@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKIN OS — Playbooks & AI Schema</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a08;
+  --bg2: #111110;
+  --bg3: #1a1a18;
+  --bg4: #202020;
+  --border: rgba(255,255,255,0.07);
+  --border-h: rgba(255,255,255,0.14);
+  --border-a: rgba(255,255,255,0.22);
+  --text: #e8e6df;
+  --text-muted: #7a786f;
+  --text-dim: #3d3c38;
+  --accent: #c8b87a;
+  --accent2: #8fb89a;
+  --accent3: #a08fc8;
+  --danger: #c88a7a;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Syne', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--mono); font-size: 13px; line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── SHELL ── */
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh; overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1/-1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; border-bottom: 1px solid var(--border); background: var(--bg); z-index: 100;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand .logo { font-family: var(--sans); font-weight: 800; font-size: 15px; letter-spacing: 0.12em; }
+.brand .sep { color: var(--text-dim); }
+.brand .sub { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-tabs { display: flex; gap: 2px; }
+.tab-btn {
+  font-family: var(--mono); font-size: 11px; padding: 6px 18px; border-radius: 2px;
+  border: 1px solid transparent; cursor: pointer; background: none; color: var(--text-muted);
+  letter-spacing: 0.05em; transition: all 0.15s;
+}
+.tab-btn:hover { color: var(--text); border-color: var(--border); }
+.tab-btn.active { background: var(--bg2); border-color: var(--border-h); color: var(--text); }
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+.chip { font-size: 10px; color: var(--text-dim); border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px; letter-spacing: 0.08em; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 20px 0; background: var(--bg);
+}
+.sb-section { font-size: 9px; letter-spacing: 0.16em; color: var(--text-dim); text-transform: uppercase; padding: 0 18px 8px; margin-top: 6px; }
+.sb-item {
+  padding: 10px 18px; cursor: pointer; border-left: 2px solid transparent;
+  transition: all 0.15s; display: flex; align-items: flex-start; gap: 10px;
+}
+.sb-item:hover { background: var(--bg2); }
+.sb-item.active { background: var(--bg2); border-left-color: var(--accent); }
+.sb-icon { font-size: 10px; color: var(--text-dim); margin-top: 2px; min-width: 14px; }
+.sb-item.active .sb-icon { color: var(--accent); }
+.sb-info .sb-name { font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.sb-item.active .sb-name { color: var(--text); }
+.sb-info .sb-desc { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+.sb-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+/* ── MAIN ── */
+.main { overflow-y: auto; background: var(--bg); }
+
+/* Panels */
+.view { display: none; }
+.view.active { display: block; animation: fadeUp 0.2s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  padding: 40px 48px 28px; border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.page-header::before {
+  content: attr(data-glyph);
+  position: absolute; right: 48px; top: 16px;
+  font-family: var(--serif); font-size: 100px; font-style: italic;
+  color: rgba(255,255,255,0.025); line-height: 1; pointer-events: none;
+}
+.ph-crumb { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+.ph-crumb span { color: var(--accent); }
+.ph-title { font-family: var(--serif); font-size: 48px; font-weight: 600; line-height: 1; margin-bottom: 10px; }
+.ph-sub { font-size: 12px; color: var(--text-muted); max-width: 560px; line-height: 1.7; }
+.ph-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.ph-tag { font-size: 10px; border: 1px solid var(--border); padding: 4px 10px; border-radius: 2px; color: var(--text-muted); }
+
+/* ── PLAYBOOK CARDS ── */
+.page-body { padding: 32px 48px 64px; }
+
+.section-label {
+  font-size: 9px; letter-spacing: 0.16em; color: var(--text-dim);
+  text-transform: uppercase; margin-bottom: 14px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Decision tree card */
+.playbook-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 4px; margin-bottom: 16px; overflow: hidden;
+  transition: border-color 0.2s;
+}
+.playbook-card:hover { border-color: var(--border-h); }
+
+.pc-header {
+  padding: 18px 22px 16px;
+  display: flex; align-items: flex-start; gap: 16px;
+  cursor: pointer; border-bottom: 1px solid var(--border);
+}
+.pc-num { font-size: 10px; color: var(--text-dim); min-width: 20px; padding-top: 2px; }
+.pc-meta { flex: 1; }
+.pc-title { font-family: var(--sans); font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.pc-trigger { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+.pc-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.pc-tag { font-size: 9px; padding: 2px 7px; border-radius: 2px; border: 1px solid var(--border); color: var(--text-dim); }
+.pc-tag.urgent { border-color: rgba(200,138,122,0.3); color: var(--danger); background: rgba(200,138,122,0.06); }
+.pc-tag.info   { border-color: rgba(160,143,200,0.3); color: var(--accent3); background: rgba(160,143,200,0.06); }
+.pc-tag.ok     { border-color: rgba(143,184,154,0.3); color: var(--accent2); background: rgba(143,184,154,0.06); }
+.pc-chevron { font-size: 10px; color: var(--text-dim); margin-top: 4px; transition: transform 0.2s; }
+.pc-header.open .pc-chevron { transform: rotate(90deg); }
+
+.pc-body { display: none; padding: 20px 22px 22px; }
+.pc-body.open { display: block; }
+
+/* Decision nodes */
+.decision-tree { margin: 0 0 16px; }
+
+.d-node {
+  display: flex; gap: 12px; align-items: flex-start;
+  padding: 12px 14px; border-radius: 4px; margin-bottom: 8px;
+  background: var(--bg3); border: 1px solid var(--border);
+}
+.d-node.question { border-left: 2px solid var(--accent3); }
+.d-node.yes      { border-left: 2px solid var(--accent2); }
+.d-node.no       { border-left: 2px solid var(--danger); }
+.d-node.action   { border-left: 2px solid var(--accent); }
+.d-node.warning  { border-left: 2px solid var(--danger); background: rgba(200,138,122,0.04); }
+
+.d-glyph { font-size: 10px; min-width: 18px; padding-top: 1px; }
+.d-node.question .d-glyph { color: var(--accent3); }
+.d-node.yes      .d-glyph { color: var(--accent2); }
+.d-node.no       .d-glyph { color: var(--danger); }
+.d-node.action   .d-glyph { color: var(--accent); }
+.d-node.warning  .d-glyph { color: var(--danger); }
+
+.d-content { flex: 1; }
+.d-label { font-size: 11px; font-family: var(--sans); font-weight: 600; color: var(--text-muted); margin-bottom: 2px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; }
+.d-text { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+.d-indent { margin-left: 28px; }
+
+/* Signal threshold bar */
+.threshold-bar {
+  display: flex; gap: 0; height: 4px; border-radius: 2px;
+  overflow: hidden; margin: 10px 0 14px;
+}
+.threshold-seg { flex: 1; }
+.threshold-seg.danger  { background: var(--danger); }
+.threshold-seg.warning { background: var(--accent); }
+.threshold-seg.ok      { background: var(--accent2); }
+
+.threshold-labels {
+  display: flex; justify-content: space-between;
+  font-size: 9px; color: var(--text-dim); margin-bottom: 12px;
+}
+
+/* KPI table */
+.kpi-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+.kpi-table th {
+  font-size: 9px; letter-spacing: 0.12em; color: var(--text-dim);
+  text-transform: uppercase; padding: 6px 12px; border-bottom: 1px solid var(--border);
+  text-align: left; font-weight: 400;
+}
+.kpi-table td {
+  font-size: 11px; color: var(--text-muted); padding: 9px 12px;
+  border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5;
+}
+.kpi-table tr:last-child td { border-bottom: none; }
+.kpi-table td:first-child { color: var(--text); font-family: var(--sans); font-weight: 500; font-size: 12px; }
+.kpi-table td .target { color: var(--accent2); font-size: 10px; display: block; margin-top: 2px; }
+.kpi-table td .warn   { color: var(--danger);  font-size: 10px; display: block; margin-top: 2px; }
+
+/* Outcome boxes */
+.outcomes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.outcome-box {
+  padding: 14px 16px; border-radius: 4px; border: 1px solid var(--border);
+  background: var(--bg3);
+}
+.outcome-box.green { border-left: 2px solid var(--accent2); }
+.outcome-box.red   { border-left: 2px solid var(--danger); }
+.ob-label { font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+.outcome-box.green .ob-label { color: var(--accent2); }
+.outcome-box.red   .ob-label { color: var(--danger); }
+.ob-text { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+/* ── AI SCHEMA VIEW ── */
+.schema-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.schema-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+}
+.schema-card.full { grid-column: 1/-1; }
+.sc-head {
+  padding: 14px 18px 12px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sc-label { font-size: 9px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; }
+.sc-tag { font-size: 9px; color: var(--accent3); border: 1px solid rgba(160,143,200,0.25); padding: 2px 7px; border-radius: 2px; }
+.sc-tag.green { color: var(--accent2); border-color: rgba(143,184,154,0.25); }
+.sc-tag.amber { color: var(--accent); border-color: rgba(200,184,122,0.25); }
+.sc-body { padding: 18px; }
+
+/* JSON code block */
+.json-block {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  padding: 16px 18px; font-family: var(--mono); font-size: 11px; line-height: 1.8;
+  overflow-x: auto; white-space: pre;
+}
+.j-key   { color: var(--accent3); }
+.j-str   { color: var(--accent2); }
+.j-num   { color: var(--accent); }
+.j-bool  { color: var(--danger); }
+.j-null  { color: var(--text-dim); }
+.j-com   { color: var(--text-dim); font-style: italic; }
+
+/* Field rows */
+.field-row {
+  display: grid; grid-template-columns: 160px 80px 1fr;
+  gap: 12px; align-items: start;
+  padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 11px;
+}
+.field-row:last-child { border-bottom: none; }
+.f-name { color: var(--accent3); font-family: var(--mono); }
+.f-type { color: var(--accent); font-family: var(--mono); font-size: 10px; padding-top: 1px; }
+.f-desc { color: var(--text-muted); line-height: 1.5; }
+.f-req  { color: var(--accent2); font-size: 9px; }
+.f-opt  { color: var(--text-dim); font-size: 9px; }
+
+/* Flow diagram */
+.flow-row {
+  display: flex; align-items: center; gap: 0;
+  overflow-x: auto; padding: 16px 0; margin: -4px 0;
+}
+.flow-step {
+  flex-shrink: 0;
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 4px;
+  padding: 10px 14px; min-width: 120px; text-align: center;
+}
+.flow-step.active-step { border-color: var(--accent); background: rgba(200,184,122,0.05); }
+.fs-num { font-size: 9px; color: var(--text-dim); margin-bottom: 4px; letter-spacing: 0.08em; }
+.fs-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-muted); }
+.flow-step.active-step .fs-name { color: var(--accent); }
+.fs-detail { font-size: 10px; color: var(--text-dim); margin-top: 2px; }
+.flow-arrow { color: var(--text-dim); padding: 0 8px; font-size: 12px; flex-shrink: 0; }
+
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">SKIN</span>
+      <span class="sep">/</span>
+      <span class="sub">OS · Playbooks & AI Schema</span>
+    </div>
+    <div class="topbar-tabs">
+      <button class="tab-btn active" onclick="switchTab('playbooks', this)">Decision Playbooks</button>
+      <button class="tab-btn" onclick="switchTab('schema', this)">AI Schema</button>
+    </div>
+    <div class="topbar-right">
+      <span class="chip">Step 3 + 4 of 4</span>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar scrollbar-thin" id="sidebar">
+
+    <!-- PLAYBOOKS sidebar -->
+    <div id="sb-playbooks">
+      <div class="sb-section">Founder Situations</div>
+      <div class="sb-item active" onclick="showView('pb-hire')">
+        <span class="sb-icon">01</span>
+        <div class="sb-info">
+          <div class="sb-name">Hire vs. Wait</div>
+          <div class="sb-desc">First critical hire timing</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-raise')">
+        <span class="sb-icon">02</span>
+        <div class="sb-info">
+          <div class="sb-name">Raise vs. Grow</div>
+          <div class="sb-desc">Fundraise timing decision</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-pivot')">
+        <span class="sb-icon">03</span>
+        <div class="sb-info">
+          <div class="sb-name">Pivot Trigger</div>
+          <div class="sb-desc">When to change direction</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-price')">
+        <span class="sb-icon">04</span>
+        <div class="sb-info">
+          <div class="sb-name">Pricing Decision</div>
+          <div class="sb-desc">When and how to raise price</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-channel')">
+        <span class="sb-icon">05</span>
+        <div class="sb-info">
+          <div class="sb-name">Channel Commitment</div>
+          <div class="sb-desc">Focus vs. diversify GTM</div>
+        </div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section">Operational Playbooks</div>
+      <div class="sb-item" onclick="showView('pb-sales')">
+        <span class="sb-icon">06</span>
+        <div class="sb-info">
+          <div class="sb-name">First Sales Hire</div>
+          <div class="sb-desc">Founder to sales motion</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-churn')">
+        <span class="sb-icon">07</span>
+        <div class="sb-info">
+          <div class="sb-name">Churn Response</div>
+          <div class="sb-desc">Diagnosing & stopping churn</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCHEMA sidebar -->
+    <div id="sb-schema" style="display:none">
+      <div class="sb-section">Data Schemas</div>
+      <div class="sb-item active" onclick="showView('sc-report')">
+        <span class="sb-icon">→</span>
+        <div class="sb-info">
+          <div class="sb-name">Report Schema</div>
+          <div class="sb-desc">SKIN Pulse output format</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('sc-intake')">
+        <span class="sb-icon">→</span>
+        <div class="sb-info">
+          <div class="sb-name">Intake Schema</div>
+          <div class="sb-desc">Founder input structure</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('sc-dim')">
+        <span class="sb-icon">→</span>
+        <div class="sb-info">
+          <div class="sb-name">Dimension Schema</div>
+          <div class="sb-desc">Per-dimension scoring model</div>
+        </div>
+      </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section">AI Pipeline</div>
+      <div class="sb-item" onclick="showView('sc-flow')">
+        <span class="sb-icon">→</span>
+        <div class="sb-info">
+          <div class="sb-name">Processing Flow</div>
+          <div class="sb-desc">End-to-end AI pipeline</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('sc-prompts')">
+        <span class="sb-icon">→</span>
+        <div class="sb-info">
+          <div class="sb-name">Prompt Registry</div>
+          <div class="sb-desc">All system prompt templates</div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main scrollbar-thin">
+
+    <!-- ══════════════ PLAYBOOK VIEWS ══════════════ -->
+
+    <!-- PB 1: HIRE VS WAIT -->
+    <div class="view active" id="pb-hire">
+      <div class="page-header" data-glyph="01">
+        <div class="ph-crumb">Playbooks / Founder Situations / <span>01</span></div>
+        <div class="ph-title">Hire vs. Wait</div>
+        <p class="ph-sub">The first critical hire is one of the highest-leverage decisions in early-stage execution. Too early destroys runway. Too late strangles growth. This playbook gives you the decision logic.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Team dimension</span>
+          <span class="ph-tag">GTM dimension</span>
+          <span class="ph-tag">Financials dimension</span>
+          <span class="ph-tag">Stage: Pre-seed → Seed</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Trigger condition</div>
+        <div class="playbook-card" style="margin-bottom:24px">
+          <div class="pc-body open" style="padding:16px 22px">
+            <div class="d-node question">
+              <span class="d-glyph">?</span>
+              <div class="d-content">
+                <div class="d-label">Use this playbook when</div>
+                <div class="d-text">You're generating consistent revenue or strong engagement, you personally are the bottleneck to growth, and you're debating whether to hire before raising or wait until after.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Decision framework</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">Pre-hire readiness gates</div>
+              <div class="pc-trigger">Before any hire, all three gates must be green.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <table class="kpi-table">
+              <tr><th>Gate</th><th>Signal required</th><th>If missing</th></tr>
+              <tr>
+                <td>Role clarity</td>
+                <td>You can write the job in one sentence with a measurable 90-day outcome</td>
+                <td class=""><span style="color:var(--danger)">Wait</span> — undefined roles produce mis-hires</td>
+              </tr>
+              <tr>
+                <td>Revenue floor</td>
+                <td>12+ months runway at current burn even after adding the hire's salary</td>
+                <td><span style="color:var(--danger)">Wait</span> — hire under pressure = bad hiring decisions</td>
+              </tr>
+              <tr>
+                <td>Founder bottleneck</td>
+                <td>You can identify a specific task consuming 30%+ of your time that a hire would take over</td>
+                <td><span style="color:var(--accent)">Pause</span> — the bottleneck may be process, not headcount</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">The hire decision tree</div>
+              <div class="pc-trigger">Step through these questions in order. Stop when you hit a "Wait" or "Hire" conclusion.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node question">
+                <span class="d-glyph">?</span>
+                <div class="d-content">
+                  <div class="d-label">Question 1</div>
+                  <div class="d-text">Is the task you need help with in your core zone of genius — or outside it?</div>
+                </div>
+              </div>
+              <div class="d-indent">
+                <div class="d-node yes">
+                  <span class="d-glyph">→</span>
+                  <div class="d-content">
+                    <div class="d-label">Outside your zone</div>
+                    <div class="d-text">You're creating a structural weakness. Hire as soon as revenue floor is met. This is highest-leverage.</div>
+                  </div>
+                </div>
+                <div class="d-node no">
+                  <span class="d-glyph">→</span>
+                  <div class="d-content">
+                    <div class="d-label">Inside your zone</div>
+                    <div class="d-text">You're at capacity in your strength area. Move to Question 2.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-node question" style="margin-top:12px">
+                <span class="d-glyph">?</span>
+                <div class="d-content">
+                  <div class="d-label">Question 2</div>
+                  <div class="d-text">Does hiring now make your fundraise more likely to succeed — or less?</div>
+                </div>
+              </div>
+              <div class="d-indent">
+                <div class="d-node yes">
+                  <span class="d-glyph">→</span>
+                  <div class="d-content">
+                    <div class="d-label">More likely (strategic hire)</div>
+                    <div class="d-text">A CTO, VP Sales, or domain expert that strengthens the story. Hire pre-raise if you can afford it. The equity premium is worth the narrative unlock.</div>
+                  </div>
+                </div>
+                <div class="d-node no">
+                  <span class="d-glyph">→</span>
+                  <div class="d-content">
+                    <div class="d-label">Less likely or neutral</div>
+                    <div class="d-text">Raise first, then hire. Don't dilute runway when the hire won't accelerate the raise.</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-node question" style="margin-top:12px">
+                <span class="d-glyph">?</span>
+                <div class="d-content">
+                  <div class="d-label">Question 3</div>
+                  <div class="d-text">Can this need be met with a fractional or contractor arrangement instead?</div>
+                </div>
+              </div>
+              <div class="d-indent">
+                <div class="d-node yes">
+                  <span class="d-glyph">→</span>
+                  <div class="d-content">
+                    <div class="d-label">Yes — role can be fractional</div>
+                    <div class="d-text">Use fractional. Test the role definition and the need. Convert to full-time only when you can't get enough of their time. Preserves runway and reduces mis-hire risk.</div>
+                  </div>
+                </div>
+                <div class="d-node action">
+                  <span class="d-glyph">✓</span>
+                  <div class="d-content">
+                    <div class="d-label">No — needs to be full-time</div>
+                    <div class="d-text">All gates are green, the hire is justified, and fractional won't cut it. Hire now. Move fast. A 30-day mis-hire costs less than a 6-month vacancy.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="outcomes">
+              <div class="outcome-box green">
+                <div class="ob-label">Hire now — signals</div>
+                <div class="ob-text">12+ months runway post-hire · Role defined with 90-day outcome · Strategic hire unlocks the raise · Founder is genuine bottleneck</div>
+              </div>
+              <div class="outcome-box red">
+                <div class="ob-label">Wait — signals</div>
+                <div class="ob-text">Under 12 months runway · Role unclear or vague · Hire driven by founder anxiety, not evidence · Process problem masquerading as headcount problem</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">C</span>
+            <div class="pc-meta">
+              <div class="pc-title">The mis-hire early warning system</div>
+              <div class="pc-trigger">Check at 30 and 60 days post-hire.</div>
+              <div class="pc-tags">
+                <span class="pc-tag urgent">Critical</span>
+              </div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <table class="kpi-table">
+              <tr><th>Week</th><th>Green signal</th><th>Red signal — act immediately</th></tr>
+              <tr><td>Week 2</td><td>Asks clarifying questions about priorities, not just tasks</td><td>Replicates what you were already doing rather than improving it</td></tr>
+              <tr><td>Week 4</td><td>Has identified one thing to change or improve that you hadn't seen</td><td>Requires daily direction — no autonomous initiative</td></tr>
+              <tr><td>Week 8</td><td>You've stopped worrying about their area of ownership</td><td>You're doing their job alongside them</td></tr>
+            </table>
+            <div class="d-node warning" style="margin-top:14px">
+              <span class="d-glyph">!</span>
+              <div class="d-content">
+                <div class="d-label">Rule</div>
+                <div class="d-text">If Week 8 red signal is present: the hire is wrong, not the person. Address immediately. Every week of a mis-hire costs more than the exit severance.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 2: RAISE VS GROW -->
+    <div class="view" id="pb-raise">
+      <div class="page-header" data-glyph="02">
+        <div class="ph-crumb">Playbooks / Founder Situations / <span>02</span></div>
+        <div class="ph-title">Raise vs. Grow</div>
+        <p class="ph-sub">Whether to fundraise now or continue growing on existing capital. The answer depends on what the evidence shows — not what the founder is comfortable with.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Financials dimension</span>
+          <span class="ph-tag">Investor Readiness dimension</span>
+          <span class="ph-tag">Stage: Seed → Series A</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Core diagnostic</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">The four raise readiness tests</div>
+              <div class="pc-trigger">You need to pass at least 3 of 4 to raise with conviction. Raising at 2 or below will cost you 6 months and dilute relationships.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node action">
+                <span class="d-glyph">1</span>
+                <div class="d-content">
+                  <div class="d-label">Evidence test</div>
+                  <div class="d-text">Do you have at least 3 repeatable customer wins (same profile, same motion, same value delivered) — not 10 one-off experiments?</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">2</span>
+                <div class="d-content">
+                  <div class="d-label">Milestone test</div>
+                  <div class="d-text">Can you articulate exactly what this round gets you to — a specific, investable milestone that changes your valuation story — in 2 sentences?</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">3</span>
+                <div class="d-content">
+                  <div class="d-label">Runway test</div>
+                  <div class="d-text">Do you have at least 9 months of runway remaining? Raising below 6 months is survival mode — investors can smell it and it compresses your leverage.</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">4</span>
+                <div class="d-content">
+                  <div class="d-label">Investor access test</div>
+                  <div class="d-text">Do you have at least 3 warm paths to target investors — not cold outreach? If all paths are cold, the raise will take 2x as long as expected.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="threshold-bar">
+              <div class="threshold-seg danger"></div>
+              <div class="threshold-seg danger"></div>
+              <div class="threshold-seg warning"></div>
+              <div class="threshold-seg warning"></div>
+              <div class="threshold-seg ok"></div>
+              <div class="threshold-seg ok"></div>
+              <div class="threshold-seg ok"></div>
+              <div class="threshold-seg ok"></div>
+            </div>
+            <div class="threshold-labels">
+              <span>0–1 tests passed: Don't raise</span>
+              <span>2: Raise with caution</span>
+              <span>3–4: Raise now</span>
+            </div>
+
+            <div class="outcomes">
+              <div class="outcome-box green">
+                <div class="ob-label">Raise now</div>
+                <div class="ob-text">3–4 tests passed. You have leverage. A raise now will be faster, cleaner, and produce better terms. Don't wait for perfect — perfect doesn't close rounds.</div>
+              </div>
+              <div class="outcome-box red">
+                <div class="ob-label">Grow first</div>
+                <div class="ob-text">0–2 tests passed. Going to market now costs relationships and time. Identify which test you're closest to passing and target that milestone specifically. 60–90 day sprint.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">If you decide to raise — the 90-day sprint</div>
+              <div class="pc-trigger">Fundraising is a full-time job. Running it poorly while also running the company is the most common execution mistake at this stage.</div>
+              <div class="pc-tags"><span class="pc-tag info">Process</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <table class="kpi-table">
+              <tr><th>Week</th><th>Focus</th><th>Output</th></tr>
+              <tr><td>1–2</td><td>Materials prep</td><td>Deck locked, data room complete, 50-name investor list prioritized by warmth</td></tr>
+              <tr><td>3–5</td><td>Soft launch</td><td>First 10 meetings — friends, angels, advisors. Refine pitch from real objections.</td></tr>
+              <tr><td>6–10</td><td>Primary process</td><td>Target funds in parallel. Create momentum — no sequential conversations.</td></tr>
+              <tr><td>11–12</td><td>Term sheet pressure</td><td>Use first term sheet to accelerate remaining conversations. 2-week close window.</td></tr>
+            </table>
+            <div class="d-node warning" style="margin-top:14px">
+              <span class="d-glyph">!</span>
+              <div class="d-content">
+                <div class="d-label">Critical rule</div>
+                <div class="d-text">Never run sequential raise conversations. All target investors must be in process simultaneously. Sequential raises give each investor infinite time and zero urgency.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 3: PIVOT TRIGGER -->
+    <div class="view" id="pb-pivot">
+      <div class="page-header" data-glyph="03">
+        <div class="ph-crumb">Playbooks / Founder Situations / <span>03</span></div>
+        <div class="ph-title">Pivot Trigger</div>
+        <p class="ph-sub">The hardest decision in early-stage. The line between persistence and delusion is thin. This playbook gives you a signal-based framework to know which side you're on.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Product dimension</span>
+          <span class="ph-tag">Market dimension</span>
+          <span class="ph-tag">GTM dimension</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">The pivot vs. persist diagnostic</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">Five-signal test</div>
+              <div class="pc-trigger">Score each signal. 4+ pointing to "pivot" is a clear signal. 2–3 means optimize before you pivot.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <table class="kpi-table">
+              <tr><th>Signal</th><th>Persist</th><th>Pivot</th></tr>
+              <tr>
+                <td>Customer retention</td>
+                <td>Users return without prompting. Cohort retention is stable or improving.</td>
+                <td>Churn is consistent and the explanation keeps changing. No user has renewed twice without a discount.</td>
+              </tr>
+              <tr>
+                <td>Conversion signal</td>
+                <td>You can reliably predict which prospects will convert and why.</td>
+                <td>Every deal feels different. No repeatable pattern to who buys or why they say yes.</td>
+              </tr>
+              <tr>
+                <td>Competitive response</td>
+                <td>Customers choose you over alternatives for a specific, named reason.</td>
+                <td>Customers don't compare you to anything — they evaluate you against doing nothing.</td>
+              </tr>
+              <tr>
+                <td>Founder energy</td>
+                <td>You still find the problem genuinely interesting. Setbacks fuel you.</td>
+                <td>You're building to prove you were right, not because the problem matters to you.</td>
+              </tr>
+              <tr>
+                <td>Market signal</td>
+                <td>Inbound interest from buyers you didn't pitch. The market is finding you.</td>
+                <td>Every customer required founder-level sell. Zero organic inbound after 12+ months.</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">Types of pivot — not all are equal</div>
+              <div class="pc-trigger">Before deciding to pivot, be specific about what you're actually changing.</div>
+              <div class="pc-tags"><span class="pc-tag info">Framework</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node action">
+                <span class="d-glyph">1</span>
+                <div class="d-content">
+                  <div class="d-label">Customer pivot (lowest risk)</div>
+                  <div class="d-text">Same product, different buyer. Often the right move when the product has real fans but they're not who you've been selling to. Audit your best customers — is there a pattern you've been ignoring?</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">2</span>
+                <div class="d-content">
+                  <div class="d-label">Problem pivot (medium risk)</div>
+                  <div class="d-text">Same customer, different problem. You have distribution and trust but you're solving the wrong pain. What do your best customers actually complain about? Shift to that.</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">3</span>
+                <div class="d-content">
+                  <div class="d-label">Technology pivot (medium-high risk)</div>
+                  <div class="d-text">Same problem, different solution approach. You've validated the problem but your solution isn't the right vehicle. Common in technical startups where the approach was limited by early assumptions.</div>
+                </div>
+              </div>
+              <div class="d-node warning">
+                <span class="d-glyph">4</span>
+                <div class="d-content">
+                  <div class="d-label">Full pivot (highest risk)</div>
+                  <div class="d-text">Different customer, different problem, different solution. Only justified if you have a genuine team asset (technology, data, network) that transfers. Otherwise this is starting over — be honest about that.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 4–7: Concise structure for remaining playbooks -->
+    <div class="view" id="pb-price">
+      <div class="page-header" data-glyph="04">
+        <div class="ph-crumb">Playbooks / Founder Situations / <span>04</span></div>
+        <div class="ph-title">Pricing Decision</div>
+        <p class="ph-sub">When and how to raise price. Founders consistently underprice. The question is rarely whether to raise price — it's what signal tells you it's time and by how much.</p>
+        <div class="ph-tags"><span class="ph-tag">Product dimension</span><span class="ph-tag">Financials dimension</span><span class="ph-tag">GTM dimension</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Price raise readiness signals</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span><div class="pc-meta"><div class="pc-title">When to raise price</div><div class="pc-trigger">Any two of these signals is sufficient justification. Waiting for all four is leaving money on the table.</div></div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node yes"><span class="d-glyph">✓</span><div class="d-content"><div class="d-label">Signal 1 — close rate too high</div><div class="d-text">If your close rate is above 60% on qualified leads, you are underpriced. The market is saying yes too easily.</div></div></div>
+              <div class="d-node yes"><span class="d-glyph">✓</span><div class="d-content"><div class="d-label">Signal 2 — no price objection</div><div class="d-text">If fewer than 30% of prospects mention price in the sales conversation, your price isn't high enough to be a real consideration.</div></div></div>
+              <div class="d-node yes"><span class="d-glyph">✓</span><div class="d-content"><div class="d-label">Signal 3 — customer ROI >> price</div><div class="d-text">If your best customers can articulate an ROI that is 10x+ your annual fee, you are dramatically underpriced relative to value delivered.</div></div></div>
+              <div class="d-node yes"><span class="d-glyph">✓</span><div class="d-content"><div class="d-label">Signal 4 — waitlist or backlog</div><div class="d-text">Demand is exceeding your delivery capacity. Price is the lever to slow demand while you scale. Raise it.</div></div></div>
+            </div>
+            <div class="d-node action" style="margin-top:12px"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">How much to raise</div><div class="d-text">Raise by 20–30% in one move. Small increments signal uncertainty. Test the new price on 5 new prospects before rolling back to existing customers. If close rate holds at 40%+, you're still underpriced.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="pb-channel">
+      <div class="page-header" data-glyph="05">
+        <div class="ph-crumb">Playbooks / Founder Situations / <span>05</span></div>
+        <div class="ph-title">Channel Commitment</div>
+        <p class="ph-sub">The decision between focusing all GTM energy on one channel versus diversifying. Most early-stage startups should be in focus mode far longer than feels comfortable.</p>
+        <div class="ph-tags"><span class="ph-tag">GTM dimension</span><span class="ph-tag">Stage: Seed</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Focus vs. diversify framework</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span><div class="pc-meta"><div class="pc-title">The channel commitment rule</div><div class="pc-trigger">You should be running a single primary channel until it breaks — not until it slows down.</div></div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Are you below $1M ARR?</div><div class="d-text">If yes: you should be on exactly one channel. No exceptions. Diversification before channel mastery is the single most common GTM mistake at early stage.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Is your primary channel at capacity?</div><div class="d-text">Capacity means: you've extracted all the volume available, CAC is rising despite optimization, or the audience is saturated. "Slowing down" is not capacity — it's a test of whether you've found the ceiling or just the plateau.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">If at capacity — test before committing</div><div class="d-text">Run a 30-day experiment on one adjacent channel with a fixed budget. Commit to the expansion only if CPL or CAC from the new channel is within 40% of your primary channel's performance.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="pb-sales">
+      <div class="page-header" data-glyph="06">
+        <div class="ph-crumb">Playbooks / Operational / <span>06</span></div>
+        <div class="ph-title">First Sales Hire</div>
+        <p class="ph-sub">The transition from founder-led sales to a repeatable sales motion. Hire too early and the rep fails. Hire too late and growth stalls. The timing signal is specific.</p>
+        <div class="ph-tags"><span class="ph-tag">GTM dimension</span><span class="ph-tag">Team dimension</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Readiness conditions</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span><div class="pc-meta"><div class="pc-title">You are not ready to hire sales until</div><div class="pc-trigger">All four must be true. Hiring before this point produces a rep who can't succeed — and a founder who blames the hire.</div></div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node action"><span class="d-glyph">1</span><div class="d-content"><div class="d-label">The pitch is documented</div><div class="d-text">You've written down the exact words that work. Not bullet points — the actual script. A new rep needs a starting point, not a conversation with the founder's memory.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">2</span><div class="d-content"><div class="d-label">You've closed 10+ of the same deal</div><div class="d-text">Not 10 different deals. 10 deals to the same ICP using the same motion. Repeatability is the signal. If you haven't found the repeatable motion yet, a rep won't find it for you.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">3</span><div class="d-content"><div class="d-label">Objections are known and handled</div><div class="d-text">You have a written objection-handling guide covering the top 5 objections you encounter. If you can't write this, you don't know the motion well enough to teach it.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">4</span><div class="d-content"><div class="d-label">You can afford 6 months of ramp</div><div class="d-text">A new sales rep needs 3–6 months to reach quota. Budget for that ramp explicitly. If you can't afford it, the hire will fail due to financial pressure regardless of talent.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="pb-churn">
+      <div class="page-header" data-glyph="07">
+        <div class="ph-crumb">Playbooks / Operational / <span>07</span></div>
+        <div class="ph-title">Churn Response</div>
+        <p class="ph-sub">Churn is a symptom, not a cause. This playbook gives you the diagnostic framework to identify the real source and the right intervention before it becomes a company-level problem.</p>
+        <div class="ph-tags"><span class="ph-tag">Product dimension</span><span class="ph-tag">GTM dimension</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Churn diagnosis tree</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span><div class="pc-meta"><div class="pc-title">The four churn root causes</div><div class="pc-trigger">Each has a different intervention. Treating the wrong root cause wastes 90 days.</div></div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Root cause 1 — Wrong customer</div><div class="d-text">Churn concentrated in one customer profile. Intervention: tighten ICP, stop selling to that profile. Don't try to save customers who were never right.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Root cause 2 — Expectation mismatch</div><div class="d-text">Customer churns saying "it wasn't what I expected." Intervention: fix the sales process, not the product. You oversold or misdirected. The fix is qualification, not features.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Root cause 3 — Onboarding failure</div><div class="d-text">Churn happens at 30–60 days. Customer never reached their first value moment. Intervention: redesign onboarding to deliver a specific, undeniable win in the first 7 days.</div></div></div>
+              <div class="d-node warning"><span class="d-glyph">!</span><div class="d-content"><div class="d-label">Root cause 4 — Product doesn't deliver</div><div class="d-text">Customers who used the product well and still churned. This is the hard one. Intervention requires honest product diagnosis. No amount of CS or sales fix will resolve a core product value gap.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════ SCHEMA VIEWS ══════════════ -->
+
+    <!-- SC 1: REPORT SCHEMA -->
+    <div class="view" id="sc-report">
+      <div class="page-header" data-glyph="{}">
+        <div class="ph-crumb">AI Schema / <span>Report Schema</span></div>
+        <div class="ph-title">Report Schema</div>
+        <p class="ph-sub">The structured output format for every SKIN Pulse report. This is what the AI writes to and what downstream systems read from. All fields are required unless marked optional.</p>
+        <div class="ph-tags"><span class="ph-tag">JSON</span><span class="ph-tag">AI output</span><span class="ph-tag">v1.0</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Full report object</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">skin_report.json</span><span class="sc-tag">Output schema</span></div>
+          <div class="sc-body">
+            <div class="json-block"><span class="j-com">// SKIN Pulse Report — v1.0 schema</span>
+{
+  <span class="j-key">"report_id"</span>:        <span class="j-str">"rpt_[uuid]"</span>,
+  <span class="j-key">"generated_at"</span>:    <span class="j-str">"2026-03-27T09:00:00Z"</span>,
+  <span class="j-key">"company_name"</span>:    <span class="j-str">"Acme Inc."</span>,
+  <span class="j-key">"analyst_version"</span>: <span class="j-str">"skin-os-v1.0"</span>,
+  <span class="j-key">"review_type"</span>:     <span class="j-str">"full_pulse"</span>,   <span class="j-com">// full_pulse | express | re-pulse</span>
+
+  <span class="j-key">"skin_score"</span>: {
+    <span class="j-key">"composite"</span>: <span class="j-num">76</span>,             <span class="j-com">// Weighted average, 0–100</span>
+    <span class="j-key">"mode"</span>:      <span class="j-str">"SCALE"</span>,         <span class="j-com">// PROBE | BUILD | LIFT-OFF | SCALE | OUTLIER</span>
+    <span class="j-key">"confidence"</span>: <span class="j-str">"HIGH"</span>           <span class="j-com">// HIGH | MEDIUM | LOW — based on evidence quality</span>
+  },
+
+  <span class="j-key">"dimensions"</span>: [
+    {
+      <span class="j-key">"id"</span>:       <span class="j-str">"team"</span>,
+      <span class="j-key">"weight"</span>:  <span class="j-num">0.20</span>,
+      <span class="j-key">"score"</span>:   <span class="j-num">84</span>,
+      <span class="j-key">"confidence"</span>: <span class="j-str">"HIGH"</span>,
+      <span class="j-key">"strengths"</span>: [<span class="j-str">"..."</span>, <span class="j-str">"..."</span>],      <span class="j-com">// 2 items, evidence-cited</span>
+      <span class="j-key">"risks"</span>:     [<span class="j-str">"..."</span>, <span class="j-str">"..."</span>],      <span class="j-com">// 2 items, evidence-cited</span>
+      <span class="j-key">"signals"</span>: {
+        <span class="j-key">"green"</span>: [<span class="j-str">"fmf"</span>, <span class="j-str">"track_record"</span>, <span class="j-str">"access"</span>],
+        <span class="j-key">"red"</span>:   [<span class="j-str">"credential_sub"</span>]
+      }
+    }
+    <span class="j-com">// ... dimensions 2–7 follow same structure</span>
+  ],
+
+  <span class="j-key">"priorities"</span>: [
+    {
+      <span class="j-key">"rank"</span>:       <span class="j-num">1</span>,
+      <span class="j-key">"dimension"</span>:  <span class="j-str">"gtm"</span>,
+      <span class="j-key">"action"</span>:     <span class="j-str">"Define ICP by situation, not firmographics"</span>,
+      <span class="j-key">"rationale"</span>: <span class="j-str">"Sales motion has no repeatable pattern..."</span>,
+      <span class="j-key">"horizon"</span>:   <span class="j-str">"30_days"</span>       <span class="j-com">// 30_days | 90_days | 6_months</span>
+    }
+  ],
+
+  <span class="j-key">"kpis"</span>: [
+    {
+      <span class="j-key">"metric"</span>:    <span class="j-str">"Sales cycle length"</span>,
+      <span class="j-key">"target"</span>:   <span class="j-str">"≤ 45 days"</span>,
+      <span class="j-key">"current"</span>:  <span class="j-str">"~90 days (estimated)"</span>,
+      <span class="j-key">"dimension"</span>: <span class="j-str">"gtm"</span>
+    }
+  ],
+
+  <span class="j-key">"mode_narrative"</span>: <span class="j-str">"The company is directionally correct..."</span>,
+  <span class="j-key">"flags"</span>: [<span class="j-str">"gtm_founder_dependent"</span>, <span class="j-str">"financials_burn_unclear"</span>],
+  <span class="j-key">"reviewer_notes"</span>: <span class="j-str">"..."</span>   <span class="j-com">// Optional human analyst notes</span>
+}</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:24px">Field reference</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">Field definitions</span><span class="sc-tag amber">Required</span></div>
+          <div class="sc-body">
+            <div class="field-row">
+              <span class="f-name">skin_score.composite</span>
+              <span class="f-type">integer</span>
+              <span class="f-desc">Weighted average of all 7 dimension scores. Computed — never manually set. <span class="f-req">Required</span></span>
+            </div>
+            <div class="field-row">
+              <span class="f-name">skin_score.mode</span>
+              <span class="f-type">enum</span>
+              <span class="f-desc">Derived from composite score. PROBE (0–39) · BUILD (40–59) · LIFT-OFF (60–74) · SCALE (75–89) · OUTLIER (90–100). <span class="f-req">Required</span></span>
+            </div>
+            <div class="field-row">
+              <span class="f-name">dimensions[].confidence</span>
+              <span class="f-type">enum</span>
+              <span class="f-desc">AI confidence in the score based on evidence quality. LOW when fewer than 3 signals have supporting evidence. <span class="f-req">Required</span></span>
+            </div>
+            <div class="field-row">
+              <span class="f-name">priorities[].horizon</span>
+              <span class="f-type">enum</span>
+              <span class="f-desc">Action timeframe: 30_days (critical), 90_days (important), 6_months (strategic). Max 1 action per horizon per report. <span class="f-req">Required</span></span>
+            </div>
+            <div class="field-row">
+              <span class="f-name">flags[]</span>
+              <span class="f-type">string[]</span>
+              <span class="f-desc">Machine-readable risk flags from the signal rubric. Used to trigger playbook recommendations in the OS. <span class="f-opt">Optional</span></span>
+            </div>
+            <div class="field-row">
+              <span class="f-name">reviewer_notes</span>
+              <span class="f-type">string</span>
+              <span class="f-desc">Human analyst overlay. Added after AI draft. Takes precedence over AI narrative when present. <span class="f-opt">Optional</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SC 2: INTAKE SCHEMA -->
+    <div class="view" id="sc-intake">
+      <div class="page-header" data-glyph="{}">
+        <div class="ph-crumb">AI Schema / <span>Intake Schema</span></div>
+        <div class="ph-title">Intake Schema</div>
+        <p class="ph-sub">The structured format for founder inputs. What the AI receives. Every field maps to one or more dimension signals in the knowledge base.</p>
+        <div class="ph-tags"><span class="ph-tag">JSON</span><span class="ph-tag">AI input</span><span class="ph-tag">v1.0</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Intake object</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">skin_intake.json</span><span class="sc-tag">Input schema</span></div>
+          <div class="sc-body">
+            <div class="json-block">{
+  <span class="j-key">"intake_id"</span>:     <span class="j-str">"int_[uuid]"</span>,
+  <span class="j-key">"submitted_at"</span>: <span class="j-str">"2026-03-27T08:00:00Z"</span>,
+
+  <span class="j-key">"company"</span>: {
+    <span class="j-key">"name"</span>:        <span class="j-str">"Acme Inc."</span>,
+    <span class="j-key">"founded"</span>:     <span class="j-str">"2024-06"</span>,
+    <span class="j-key">"stage"</span>:       <span class="j-str">"seed"</span>,          <span class="j-com">// pre-seed | seed | series-a</span>
+    <span class="j-key">"sector"</span>:      <span class="j-str">"b2b-saas"</span>,
+    <span class="j-key">"revenue_arr"</span>: <span class="j-num">180000</span>,          <span class="j-com">// USD, 0 if pre-revenue</span>
+    <span class="j-key">"headcount"</span>:   <span class="j-num">4</span>
+  },
+
+  <span class="j-key">"documents"</span>: {
+    <span class="j-key">"deck_url"</span>:      <span class="j-str">"s3://skin/[id]/deck.pdf"</span>,
+    <span class="j-key">"team_bios_url"</span>: <span class="j-str">"s3://skin/[id]/team.pdf"</span>,
+    <span class="j-key">"financials_url"</span>: <span class="j-null">null</span>,     <span class="j-com">// Optional</span>
+    <span class="j-key">"other_urls"</span>:   []
+  },
+
+  <span class="j-key">"founder_responses"</span>: {
+    <span class="j-com">// Indexed by question ID from knowledge base</span>
+    <span class="j-key">"team_q1"</span>: <span class="j-str">"I spent 8 years in industrial procurement before..."</span>,
+    <span class="j-key">"team_q2"</span>: <span class="j-str">"We mis-hired a head of partnerships in January..."</span>,
+    <span class="j-key">"product_q1"</span>: <span class="j-str">"We help ops managers at mid-sized manufacturers..."</span>
+    <span class="j-com">// ... all active questions per dimension</span>
+  },
+
+  <span class="j-key">"nda_accepted"</span>:   <span class="j-bool">true</span>,
+  <span class="j-key">"review_tier"</span>:   <span class="j-str">"standard"</span>   <span class="j-com">// standard | priority</span>
+}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SC 3: DIMENSION SCHEMA -->
+    <div class="view" id="sc-dim">
+      <div class="page-header" data-glyph="{}">
+        <div class="ph-crumb">AI Schema / <span>Dimension Schema</span></div>
+        <div class="ph-title">Dimension Schema</div>
+        <p class="ph-sub">The internal scoring model for each dimension. Defines signals, weights, rubric thresholds, and how evidence maps to scores. This is the knowledge base in machine-readable form.</p>
+        <div class="ph-tags"><span class="ph-tag">JSON</span><span class="ph-tag">Internal</span><span class="ph-tag">v1.0</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Dimension definition object</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">skin_dimension.json — example: team</span><span class="sc-tag">Internal schema</span></div>
+          <div class="sc-body">
+            <div class="json-block">{
+  <span class="j-key">"id"</span>:          <span class="j-str">"team"</span>,
+  <span class="j-key">"index"</span>:       <span class="j-num">1</span>,
+  <span class="j-key">"name"</span>:         <span class="j-str">"Team"</span>,
+  <span class="j-key">"weight"</span>:      <span class="j-num">0.20</span>,
+
+  <span class="j-key">"signals"</span>: {
+    <span class="j-key">"green"</span>: [
+      {
+        <span class="j-key">"id"</span>:          <span class="j-str">"fmf"</span>,
+        <span class="j-key">"label"</span>:      <span class="j-str">"Founder–market fit"</span>,
+        <span class="j-key">"description"</span>: <span class="j-str">"Lived the problem personally or professionally"</span>,
+        <span class="j-key">"weight"</span>:     <span class="j-num">0.25</span>,           <span class="j-com">// within dimension</span>
+        <span class="j-key">"rubric"</span>: {
+          <span class="j-key">"90_100"</span>: <span class="j-str">"Founding story is the problem. Deep domain immersion, 5+ years."</span>,
+          <span class="j-key">"70_89"</span>:  <span class="j-str">"Strong proximity to problem. Personal experience or operator background."</span>,
+          <span class="j-key">"50_69"</span>:  <span class="j-str">"Adjacent experience. Logical but not intimate."</span>,
+          <span class="j-key">"30_49"</span>:  <span class="j-str">"Opportunity identification from outside. No lived experience."</span>,
+          <span class="j-key">"0_29"</span>:   <span class="j-str">"No relevant experience. Pure market opportunity play."</span>
+        },
+        <span class="j-key">"source_questions"</span>: [<span class="j-str">"team_q1"</span>]
+      }
+      <span class="j-com">// ... other signals</span>
+    ],
+    <span class="j-key">"red"</span>: [
+      {
+        <span class="j-key">"id"</span>:          <span class="j-str">"opp_founder"</span>,
+        <span class="j-key">"label"</span>:      <span class="j-str">"Opportunity founder syndrome"</span>,
+        <span class="j-key">"penalty"</span>:    <span class="j-num">-12</span>,             <span class="j-com">// Applied to dimension score if present</span>
+        <span class="j-key">"detection"</span>:  <span class="j-str">"Cannot explain personal reason for this specific problem"</span>
+      }
+    ]
+  },
+
+  <span class="j-key">"questions"</span>: [
+    { <span class="j-key">"id"</span>: <span class="j-str">"team_q1"</span>, <span class="j-key">"text"</span>: <span class="j-str">"Why are you uniquely positioned..."</span>, <span class="j-key">"maps_to"</span>: [<span class="j-str">"fmf"</span>] },
+    { <span class="j-key">"id"</span>: <span class="j-str">"team_q2"</span>, <span class="j-key">"text"</span>: <span class="j-str">"Describe a decision you made wrong..."</span>, <span class="j-key">"maps_to"</span>: [<span class="j-str">"conviction"</span>] }
+  ],
+
+  <span class="j-key">"failure_modes"</span>: [<span class="j-str">"opp_founder"</span>, <span class="j-str">"undeclared_ceo"</span>, <span class="j-str">"credential_sub"</span>],
+  <span class="j-key">"playbooks"</span>:     [<span class="j-str">"hire_vs_wait"</span>, <span class="j-str">"first_sales_hire"</span>]  <span class="j-com">// Linked playbooks</span>
+}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SC 4: PROCESSING FLOW -->
+    <div class="view" id="sc-flow">
+      <div class="page-header" data-glyph="→">
+        <div class="ph-crumb">AI Schema / <span>Processing Flow</span></div>
+        <div class="ph-title">Processing Flow</div>
+        <p class="ph-sub">The end-to-end pipeline from founder submission to delivered report. Seven stages, each with defined inputs, AI actions, and outputs.</p>
+        <div class="ph-tags"><span class="ph-tag">Pipeline</span><span class="ph-tag">AI + Human</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">End-to-end pipeline</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">Processing stages</span><span class="sc-tag green">Active</span></div>
+          <div class="sc-body">
+            <div class="flow-row">
+              <div class="flow-step active-step"><div class="fs-num">01</div><div class="fs-name">Intake</div><div class="fs-detail">Form + docs</div></div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step"><div class="fs-num">02</div><div class="fs-name">Parse</div><div class="fs-detail">Doc extraction</div></div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step"><div class="fs-num">03</div><div class="fs-name">Gap detect</div><div class="fs-detail">Missing signals</div></div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step"><div class="fs-num">04</div><div class="fs-name">Score</div><div class="fs-detail">7 × dimension AI</div></div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step"><div class="fs-num">05</div><div class="fs-name">Synthesize</div><div class="fs-detail">Composite + flags</div></div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step"><div class="fs-num">06</div><div class="fs-name">Human review</div><div class="fs-detail">Analyst overlay</div></div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-step"><div class="fs-num">07</div><div class="fs-name">Deliver</div><div class="fs-detail">Report + playbooks</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="schema-grid" style="margin-top:16px">
+          <div class="schema-card">
+            <div class="sc-head"><span class="sc-label">Stage 02 — Parse</span><span class="sc-tag">AI</span></div>
+            <div class="sc-body">
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Input</span><span class="f-desc">PDF deck, team bios, founder response text</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Action</span><span class="f-desc">Extract structured data per intake schema. Flag missing fields.</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Output</span><span class="f-desc">Populated skin_intake.json with confidence scores per field</span>
+              </div>
+            </div>
+          </div>
+          <div class="schema-card">
+            <div class="sc-head"><span class="sc-label">Stage 04 — Score</span><span class="sc-tag">AI</span></div>
+            <div class="sc-body">
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Input</span><span class="f-desc">Intake JSON + dimension schema + signal rubrics</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Action</span><span class="f-desc">7 parallel API calls, one per dimension. Each returns score, evidence, flags.</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Output</span><span class="f-desc">7 × dimension score objects, ready for synthesis</span>
+              </div>
+            </div>
+          </div>
+          <div class="schema-card">
+            <div class="sc-head"><span class="sc-label">Stage 05 — Synthesize</span><span class="sc-tag">AI</span></div>
+            <div class="sc-body">
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Input</span><span class="f-desc">7 scored dimensions + company context</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Action</span><span class="f-desc">Compute composite, assign mode, generate priorities (max 3), select KPIs, trigger playbook links.</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Output</span><span class="f-desc">Complete skin_report.json draft</span>
+              </div>
+            </div>
+          </div>
+          <div class="schema-card">
+            <div class="sc-head"><span class="sc-label">Stage 06 — Human review</span><span class="sc-tag green">Human</span></div>
+            <div class="sc-body">
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Input</span><span class="f-desc">AI-generated report draft</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Action</span><span class="f-desc">SKIN analyst reviews scores, adjusts where evidence warrants, adds reviewer_notes. Uses score engine UI.</span>
+              </div>
+              <div class="field-row" style="grid-template-columns:90px 1fr">
+                <span class="f-type">Output</span><span class="f-desc">Final approved report. SLA: within 2 working days of submission.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SC 5: PROMPT REGISTRY -->
+    <div class="view" id="sc-prompts">
+      <div class="page-header" data-glyph="AI">
+        <div class="ph-crumb">AI Schema / <span>Prompt Registry</span></div>
+        <div class="ph-title">Prompt Registry</div>
+        <p class="ph-sub">All system prompts used in the SKIN OS pipeline. Version-controlled. Each prompt is pinned to a model version and a pipeline stage.</p>
+        <div class="ph-tags"><span class="ph-tag">claude-sonnet-4-6</span><span class="ph-tag">7 prompts</span><span class="ph-tag">v1.0</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Document parser — Stage 02</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">prompt:doc_parser</span><span class="sc-tag">Stage 02</span></div>
+          <div class="sc-body">
+            <div class="json-block">You are a SKIN intake analyst. Extract structured startup data from the submitted documents.
+
+<span class="j-key">TASK:</span>
+Parse the uploaded pitch deck and team bios. For each field in the skin_intake schema,
+extract the best available value. If a field cannot be determined from the documents,
+set it to null and add it to a "gaps" array.
+
+<span class="j-key">RULES:</span>
+- Extract facts only. Do not infer, interpolate, or assume.
+- Quote the source text in an "evidence" field alongside each extracted value.
+- Flag any claim in the documents that appears unsubstantiated.
+- Revenue, headcount, and ARR figures must be taken verbatim — do not normalize.
+
+<span class="j-key">OUTPUT:</span>
+Return only valid JSON matching the skin_intake schema.
+Include a "parse_confidence" field (HIGH/MEDIUM/LOW) per top-level object.
+Do not include prose, preamble, or explanation.</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px">Dimension scorer — Stage 04 (per-dimension)</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">prompt:dimension_scorer</span><span class="sc-tag">Stage 04 × 7</span></div>
+          <div class="sc-body">
+            <div class="json-block">You are a SKIN analyst — an experienced startup operator scoring a company
+against the SKIN framework. You have operator judgment, not consultant hedging.
+
+<span class="j-key">CONTEXT:</span>
+Dimension:       {{dimension_name}} (weight: {{dimension_weight}}%)
+Signals rubric:  {{dimension_signals_json}}
+Founder answers: {{founder_responses_for_dimension}}
+Parsed deck data: {{relevant_deck_fields}}
+
+<span class="j-key">TASK:</span>
+1. Score this dimension 0–100 using the rubric.
+   - Green signals pull the score up. Red signals apply their penalty.
+   - Low confidence (missing evidence) should pull the score toward 50, not toward 100.
+2. Identify the 2 strongest pieces of evidence (green or red).
+3. Identify the 2 highest-risk items with specific citations.
+4. List which signal IDs are present (green) and which red flags fired.
+
+<span class="j-key">CONSTRAINTS:</span>
+- Never score above 80 if confidence is LOW.
+- Never infer intent from missing data — flag the gap.
+- Cite specific quotes or data points for every strength and risk.
+
+<span class="j-key">OUTPUT:</span>
+Return JSON matching the skin_report.dimensions[] schema. No prose.</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:20px">Report synthesizer — Stage 05</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">prompt:synthesizer</span><span class="sc-tag">Stage 05</span></div>
+          <div class="sc-body">
+            <div class="json-block">You are the lead SKIN analyst synthesizing a full Pulse report from 7 scored dimensions.
+
+<span class="j-key">INPUTS:</span>
+Scored dimensions: {{dimensions_array}}
+Company context:   {{company_object}}
+
+<span class="j-key">TASK:</span>
+1. Compute the composite SKIN Score (weighted average, round to integer).
+2. Assign the correct SKIN Mode based on the composite.
+3. Write a mode_narrative of exactly 2 sentences. Operator voice, no hedging.
+4. Generate 3 prioritized actions — one per horizon (30_days, 90_days, 6_months).
+   - Each action must target a specific dimension and cite evidence.
+   - The 30-day action must be executable without additional capital or headcount.
+5. Select 3 KPIs that are leading indicators for the top priority dimension.
+6. Fire any applicable flags from the flag registry.
+7. Link relevant playbooks from the playbook registry.
+
+<span class="j-key">CONSTRAINTS:</span>
+- Priorities must be ordered by impact × urgency, not by score rank.
+- Mode narrative must use the company's specific situation — no generic language.
+- Do not repeat information from individual dimension summaries verbatim.
+
+<span class="j-key">OUTPUT:</span>
+Complete skin_report.json. No prose outside the schema fields.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let currentTab = 'playbooks';
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.getElementById('sb-playbooks').style.display = tab === 'playbooks' ? 'block' : 'none';
+  document.getElementById('sb-schema').style.display    = tab === 'schema'    ? 'block' : 'none';
+
+  // Reset sidebar active states
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+
+  if (tab === 'playbooks') {
+    showView('pb-hire');
+    document.querySelector('#sb-playbooks .sb-item').classList.add('active');
+  } else {
+    showView('sc-report');
+    document.querySelector('#sb-schema .sb-item').classList.add('active');
+  }
+}
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById(id);
+  if (el) el.classList.add('active');
+
+  // Update sidebar active
+  document.querySelectorAll('.sb-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.getAttribute('onclick') && item.getAttribute('onclick').includes(id)) {
+      item.classList.add('active');
+    }
+  });
+
+  document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleCard(header) {
+  const body = header.nextElementSibling;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  header.classList.toggle('open', !isOpen);
+}
+</script>
+</body>
+</html>

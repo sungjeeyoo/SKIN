@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKIN Score Engine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a08;
+  --bg2: #111110;
+  --bg3: #1a1a18;
+  --bg4: #202020;
+  --border: rgba(255,255,255,0.07);
+  --border-hover: rgba(255,255,255,0.14);
+  --border-active: rgba(255,255,255,0.22);
+  --text: #e8e6df;
+  --text-muted: #7a786f;
+  --text-dim: #3d3c38;
+  --accent: #c8b87a;
+  --accent2: #8fb89a;
+  --accent3: #a08fc8;
+  --score-high: #8fb89a;
+  --score-mid: #c8b87a;
+  --score-low: #c88a7a;
+  --mono: 'DM Mono', monospace;
+  --serif: 'Cormorant Garamond', serif;
+  --sans: 'Syne', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.shell {
+  display: grid;
+  grid-template-columns: 300px 1fr 340px;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  z-index: 100;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand .logo { font-family: var(--sans); font-weight: 800; font-size: 15px; letter-spacing: 0.12em; }
+.brand .sep { color: var(--text-dim); }
+.brand .label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-actions { display: flex; align-items: center; gap: 14px; }
+.btn-ghost {
+  font-family: var(--mono); font-size: 11px; color: var(--text-muted);
+  border: 1px solid var(--border); padding: 6px 14px; border-radius: 2px;
+  cursor: pointer; background: none; transition: all 0.15s; letter-spacing: 0.05em;
+}
+.btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+.btn-primary {
+  font-family: var(--mono); font-size: 11px; color: var(--bg);
+  background: var(--accent); border: none; padding: 6px 16px; border-radius: 2px;
+  cursor: pointer; transition: opacity 0.15s; letter-spacing: 0.05em; font-weight: 500;
+}
+.btn-primary:hover { opacity: 0.88; }
+
+/* ── LEFT PANEL: DIMENSION NAV ── */
+.dim-nav {
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px 0;
+  background: var(--bg);
+}
+.nav-section { font-size: 9px; letter-spacing: 0.16em; color: var(--text-dim); text-transform: uppercase; padding: 0 20px 8px; margin-top: 4px; }
+.dim-item {
+  padding: 12px 20px; cursor: pointer; border-left: 2px solid transparent;
+  transition: all 0.15s; display: flex; align-items: center; gap: 12px;
+}
+.dim-item:hover { background: var(--bg2); }
+.dim-item.active { background: var(--bg2); border-left-color: var(--accent); }
+.dim-idx { font-size: 10px; color: var(--text-dim); min-width: 18px; }
+.dim-item.active .dim-idx { color: var(--accent); }
+.dim-label { font-family: var(--sans); font-size: 12px; font-weight: 500; color: var(--text-muted); flex: 1; }
+.dim-item.active .dim-label { color: var(--text); }
+.dim-pct { font-size: 10px; color: var(--text-dim); }
+.dim-mini-score {
+  font-size: 11px; font-family: var(--mono); min-width: 32px; text-align: right;
+}
+
+/* Completion indicator dots */
+.dim-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--text-dim); flex-shrink: 0;
+  transition: background 0.3s;
+}
+.dim-dot.partial { background: var(--accent); }
+.dim-dot.complete { background: var(--accent2); }
+
+/* ── CENTER PANEL: SCORING FORM ── */
+.scorer {
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.dim-panel { display: none; }
+.dim-panel.active { display: block; animation: fadeUp 0.2s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.panel-head {
+  padding: 36px 40px 28px;
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+.panel-head::before {
+  content: attr(data-num);
+  position: absolute; right: 40px; top: 10px;
+  font-family: var(--serif); font-size: 110px; font-style: italic;
+  color: rgba(255,255,255,0.025); line-height: 1;
+  pointer-events: none; user-select: none;
+}
+.panel-crumb { font-size: 10px; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 12px; }
+.panel-crumb span { color: var(--accent); }
+.panel-title { font-family: var(--serif); font-size: 46px; font-weight: 600; line-height: 1; margin-bottom: 8px; }
+.panel-sub { font-size: 11px; color: var(--text-muted); max-width: 440px; line-height: 1.7; margin-bottom: 20px; }
+.weight-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 10px; color: var(--text-muted); border: 1px solid var(--border);
+  padding: 4px 10px; border-radius: 2px;
+}
+
+/* Score sliders */
+.signals-form { padding: 28px 40px 48px; }
+.signal-group { margin-bottom: 32px; }
+.group-label {
+  font-size: 9px; letter-spacing: 0.16em; color: var(--text-dim);
+  text-transform: uppercase; margin-bottom: 14px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+
+.signal-row {
+  display: grid;
+  grid-template-columns: 1fr 180px 52px;
+  align-items: center; gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.signal-row:last-child { border-bottom: none; }
+
+.signal-name { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+.signal-name em { display: block; font-size: 10px; color: var(--text-dim); font-style: normal; margin-top: 2px; }
+
+/* Custom range slider */
+.slider-wrap { position: relative; }
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 3px;
+  background: var(--bg4);
+  border-radius: 2px; outline: none; cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 1px var(--accent);
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+.slider-val {
+  font-family: var(--mono); font-size: 13px; font-weight: 500;
+  text-align: right; min-width: 32px;
+  transition: color 0.2s;
+}
+
+/* Signal confidence (optional) */
+.confidence-row {
+  display: flex; gap: 6px; padding: 6px 0 12px; padding-left: 0;
+}
+.conf-btn {
+  font-size: 9px; font-family: var(--mono); letter-spacing: 0.08em;
+  border: 1px solid var(--border); padding: 3px 8px; border-radius: 2px;
+  cursor: pointer; background: none; color: var(--text-dim);
+  transition: all 0.15s;
+}
+.conf-btn:hover { border-color: var(--border-hover); color: var(--text-muted); }
+.conf-btn.sel { background: var(--bg3); border-color: var(--border-active); color: var(--text); }
+
+/* Navigation footer */
+.panel-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px; border-top: 1px solid var(--border);
+  position: sticky; bottom: 0; background: var(--bg); z-index: 10;
+}
+.nav-btn {
+  font-family: var(--mono); font-size: 11px;
+  border: 1px solid var(--border); padding: 8px 20px; border-radius: 2px;
+  cursor: pointer; background: none; color: var(--text-muted); transition: all 0.15s;
+}
+.nav-btn:hover { border-color: var(--border-hover); color: var(--text); }
+.nav-btn.next {
+  background: var(--bg2); border-color: var(--border-hover); color: var(--text);
+}
+.step-indicator { font-size: 10px; color: var(--text-dim); }
+
+/* ── RIGHT PANEL: LIVE SCORE ── */
+.score-panel {
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+  background: var(--bg);
+  padding: 28px 24px 48px;
+}
+
+.score-panel-title {
+  font-size: 9px; letter-spacing: 0.16em; color: var(--text-dim);
+  text-transform: uppercase; margin-bottom: 20px;
+}
+
+/* Big score dial */
+.score-dial-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 24px 0 20px; margin-bottom: 16px;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--bg2); position: relative; overflow: hidden;
+}
+.score-dial-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% 110%, rgba(200,184,122,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.dial-svg { position: relative; z-index: 1; }
+
+.skin-score-num {
+  font-family: var(--serif); font-size: 72px; font-weight: 600;
+  line-height: 1; text-align: center;
+  transition: all 0.5s cubic-bezier(0.4,0,0.2,1);
+  position: relative; z-index: 1;
+}
+.mode-label {
+  font-family: var(--sans); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  margin-top: 6px; text-align: center;
+  transition: color 0.4s;
+  position: relative; z-index: 1;
+}
+.mode-desc {
+  font-size: 10px; color: var(--text-dim); text-align: center;
+  max-width: 200px; line-height: 1.5; margin-top: 6px;
+  position: relative; z-index: 1;
+}
+
+/* Dimension breakdown bars */
+.breakdown-section { margin-top: 20px; }
+.breakdown-title { font-size: 9px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px; }
+
+.breakdown-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 0; border-bottom: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s;
+}
+.breakdown-row:last-child { border-bottom: none; }
+.breakdown-row:hover .bd-label { color: var(--text); }
+
+.bd-num { font-size: 9px; color: var(--text-dim); min-width: 16px; }
+.bd-label { font-family: var(--sans); font-size: 11px; color: var(--text-muted); flex: 1; transition: color 0.15s; }
+.bd-bar-wrap { width: 60px; height: 2px; background: var(--bg4); border-radius: 2px; }
+.bd-bar { height: 100%; border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+.bd-val { font-size: 11px; color: var(--text-muted); min-width: 24px; text-align: right; }
+
+/* Radar chart */
+.radar-wrap {
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--bg2); padding: 16px; margin-top: 16px;
+}
+.radar-title { font-size: 9px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 12px; }
+
+/* Mode cards */
+.mode-guide { margin-top: 20px; }
+.mode-guide-title { font-size: 9px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; }
+
+.mode-card {
+  border: 1px solid var(--border); border-radius: 4px;
+  padding: 12px 14px; margin-bottom: 6px;
+  display: flex; align-items: flex-start; gap: 10px;
+  transition: border-color 0.3s;
+}
+.mode-card.current { border-color: var(--accent); background: var(--bg2); }
+.mode-range { font-size: 10px; color: var(--text-dim); min-width: 44px; font-family: var(--mono); }
+.mode-card.current .mode-range { color: var(--accent); }
+.mode-info .mode-name { font-family: var(--sans); font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; }
+.mode-card.current .mode-name { color: var(--text); }
+.mode-info .mode-detail { font-size: 10px; color: var(--text-dim); line-height: 1.5; margin-top: 2px; }
+
+/* Priority flags */
+.flags-section { margin-top: 20px; }
+.flags-title { font-size: 9px; letter-spacing: 0.14em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 10px; }
+.flag-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 11px;
+}
+.flag-item:last-child { border-bottom: none; }
+.flag-icon { font-size: 10px; min-width: 16px; margin-top: 1px; }
+.flag-text { color: var(--text-muted); line-height: 1.5; }
+.flag-text strong { color: var(--text); font-weight: 400; }
+
+/* Progress bar on score dial */
+.arc-track { fill: none; stroke: var(--bg3); stroke-width: 6; }
+.arc-fill  { fill: none; stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1), stroke 0.4s; }
+
+.scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
+
+@media (max-width: 1100px) {
+  .shell { grid-template-columns: 240px 1fr 280px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">SKIN</span>
+      <span class="sep">/</span>
+      <span class="label">Score Engine v0.1</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-ghost" onclick="resetAll()">Reset</button>
+      <button class="btn-ghost" onclick="window.location.href='skin-knowledge-base.html'">← Knowledge Base</button>
+      <button class="btn-primary" onclick="exportReport()">Export Report</button>
+    </div>
+  </header>
+
+  <!-- LEFT: DIM NAV -->
+  <nav class="dim-nav scrollbar-thin">
+    <div class="nav-section">Dimensions</div>
+    <div class="dim-item active" data-panel="p1" onclick="goTo(1)">
+      <span class="dim-idx">01</span>
+      <span class="dim-label">Team</span>
+      <span class="dim-pct">20%</span>
+      <span class="dim-mini-score" id="nav-score-1" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-1"></span>
+    </div>
+    <div class="dim-item" data-panel="p2" onclick="goTo(2)">
+      <span class="dim-idx">02</span>
+      <span class="dim-label">Product</span>
+      <span class="dim-pct">18%</span>
+      <span class="dim-mini-score" id="nav-score-2" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-2"></span>
+    </div>
+    <div class="dim-item" data-panel="p3" onclick="goTo(3)">
+      <span class="dim-idx">03</span>
+      <span class="dim-label">Brand</span>
+      <span class="dim-pct">10%</span>
+      <span class="dim-mini-score" id="nav-score-3" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-3"></span>
+    </div>
+    <div class="dim-item" data-panel="p4" onclick="goTo(4)">
+      <span class="dim-idx">04</span>
+      <span class="dim-label">Market</span>
+      <span class="dim-pct">18%</span>
+      <span class="dim-mini-score" id="nav-score-4" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-4"></span>
+    </div>
+    <div class="dim-item" data-panel="p5" onclick="goTo(5)">
+      <span class="dim-idx">05</span>
+      <span class="dim-label">Go-To-Market</span>
+      <span class="dim-pct">16%</span>
+      <span class="dim-mini-score" id="nav-score-5" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-5"></span>
+    </div>
+    <div class="dim-item" data-panel="p6" onclick="goTo(6)">
+      <span class="dim-idx">06</span>
+      <span class="dim-label">Investor Readiness</span>
+      <span class="dim-pct">12%</span>
+      <span class="dim-mini-score" id="nav-score-6" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-6"></span>
+    </div>
+    <div class="dim-item" data-panel="p7" onclick="goTo(7)">
+      <span class="dim-idx">07</span>
+      <span class="dim-label">Financials</span>
+      <span class="dim-pct">14%</span>
+      <span class="dim-mini-score" id="nav-score-7" style="color:var(--text-dim)">—</span>
+      <span class="dim-dot" id="dot-7"></span>
+    </div>
+  </nav>
+
+  <!-- CENTER: SCORING FORM -->
+  <main class="scorer scrollbar-thin">
+
+    <!-- ─── DIMENSION 1: TEAM ─── -->
+    <div class="dim-panel active" id="p1">
+      <div class="panel-head" data-num="01">
+        <div class="panel-crumb">Score Engine / <span>Dimension 01</span></div>
+        <div class="panel-title">Team</div>
+        <p class="panel-sub">Rate each signal based on the evidence you have from the founder's responses and submitted materials.</p>
+        <div class="weight-badge">Weight: 20% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals — score 0 to 100</div>
+
+          <div class="signal-row">
+            <div class="signal-name">Founder–market fit<em>Lived the problem personally or professionally</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Execution track record<em>Has shipped something at scale before</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Team structure & role clarity<em>Clear ownership, no decision overlap</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Talent magnet signal<em>Early hires notably stronger than stage-typical</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Unfair access / network<em>Asymmetric channels competitors can't replicate</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-4">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Conviction under pressure<em>Narrative holds under adversarial questioning</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-5">50</div>
+          </div>
+        </div>
+
+        <div class="signal-group">
+          <div class="group-label">Risk flags — if present, drag score down</div>
+          <div class="signal-row">
+            <div class="signal-name">Opportunity founder (not problem founder)<em>Entered market from outside, not lived experience</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-6">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Undeclared CEO / decision paralysis<em>Overlapping authority between co-founders</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="1" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-1-7">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <div class="step-indicator">Step 1 of 7</div>
+        <button class="nav-btn next" onclick="goTo(2)">Product →</button>
+      </div>
+    </div>
+
+    <!-- ─── DIMENSION 2: PRODUCT ─── -->
+    <div class="dim-panel" id="p2">
+      <div class="panel-head" data-num="02">
+        <div class="panel-crumb">Score Engine / <span>Dimension 02</span></div>
+        <div class="panel-title">Product</div>
+        <p class="panel-sub">Evidence of real value delivery. What users do, not what founders claim.</p>
+        <div class="weight-badge">Weight: 18% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals</div>
+          <div class="signal-row">
+            <div class="signal-name">Problem–solution fit clarity<em>One sentence, one person, undeniable value</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">PMF signal strength<em>40%+ "very disappointed" or equivalent retention signal</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Technical defensibility<em>Real IP or data moat, not just a wrapper</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">User retention quality<em>Organic expansion, not prompted by sales</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Roadmap conviction<em>Built from founder insight, not request lists</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-4">50</div>
+          </div>
+        </div>
+        <div class="signal-group">
+          <div class="group-label">Risk flags</div>
+          <div class="signal-row">
+            <div class="signal-name">Narrative drift under questioning<em>Product description changes with the audience</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-5">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Willingness-to-pay gap<em>Users engage but don't pay full price unprompted</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="2" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-2-6">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="nav-btn" onclick="goTo(1)">← Team</button>
+        <div class="step-indicator">Step 2 of 7</div>
+        <button class="nav-btn next" onclick="goTo(3)">Brand →</button>
+      </div>
+    </div>
+
+    <!-- ─── DIMENSION 3: BRAND ─── -->
+    <div class="dim-panel" id="p3">
+      <div class="panel-head" data-num="03">
+        <div class="panel-crumb">Score Engine / <span>Dimension 03</span></div>
+        <div class="panel-title">Brand</div>
+        <p class="panel-sub">Narrative clarity and positioning sharpness. Whether the market knows what to think about this company.</p>
+        <div class="weight-badge">Weight: 10% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals</div>
+          <div class="signal-row">
+            <div class="signal-name">Narrative clarity<em>Customer-language description, not founder-speak</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="3" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-3-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Positioning sharpness<em>Clear "not for" — brand knows who it rejects</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="3" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-3-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Founder authority signal<em>Credible voice, network, or track record in the space</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="3" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-3-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Cross-channel coherence<em>Deck, website, and sales calls tell the same story</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="3" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-3-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Customer language alignment<em>Customers describe the company the way it describes itself</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="3" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-3-4">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="nav-btn" onclick="goTo(2)">← Product</button>
+        <div class="step-indicator">Step 3 of 7</div>
+        <button class="nav-btn next" onclick="goTo(4)">Market →</button>
+      </div>
+    </div>
+
+    <!-- ─── DIMENSION 4: MARKET ─── -->
+    <div class="dim-panel" id="p4">
+      <div class="panel-head" data-num="04">
+        <div class="panel-crumb">Score Engine / <span>Dimension 04</span></div>
+        <div class="panel-title">Market</div>
+        <p class="panel-sub">Structural pull, timing precision, and whether the competitive landscape is genuinely navigable.</p>
+        <div class="weight-badge">Weight: 18% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals</div>
+          <div class="signal-row">
+            <div class="signal-name">Structural tailwind clarity<em>Regulatory, tech, or cost force pulling toward solution now</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="4" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-4-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Timing precision<em>Can name events in the last 18 months that changed the window</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="4" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-4-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Competitive white space<em>Incumbents misaligned, slow, or structurally blocked</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="4" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-4-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Market size validity<em>Bottom-up from real buyers, not analyst TAM</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="4" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-4-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Beachhead definition<em>Narrow enough to dominate, adjacent to scale</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="4" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-4-4">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Budget existence signal<em>Buyers already spending on this problem in some form</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="4" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-4-5">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="nav-btn" onclick="goTo(3)">← Brand</button>
+        <div class="step-indicator">Step 4 of 7</div>
+        <button class="nav-btn next" onclick="goTo(5)">Go-To-Market →</button>
+      </div>
+    </div>
+
+    <!-- ─── DIMENSION 5: GTM ─── -->
+    <div class="dim-panel" id="p5">
+      <div class="panel-head" data-num="05">
+        <div class="panel-crumb">Score Engine / <span>Dimension 05</span></div>
+        <div class="panel-title">Go-To-Market</div>
+        <p class="panel-sub">Channel clarity, ICP precision, and whether the sales motion runs without the founder in the room.</p>
+        <div class="weight-badge">Weight: 16% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals</div>
+          <div class="signal-row">
+            <div class="signal-name">ICP definition quality<em>Defined by situation and behavior, includes "not for"</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Channel validation<em>Real conversion data from at least one channel</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Sales motion repeatability<em>Non-founder has closed at least one deal</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Sales cycle predictability<em>Founder can state avg days from first contact to close</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">CAC awareness<em>Known or reliably estimated from real data</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-4">50</div>
+          </div>
+        </div>
+        <div class="signal-group">
+          <div class="group-label">Risk flags</div>
+          <div class="signal-row">
+            <div class="signal-name">Spray-and-pray channel strategy<em>No channel prioritized, no conversion data</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-5">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">All customers from founder's network<em>Warm network is not a repeatable GTM motion</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="5" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-5-6">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="nav-btn" onclick="goTo(4)">← Market</button>
+        <div class="step-indicator">Step 5 of 7</div>
+        <button class="nav-btn next" onclick="goTo(6)">Investor Readiness →</button>
+      </div>
+    </div>
+
+    <!-- ─── DIMENSION 6: INVESTOR READINESS ─── -->
+    <div class="dim-panel" id="p6">
+      <div class="panel-head" data-num="06">
+        <div class="panel-crumb">Score Engine / <span>Dimension 06</span></div>
+        <div class="panel-title">Investor Readiness</div>
+        <p class="panel-sub">Whether stage, evidence, ask, and narrative are in coherent alignment. Investors fund clarity.</p>
+        <div class="weight-badge">Weight: 12% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals</div>
+          <div class="signal-row">
+            <div class="signal-name">Narrative & pitch clarity<em>Story lands with the right investor type</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="6" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-6-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Ask / milestone alignment<em>Raise sized to a specific de-risking proof point</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="6" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-6-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Stage-evidence coherence<em>Metrics match the round stage expectations</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="6" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-6-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Investor targeting quality<em>Knows exactly which funds, why, with warm paths</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="6" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-6-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Data room readiness<em>Financials, cap table, legal accessible within 48 hrs</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="6" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-6-4">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="nav-btn" onclick="goTo(5)">← Go-To-Market</button>
+        <div class="step-indicator">Step 6 of 7</div>
+        <button class="nav-btn next" onclick="goTo(7)">Financials →</button>
+      </div>
+    </div>
+
+    <!-- ─── DIMENSION 7: FINANCIALS ─── -->
+    <div class="dim-panel" id="p7">
+      <div class="panel-head" data-num="07">
+        <div class="panel-crumb">Score Engine / <span>Dimension 07</span></div>
+        <div class="panel-title">Financials</div>
+        <p class="panel-sub">The founding team's relationship with capital. Burn awareness, unit economics, and path to sustainability.</p>
+        <div class="weight-badge">Weight: 14% of SKIN Score</div>
+      </div>
+      <div class="signals-form">
+        <div class="signal-group">
+          <div class="group-label">Core signals</div>
+          <div class="signal-row">
+            <div class="signal-name">Burn awareness & control<em>Knows monthly burn by line item, not just total</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-0">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Runway clarity<em>Calculated from realistic assumptions with buffer</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-1">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Unit economics understanding<em>Knows which segments are profitable vs not</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-2">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Capital efficiency discipline<em>Spend and team matched to actual stage evidence</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-3">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Revenue model validation<em>Pricing accepted by real customers at full price</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-4">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Breakeven path clarity<em>Knows the operational levers, not just "when we raise"</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-5">50</div>
+          </div>
+        </div>
+        <div class="signal-group">
+          <div class="group-label">Risk flags</div>
+          <div class="signal-row">
+            <div class="signal-name">Hockey-stick projections without driver<em>Aspiration masquerading as analysis</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-6">50</div>
+          </div>
+          <div class="signal-row">
+            <div class="signal-name">Premature scaling<em>Headcount ahead of repeatable sales motion</em></div>
+            <div class="slider-wrap"><input type="range" min="0" max="100" value="50" class="dim-slider" data-dim="7" oninput="onSlide(this)"></div>
+            <div class="slider-val" id="sv-7-7">50</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button class="nav-btn" onclick="goTo(6)">← Investor Readiness</button>
+        <div class="step-indicator">Step 7 of 7</div>
+        <button class="btn-primary" onclick="exportReport()" style="padding:8px 20px">Generate Report</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT: LIVE SCORE PANEL -->
+  <aside class="score-panel scrollbar-thin">
+    <div class="score-panel-title">Live SKIN Score™</div>
+
+    <!-- Dial -->
+    <div class="score-dial-wrap">
+      <svg class="dial-svg" width="160" height="90" viewBox="0 0 160 90">
+        <path class="arc-track" d="M 20 80 A 60 60 0 0 1 140 80"/>
+        <path class="arc-fill" id="arc-fill" d="M 20 80 A 60 60 0 0 1 140 80" stroke="#c8b87a" stroke-dasharray="188.5" stroke-dashoffset="188.5"/>
+      </svg>
+      <div class="skin-score-num" id="live-score">50</div>
+      <div class="mode-label" id="live-mode" style="color:var(--accent)">CALIBRATING</div>
+      <div class="mode-desc" id="live-mode-desc">Adjust the dimension signals to generate your SKIN Score.</div>
+    </div>
+
+    <!-- Dimension breakdown -->
+    <div class="breakdown-section">
+      <div class="breakdown-title">Dimension breakdown</div>
+      <div class="breakdown-row" onclick="goTo(1)">
+        <span class="bd-num">01</span>
+        <span class="bd-label">Team</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-1" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-1">50</span>
+      </div>
+      <div class="breakdown-row" onclick="goTo(2)">
+        <span class="bd-num">02</span>
+        <span class="bd-label">Product</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-2" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-2">50</span>
+      </div>
+      <div class="breakdown-row" onclick="goTo(3)">
+        <span class="bd-num">03</span>
+        <span class="bd-label">Brand</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-3" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-3">50</span>
+      </div>
+      <div class="breakdown-row" onclick="goTo(4)">
+        <span class="bd-num">04</span>
+        <span class="bd-label">Market</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-4" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-4">50</span>
+      </div>
+      <div class="breakdown-row" onclick="goTo(5)">
+        <span class="bd-num">05</span>
+        <span class="bd-label">GTM</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-5" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-5">50</span>
+      </div>
+      <div class="breakdown-row" onclick="goTo(6)">
+        <span class="bd-num">06</span>
+        <span class="bd-label">Investor</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-6" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-6">50</span>
+      </div>
+      <div class="breakdown-row" onclick="goTo(7)">
+        <span class="bd-num">07</span>
+        <span class="bd-label">Financials</span>
+        <div class="bd-bar-wrap"><div class="bd-bar" id="bar-7" style="width:50%;background:var(--score-mid)"></div></div>
+        <span class="bd-val" id="bv-7">50</span>
+      </div>
+    </div>
+
+    <!-- Radar chart -->
+    <div class="radar-wrap">
+      <div class="radar-title">Signal radar</div>
+      <svg width="100%" viewBox="0 0 220 200" id="radar-svg">
+        <!-- Grid rings -->
+        <polygon id="rg-25"  fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+        <polygon id="rg-50"  fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        <polygon id="rg-75"  fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/>
+        <polygon id="rg-100" fill="none" stroke="rgba(255,255,255,0.1)"  stroke-width="0.5"/>
+        <!-- Axis lines -->
+        <g id="radar-axes" stroke="rgba(255,255,255,0.06)" stroke-width="0.5"></g>
+        <!-- Data polygon -->
+        <polygon id="radar-data" fill="rgba(200,184,122,0.12)" stroke="#c8b87a" stroke-width="1.2"/>
+        <!-- Labels -->
+        <g id="radar-labels" font-family="'DM Mono',monospace" font-size="9" fill="rgba(255,255,255,0.35)"></g>
+      </svg>
+    </div>
+
+    <!-- Mode guide -->
+    <div class="mode-guide">
+      <div class="mode-guide-title">SKIN Modes</div>
+      <div class="mode-card" id="mc-probe" data-min="0" data-max="39">
+        <span class="mode-range">0–39</span>
+        <div class="mode-info">
+          <div class="mode-name">PROBE</div>
+          <div class="mode-detail">Pre-validation. Core assumptions untested. Significant rework required before capital or scale.</div>
+        </div>
+      </div>
+      <div class="mode-card" id="mc-build" data-min="40" data-max="59">
+        <span class="mode-range">40–59</span>
+        <div class="mode-info">
+          <div class="mode-name">BUILD</div>
+          <div class="mode-detail">Fundamentals forming. Key signals present but execution gaps remain. Focus before scale.</div>
+        </div>
+      </div>
+      <div class="mode-card" id="mc-liftoff" data-min="60" data-max="74">
+        <span class="mode-range">60–74</span>
+        <div class="mode-info">
+          <div class="mode-name">LIFT-OFF</div>
+          <div class="mode-detail">Directionally correct and positioned to scale. Repeatability must now be formalized.</div>
+        </div>
+      </div>
+      <div class="mode-card" id="mc-scale" data-min="75" data-max="89">
+        <span class="mode-range">75–89</span>
+        <div class="mode-info">
+          <div class="mode-name">SCALE</div>
+          <div class="mode-detail">Strong execution fundamentals. Engine is built. The task now is acceleration without breaking it.</div>
+        </div>
+      </div>
+      <div class="mode-card" id="mc-outlier" data-min="90" data-max="100">
+        <span class="mode-range">90–100</span>
+        <div class="mode-info">
+          <div class="mode-name">OUTLIER</div>
+          <div class="mode-detail">Rare execution clarity across all dimensions. High-conviction opportunity.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priority flags -->
+    <div class="flags-section">
+      <div class="flags-title">Priority flags</div>
+      <div id="flags-list">
+        <div class="flag-item"><span class="flag-icon">·</span><span class="flag-text" style="color:var(--text-dim)">Flags appear as scores diverge across dimensions.</span></div>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ── SCORING CONFIG ──
+const WEIGHTS = [0, 0.20, 0.18, 0.10, 0.18, 0.16, 0.12, 0.14]; // index 0 unused
+const NAMES   = ['','Team','Product','Brand','Market','Go-To-Market','Investor Readiness','Financials'];
+
+// Store scores per dim
+const dimScores = [0, 50, 50, 50, 50, 50, 50, 50];
+let currentDim  = 1;
+
+// Radar geometry
+const CX = 110, CY = 104, R = 78;
+const ANGLES = [0,1,2,3,4,5,6].map(i => (i * 2*Math.PI/7) - Math.PI/2);
+const LABELS  = ['Team','Product','Brand','Market','GTM','Investor','Financials'];
+
+// ── NAVIGATION ──
+function goTo(n) {
+  document.querySelectorAll('.dim-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('p'+n).classList.add('active');
+  document.querySelectorAll('.dim-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.dim-item')[n-1].classList.add('active');
+  document.querySelector('.scorer').scrollTo({top:0, behavior:'smooth'});
+  currentDim = n;
+}
+
+// ── SLIDER INPUT ──
+function onSlide(el) {
+  const dim = +el.dataset.dim;
+  const sliders = [...document.querySelectorAll(`.dim-slider[data-dim="${dim}"]`)];
+  const idx = sliders.indexOf(el);
+  document.getElementById(`sv-${dim}-${idx}`).textContent = el.value;
+  recomputeDim(dim);
+  updateDot(dim);
+}
+
+function recomputeDim(dim) {
+  const sliders = [...document.querySelectorAll(`.dim-slider[data-dim="${dim}"]`)];
+  const avg = sliders.reduce((s, sl) => s + +sl.value, 0) / sliders.length;
+  dimScores[dim] = Math.round(avg);
+  updateRightPanel();
+}
+
+// ── RIGHT PANEL REFRESH ──
+function updateRightPanel() {
+  // Composite score
+  let score = 0;
+  for (let d = 1; d <= 7; d++) score += dimScores[d] * WEIGHTS[d];
+  score = Math.round(score);
+
+  // Big number
+  const el = document.getElementById('live-score');
+  el.textContent = score;
+
+  // Color
+  const col = scoreColor(score);
+  el.style.color = col;
+
+  // Arc
+  const ARC_LEN = 188.5;
+  const offset = ARC_LEN - (score / 100) * ARC_LEN;
+  const arc = document.getElementById('arc-fill');
+  arc.style.strokeDashoffset = offset;
+  arc.style.stroke = col;
+
+  // Mode
+  const mode = getMode(score);
+  document.getElementById('live-mode').textContent = mode.name;
+  document.getElementById('live-mode').style.color = col;
+  document.getElementById('live-mode-desc').textContent = mode.desc;
+
+  // Mode cards
+  document.querySelectorAll('.mode-card').forEach(mc => {
+    const min = +mc.dataset.min, max = +mc.dataset.max;
+    mc.classList.toggle('current', score >= min && score <= max);
+  });
+
+  // Breakdown bars
+  for (let d = 1; d <= 7; d++) {
+    const s = dimScores[d];
+    const bar = document.getElementById('bar-'+d);
+    const val = document.getElementById('bv-'+d);
+    bar.style.width = s + '%';
+    bar.style.background = scoreColor(s);
+    val.textContent = s;
+    val.style.color = scoreColor(s);
+
+    const ns = document.getElementById('nav-score-'+d);
+    ns.textContent = s;
+    ns.style.color = scoreColor(s);
+  }
+
+  // Radar
+  drawRadar();
+
+  // Flags
+  updateFlags(score);
+}
+
+function scoreColor(s) {
+  if (s >= 70) return 'var(--score-high)';
+  if (s >= 45) return 'var(--score-mid)';
+  return 'var(--score-low)';
+}
+
+function getMode(s) {
+  if (s >= 90) return { name: 'OUTLIER',  desc: 'Rare execution clarity across all dimensions. High-conviction opportunity.' };
+  if (s >= 75) return { name: 'SCALE',    desc: 'Strong fundamentals. The engine is built — now accelerate without breaking it.' };
+  if (s >= 60) return { name: 'LIFT-OFF', desc: 'Directionally correct and positioned to scale. Repeatability must now be formalized.' };
+  if (s >= 40) return { name: 'BUILD',    desc: 'Fundamentals forming. Execution gaps remain. Focus before scale.' };
+  return              { name: 'PROBE',    desc: 'Pre-validation. Core assumptions untested. Rework required before capital or scale.' };
+}
+
+// ── DOT COMPLETION ──
+function updateDot(dim) {
+  const sliders = [...document.querySelectorAll(`.dim-slider[data-dim="${dim}"]`)];
+  const allMoved = sliders.every(s => s.value != 50);
+  const anyMoved = sliders.some(s => s.value != 50);
+  const dot = document.getElementById('dot-'+dim);
+  dot.className = 'dim-dot' + (allMoved ? ' complete' : anyMoved ? ' partial' : '');
+}
+
+// ── RADAR ──
+function poly(points) {
+  return points.map(([x,y]) => `${x},${y}`).join(' ');
+}
+
+function radarPoint(angle, pct) {
+  const r = (pct / 100) * R;
+  return [CX + r * Math.cos(angle), CY + r * Math.sin(angle)];
+}
+
+function drawRadar() {
+  // Grid rings
+  [25, 50, 75, 100].forEach(pct => {
+    const pts = ANGLES.map(a => radarPoint(a, pct));
+    document.getElementById('rg-'+pct).setAttribute('points', poly(pts));
+  });
+
+  // Axes
+  const axesG = document.getElementById('radar-axes');
+  axesG.innerHTML = ANGLES.map(a => {
+    const [x2,y2] = radarPoint(a, 100);
+    return `<line x1="${CX}" y1="${CY}" x2="${x2}" y2="${y2}"/>`;
+  }).join('');
+
+  // Data polygon (dims 1–7 → angles 0–6)
+  const dataPts = ANGLES.map((a, i) => radarPoint(a, dimScores[i+1]));
+  document.getElementById('radar-data').setAttribute('points', poly(dataPts));
+
+  // Labels
+  const labelsG = document.getElementById('radar-labels');
+  labelsG.innerHTML = ANGLES.map((a, i) => {
+    const [x, y] = radarPoint(a, 118);
+    const anchor = x < CX - 5 ? 'end' : x > CX + 5 ? 'start' : 'middle';
+    return `<text x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="central">${LABELS[i]}</text>`;
+  }).join('');
+}
+
+// ── PRIORITY FLAGS ──
+function updateFlags(score) {
+  const scores = dimScores.slice(1);
+  const avg = scores.reduce((a,b) => a+b,0) / 7;
+  const flags = [];
+
+  scores.forEach((s, i) => {
+    const name = NAMES[i+1];
+    if (s < 40) flags.push({ icon: '↓', text: `<strong>${name}</strong> is critically weak — address before attempting to scale.`, urgency: 2 });
+    else if (s < avg - 18) flags.push({ icon: '!', text: `<strong>${name}</strong> is lagging the company average by ${Math.round(avg-s)} points.`, urgency: 1 });
+  });
+
+  // Specific pattern flags
+  if (dimScores[2] > 70 && dimScores[5] < 50) flags.push({ icon: '!', text: `Strong <strong>Product</strong> but weak <strong>GTM</strong> — distribution is the bottleneck.`, urgency: 1 });
+  if (dimScores[1] > 75 && dimScores[7] < 50) flags.push({ icon: '!', text: `Strong <strong>Team</strong> but weak <strong>Financials</strong> — discipline gap, not capability gap.`, urgency: 1 });
+  if (dimScores[4] > 70 && dimScores[5] < 50) flags.push({ icon: '!', text: `Strong <strong>Market</strong> but weak <strong>GTM</strong> — opportunity is real but unseized.`, urgency: 1 });
+
+  flags.sort((a,b) => b.urgency - a.urgency);
+
+  const list = document.getElementById('flags-list');
+  if (flags.length === 0) {
+    list.innerHTML = `<div class="flag-item"><span class="flag-icon">✓</span><span class="flag-text" style="color:var(--accent2)">No critical divergences detected across dimensions.</span></div>`;
+  } else {
+    list.innerHTML = flags.slice(0,4).map(f =>
+      `<div class="flag-item"><span class="flag-icon" style="color:${f.urgency>1?'var(--score-low)':'var(--score-mid)'}">${f.icon}</span><span class="flag-text">${f.text}</span></div>`
+    ).join('');
+  }
+}
+
+// ── RESET ──
+function resetAll() {
+  document.querySelectorAll('.dim-slider').forEach((sl, i) => {
+    sl.value = 50;
+    const dim = +sl.dataset.dim;
+    const sliders = [...document.querySelectorAll(`.dim-slider[data-dim="${dim}"]`)];
+    const idx = sliders.indexOf(sl);
+    const valEl = document.getElementById(`sv-${dim}-${idx}`);
+    if (valEl) valEl.textContent = '50';
+  });
+  for (let d = 1; d <= 7; d++) {
+    dimScores[d] = 50;
+    document.getElementById('dot-'+d).className = 'dim-dot';
+    document.getElementById('nav-score-'+d).textContent = '—';
+    document.getElementById('nav-score-'+d).style.color = 'var(--text-dim)';
+  }
+  updateRightPanel();
+}
+
+// ── EXPORT ──
+function exportReport() {
+  const score = Math.round(dimScores.slice(1).reduce((s,v,i)=>s+v*WEIGHTS[i+1],0));
+  const mode  = getMode(score).name;
+  const lines = ['SKIN PULSE™ — SCORE REPORT', '═'.repeat(40), '', `Composite SKIN Score: ${score} / 100`, `Current Mode: ${mode}`, '', '─'.repeat(40), 'Dimension Breakdown', '─'.repeat(40)];
+  for (let d = 1; d <= 7; d++) lines.push(`${String(d).padStart(2,'0')} ${NAMES[d].padEnd(22)} ${dimScores[d]}`);
+  lines.push('', '─'.repeat(40), `Generated: ${new Date().toLocaleDateString()}`, 'SKIN STUDIOS — skin.global');
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const a = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:'skin-score-report.txt'});
+  a.click();
+}
+
+// ── INIT ──
+drawRadar();
+updateRightPanel();
+</script>
+</body>
+</html>

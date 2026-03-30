@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -59,7 +60,8 @@ body {
   background: var(--bg);
   z-index: 100;
 }
-.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; transition: opacity 0.15s; }
+.brand:hover { opacity: 0.75; }
 .brand .logo { font-family: var(--sans); font-weight: 800; font-size: 15px; letter-spacing: 0.12em; }
 .brand .sep { color: var(--text-dim); }
 .brand .label { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -337,11 +339,11 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <div class="brand">
+    <a href="index.html" class="brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="Back to SKIN OS home">
       <span class="logo">SKIN</span>
       <span class="sep">/</span>
       <span class="label">Score Engine v0.1</span>
-    </div>
+    </a>
     <div class="topbar-actions">
       <button class="btn-ghost" onclick="resetAll()">Reset</button>
       <button class="btn-ghost" onclick="window.location.href='skin-knowledge-base.html'">← Knowledge Base</button>

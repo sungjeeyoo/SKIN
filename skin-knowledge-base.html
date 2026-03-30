@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +65,9 @@
     display: flex;
     align-items: baseline;
     gap: 10px;
+    transition: opacity 0.15s;
   }
+  .topbar-brand:hover { opacity: 0.75; }
 
   .topbar-brand .logo {
     font-family: var(--sans);
@@ -604,11 +607,11 @@
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <div class="topbar-brand">
+    <a href="index.html" class="topbar-brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="Back to SKIN OS home">
       <span class="logo">SKIN</span>
       <span class="divider">/</span>
-      <span class="subtitle">Startup OS · Knowledge Base v0.1</span>
-    </div>
+      <span class="subtitle">Startup OS · Knowledge Base v1.1</span>
+    </a>
     <div class="topbar-meta">
       <span class="version-tag">7 DIMENSIONS</span>
       <div class="status-dot" title="Active"></div>
@@ -664,6 +667,16 @@
 
     <div class="sidebar-divider"></div>
 
+    <div class="sidebar-section-label">Sources</div>
+    <div class="sidebar-aux-item" data-target="sources">
+      <span>↳</span> Signal sources
+    </div>
+    <div class="sidebar-aux-item" data-target="benchmarks">
+      <span>↳</span> Failure benchmarks
+    </div>
+
+    <div class="sidebar-divider"></div>
+
     <div class="sidebar-section-label">AI Layer</div>
     <div class="sidebar-aux-item" data-target="prompts">
       <span>↳</span> Diagnostic prompts
@@ -686,9 +699,9 @@
         <div class="overview-title">Seven<br>Dimensions</div>
         <p class="overview-desc">A proprietary diagnostic framework that evaluates early-stage startups against the fundamentals that determine execution, decision-making, and long-term survival. Each dimension captures a distinct vector of company health — together they produce the SKIN Score.</p>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <div class="meta-chip"><div class="dot" style="background:var(--accent2)"></div>Framework v1.0</div>
-          <div class="meta-chip"><div class="dot" style="background:var(--accent)"></div>7 dimensions · 42 signals</div>
-          <div class="meta-chip"><div class="dot" style="background:var(--accent3)"></div>AI-powered scoring</div>
+          <div class="meta-chip"><div class="dot" style="background:var(--accent2)"></div>Framework v1.1</div>
+          <div class="meta-chip"><div class="dot" style="background:var(--accent)"></div>7 dimensions · 48 signals</div>
+          <div class="meta-chip"><div class="dot" style="background:var(--accent3)"></div>6 external sources</div>
         </div>
       </div>
       <div class="dimensions-grid">
@@ -834,6 +847,11 @@
                 <div class="failure-title">Credential substitution</div>
                 <div class="failure-desc">Impressive backgrounds used as a substitute for demonstrated execution. Pedigree is a weak signal; what matters is what they've actually built.</div>
               </div>
+              <div class="failure-item" style="border-left-color:rgba(160,143,200,0.5)">
+                <div class="failure-title" style="font-size:10px;color:var(--accent3);margin-bottom:4px">↳ SOURCE: YC Startup School · Startups.RIP analysis</div>
+                <div class="failure-title">Resilience deficit</div>
+                <div class="failure-desc">YC data shows resilience — not intelligence or pedigree — is the #1 predictor of founder success. Founders who pivot narrative under light pressure almost universally fail to survive the first serious setback. Pattern visible across 1,700+ YC postmortems: team cohesion under stress is a leading indicator of survival.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -938,6 +956,11 @@
                 <div class="failure-title">Solution in search of a problem</div>
                 <div class="failure-desc">Technical excellence applied to a pain that doesn't justify switching costs. Elegant product, weak demand.</div>
               </div>
+              <div class="failure-item" style="border-left-color:rgba(160,143,200,0.5)">
+                <div class="failure-title" style="font-size:10px;color:var(--accent3);margin-bottom:4px">↳ SOURCE: Failory Cemetery · 400+ startup failures analyzed</div>
+                <div class="failure-title">No market need — the #1 killer</div>
+                <div class="failure-desc">Failory's analysis of 400+ failed startups identifies "no market need" as the leading failure cause — present in 64+ documented cases. The product existed; the pain didn't. Distinct from poor product: the product worked, but no one needed it badly enough to pay, switch, or return. SKIN signal: users engage but don't pay, or pay once and don't return.</div>
+              </div>
             </div>
           </div>
         </div>
@@ -1002,6 +1025,30 @@
               <li class="question-item"><span class="q-num">Q4</span>Has anyone other than a founder closed a deal? If not, what's the plan to change that?</li>
               <li class="question-item"><span class="q-num">Q5</span>What's your current CAC? What data is that based on?</li>
             </ul>
+          </div>
+        </div>
+        <div class="content-card full">
+          <div class="card-header"><span class="card-label">Common failure modes</span></div>
+          <div class="card-body">
+            <div class="failure-grid">
+              <div class="failure-item">
+                <div class="failure-title">Spray-and-pray channel strategy</div>
+                <div class="failure-desc">No channel prioritized, no conversion data, no sequencing. Energy spread across LinkedIn, events, content, and outbound simultaneously — mastering none.</div>
+              </div>
+              <div class="failure-item">
+                <div class="failure-title">Warm network mistaken for GTM</div>
+                <div class="failure-desc">All customers came through the founder's personal relationships. Not a sales motion — social capital spending. Depletes faster than it compounds and cannot be handed to a hire.</div>
+              </div>
+              <div class="failure-item">
+                <div class="failure-title">Founder-dependency trap</div>
+                <div class="failure-desc">Sales process lives in the founder's head. No playbook, no handoff, no repeatability. Company cannot scale past the founder's calendar.</div>
+              </div>
+              <div class="failure-item" style="border-left-color:rgba(160,143,200,0.5)">
+                <div class="failure-title" style="font-size:10px;color:var(--accent3);margin-bottom:4px">↳ SOURCE: Wefunder · Failory "bad marketing" database (38+ cases)</div>
+                <div class="failure-title">Narrative-market disconnect</div>
+                <div class="failure-desc">Wefunder data: campaigns that connect personally — relatable story, transparent risk, clear use of funds — consistently outperform technically superior competitors. Failory's 38+ "bad marketing" cases share one pattern: product story is founder-language, not customer-language. Buyers don't recognize themselves in it. SKIN signal: conversion below 20% on qualified leads despite a strong product.</div>
+              </div>
+            </div>
           </div>
         </div>
         <div class="content-card full">
@@ -1188,6 +1235,11 @@
               <div class="failure-item">
                 <div class="failure-title">Incumbent awakening</div>
                 <div class="failure-desc">Market validation attracts a well-resourced incumbent who can replicate the product in 12 months. Competitive moat was distribution and brand, not technology — and the startup has neither yet.</div>
+              </div>
+              <div class="failure-item" style="border-left-color:rgba(160,143,200,0.5)">
+                <div class="failure-title" style="font-size:10px;color:var(--accent3);margin-bottom:4px">↳ SOURCE: Dealroom Taxonomy · 2.6M+ companies tracked globally</div>
+                <div class="failure-title">Category misclassification</div>
+                <div class="failure-desc">Founder describes their market in a category that investors and buyers don't use. Dealroom's taxonomy of 50+ primary sectors with hundreds of sub-categories shows that how a startup is categorized directly affects which investors find it, which competitors it's benchmarked against, and which pricing comps apply. Founders who create their own category names without the authority to make them stick — "AI-native CRM for the future of work" — are invisible to the market infrastructure that would otherwise route capital and customers to them.</div>
               </div>
             </div>
           </div>
@@ -1465,6 +1517,160 @@ This brief will be reviewed by human analysts before delivery.</div>
       </div>
     </div>
 
+    <!-- SOURCES PANEL -->
+    <div class="dim-panel" id="sources">
+      <div class="panel-header" data-index="SRC">
+        <div class="breadcrumb">SKIN OS / Sources / <span>Signal Sources</span></div>
+        <div class="panel-title">Sources</div>
+        <p class="panel-tagline">The external databases, research platforms, and real-world datasets that validate and calibrate SKIN's signal library. Each source is rated for signal quality and mapped to the dimensions it informs.</p>
+        <div class="panel-meta-row">
+          <div class="meta-chip"><div class="dot" style="background:var(--accent2)"></div>6 sources integrated</div>
+          <div class="meta-chip">v1.1 — March 2026</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="content-card full">
+          <div class="card-header"><span class="card-label">Source registry</span><span class="card-tag">EXTERNAL VALIDATION</span></div>
+          <div class="card-body">
+            <ul class="signal-list">
+              <li class="signal-item">
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">Startups.RIP</div>
+                  <div style="font-size:11px;color:var(--text-muted);line-height:1.6">1,737+ YC startup postmortems from 2005 to present. Covers all batches. Curated failure and acquisition patterns across every industry. Highest signal quality for Team and Product dimensions — shows which founder profiles survive vs. collapse, and which product categories have structural death rates.</div>
+                  <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="signal-tag tag-green">HIGH signal</span>
+                    <span class="signal-tag" style="background:rgba(160,143,200,0.1);color:var(--accent3);border-color:rgba(160,143,200,0.2)">Team · Product · Market</span>
+                  </div>
+                </div>
+              </li>
+              <li class="signal-item">
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">Failory Cemetery</div>
+                  <div style="font-size:11px;color:var(--text-muted);line-height:1.6">120+ structured startup postmortems categorized by root cause: no market need (64+ cases), bad marketing (38+), competition (39+), lack of focus, legal challenges, poor product, no pivoting, mismanagement of funds. Each case includes founder interview. Best source for failure mode classification and red signal calibration.</div>
+                  <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="signal-tag tag-green">HIGH signal</span>
+                    <span class="signal-tag" style="background:rgba(160,143,200,0.1);color:var(--accent3);border-color:rgba(160,143,200,0.2)">Product · GTM · Market</span>
+                  </div>
+                </div>
+              </li>
+              <li class="signal-item">
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">YC Startup School</div>
+                  <div style="font-size:11px;color:var(--text-muted);line-height:1.6">15 years of YC playbook distilled from 5,000+ companies. Key calibrations: 70% of top 100 YC companies found ideas organically (not forced); resilience is the #1 founder trait (above intelligence, pedigree, or confidence); execution speed is the top predictor of success in the AI era. Canonical benchmark for Team and Product signals.</div>
+                  <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="signal-tag tag-green">HIGH signal — canonical</span>
+                    <span class="signal-tag" style="background:rgba(160,143,200,0.1);color:var(--accent3);border-color:rgba(160,143,200,0.2)">Team · Product · Financials</span>
+                  </div>
+                </div>
+              </li>
+              <li class="signal-item">
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">Dealroom Taxonomy</div>
+                  <div style="font-size:11px;color:var(--text-muted);line-height:1.6">2.6M+ companies tracked globally. 50+ primary sectors with hundreds of sub-categories. Defines a startup as "a company designed to grow fast." Used by SKIN for: standardizing sector classification at intake, mapping a company's beachhead to an investable category, and benchmarking against stage/sector peers. Key insight: how you're classified determines who finds you — investors, acquirers, and buyers all navigate by category.</div>
+                  <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="signal-tag tag-green">HIGH signal — classification</span>
+                    <span class="signal-tag" style="background:rgba(160,143,200,0.1);color:var(--accent3);border-color:rgba(160,143,200,0.2)">Market · Investor Readiness</span>
+                  </div>
+                </div>
+              </li>
+              <li class="signal-item">
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">Wefunder</div>
+                  <div style="font-size:11px;color:var(--text-muted);line-height:1.6">$617M raised across 2,833 founders since 2012. 1.5M+ retail investor base. Key calibrations: campaigns that connect personally (narrative, transparent risk, clear use of funds) outperform technical pitches; hockey-stick projections without drivers are the most common valuation red flag; revenue multiples of 165x+ at early stage signal disconnect from reality. Strongest source for Investor Readiness and GTM narrative signals.</div>
+                  <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="signal-tag tag-amber">MEDIUM signal</span>
+                    <span class="signal-tag" style="background:rgba(160,143,200,0.1);color:var(--accent3);border-color:rgba(160,143,200,0.2)">GTM · Brand · Investor Readiness</span>
+                  </div>
+                </div>
+              </li>
+              <li class="signal-item" style="border-bottom:none">
+                <div style="flex:1">
+                  <div style="font-family:var(--sans);font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">Cerdeira Notion DB</div>
+                  <div style="font-size:11px;color:var(--text-muted);line-height:1.6">Curated Notion database of startup resources, frameworks, and tools. Broad but less opinionated than primary failure databases. Useful for discovering emerging frameworks and tools across the startup ecosystem. Currently inaccessible (link may have moved — check cerdeira.notion.site for updated path).</div>
+                  <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap">
+                    <span class="signal-tag" style="background:rgba(200,138,122,0.1);color:var(--score-low);border-color:rgba(200,138,122,0.2)">PENDING — link broken</span>
+                    <span class="signal-tag" style="background:rgba(160,143,200,0.1);color:var(--accent3);border-color:rgba(160,143,200,0.2)">General reference</span>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BENCHMARKS PANEL -->
+    <div class="dim-panel" id="benchmarks">
+      <div class="panel-header" data-index="BM">
+        <div class="breadcrumb">SKIN OS / Sources / <span>Failure Benchmarks</span></div>
+        <div class="panel-title">Failure<br>Benchmarks</div>
+        <p class="panel-tagline">Aggregate failure pattern data from Failory and Startups.RIP. These are the base rates — what kills startups, how often, and at what stage. Every SKIN red signal maps to at least one of these root causes.</p>
+        <div class="panel-meta-row">
+          <div class="meta-chip"><div class="dot" style="background:var(--score-low)"></div>400+ failures analyzed</div>
+          <div class="meta-chip">11 root cause categories</div>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="content-card full">
+          <div class="card-header"><span class="card-label">Root cause taxonomy — Failory (400+ cases)</span><span class="card-tag">FREQUENCY RANKED</span></div>
+          <div class="card-body">
+            <div class="score-breakdown">
+              <div class="score-row"><span class="score-label" style="min-width:200px">No market need</span><div class="score-bar-wrap"><div class="score-bar" style="width:100%;background:var(--score-low)"></div></div><span class="score-val" style="color:var(--score-low)">#1</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Bad marketing / GTM</span><div class="score-bar-wrap"><div class="score-bar" style="width:85%;background:var(--score-low)"></div></div><span class="score-val" style="color:var(--score-low)">#2</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Competition</span><div class="score-bar-wrap"><div class="score-bar" style="width:75%;background:var(--score-mid)"></div></div><span class="score-val" style="color:var(--score-mid)">#3</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Lack of focus (ICP drift)</span><div class="score-bar-wrap"><div class="score-bar" style="width:65%;background:var(--score-mid)"></div></div><span class="score-val" style="color:var(--score-mid)">#4</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Lack of funds / runway</span><div class="score-bar-wrap"><div class="score-bar" style="width:58%;background:var(--score-mid)"></div></div><span class="score-val" style="color:var(--score-mid)">#5</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Poor product</span><div class="score-bar-wrap"><div class="score-bar" style="width:50%;background:var(--score-mid)"></div></div><span class="score-val" style="color:var(--score-mid)">#6</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">No pivoting (failed to adapt)</span><div class="score-bar-wrap"><div class="score-bar" style="width:42%;background:var(--score-mid)"></div></div><span class="score-val" style="color:var(--score-mid)">#7</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Mismanagement of funds</span><div class="score-bar-wrap"><div class="score-bar" style="width:35%;background:var(--score-mid)"></div></div><span class="score-val" style="color:var(--score-mid)">#8</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Legal challenges</span><div class="score-bar-wrap"><div class="score-bar" style="width:28%;background:var(--accent2)"></div></div><span class="score-val" style="color:var(--accent2)">#9</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Depending on others</span><div class="score-bar-wrap"><div class="score-bar" style="width:22%;background:var(--accent2)"></div></div><span class="score-val" style="color:var(--accent2)">#10</span></div>
+              <div class="score-row"><span class="score-label" style="min-width:200px">Lack of experience</span><div class="score-bar-wrap"><div class="score-bar" style="width:18%;background:var(--accent2)"></div></div><span class="score-val" style="color:var(--accent2)">#11</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="card-header"><span class="card-label">YC postmortem patterns — Startups.RIP</span><span class="card-tag">1,737+ COMPANIES</span></div>
+          <div class="card-body">
+            <ul class="signal-list">
+              <li class="signal-item"><span class="signal-glyph">→</span><span class="signal-text">Highest failure sectors: Community, Social Media, Marketplace, Education — all high-competition, network-effect-dependent categories where timing and distribution matter more than product quality</span><span class="signal-tag tag-red">HIGH RISK</span></li>
+              <li class="signal-item"><span class="signal-glyph">→</span><span class="signal-text">Most acquired (survived) sectors: Developer Tools, Fintech, B2B SaaS, HealthTech — defensible IP or sticky enterprise contracts make these acquirable before they fail</span><span class="signal-tag tag-green">ACQUIRABLE</span></li>
+              <li class="signal-item"><span class="signal-glyph">→</span><span class="signal-text">The W12/S12 cohort shows disproportionate failure — post-2008 funding surge attracted opportunity founders who entered markets without lived experience, and hit reality hard when growth slowed</span><span class="signal-tag tag-amber">PATTERN</span></li>
+              <li class="signal-item"><span class="signal-glyph">→</span><span class="signal-text">Hardware, Consumer, and Deep Tech show the lowest acquisition rates and highest "inactive" classification — cash intensity and long cycles outrun most founding teams</span><span class="signal-tag tag-red">CAPITAL TRAP</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="content-card">
+          <div class="card-header"><span class="card-label">Wefunder red flags — valuation & narrative</span><span class="card-tag">$617M DATA</span></div>
+          <div class="card-body">
+            <ul class="signal-list">
+              <li class="signal-item"><span class="signal-glyph">!</span><span class="signal-text">Valuations above 30x revenue at early stage without a clear growth driver are routinely rejected by sophisticated investors — 165x multiple cases (e.g. GigaStar) illustrate the ceiling of what retail markets will absorb</span><span class="signal-tag tag-red">VALUATION</span></li>
+              <li class="signal-item"><span class="signal-glyph">!</span><span class="signal-text">Hockey-stick projections without an identified inflection driver are the single most common credibility destroyer in a pitch — across both institutional and retail investor contexts</span><span class="signal-tag tag-red">PROJECTIONS</span></li>
+              <li class="signal-item"><span class="signal-glyph">+</span><span class="signal-text">Campaigns/pitches that nail personal narrative + transparent risk + specific use of funds consistently outperform technically stronger competitors — across Wefunder, YC, and institutional contexts alike</span><span class="signal-tag tag-green">NARRATIVE</span></li>
+              <li class="signal-item"><span class="signal-glyph">+</span><span class="signal-text">Community round momentum (early investor clustering) is a leading indicator of eventual institutional follow-on — 2,833 Wefunder companies have gone on to raise $5B in follow-on financing</span><span class="signal-tag tag-green">MOMENTUM</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="content-card full">
+          <div class="card-header"><span class="card-label">Dimension → failure root cause mapping</span></div>
+          <div class="card-body">
+            <div class="score-breakdown">
+              <div class="score-row"><span class="score-label" style="min-width:180px">Team</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">Lack of experience · Depending on others · Founder conflict</div></div></div>
+              <div class="score-row"><span class="score-label" style="min-width:180px">Product</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">No market need · Poor product · No pivoting</div></div></div>
+              <div class="score-row"><span class="score-label" style="min-width:180px">Brand</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">Bad marketing · Lack of focus · No market need (positioning)</div></div></div>
+              <div class="score-row"><span class="score-label" style="min-width:180px">Market</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">Competition · No market need (timing) · Legal challenges</div></div></div>
+              <div class="score-row"><span class="score-label" style="min-width:180px">Go-To-Market</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">Bad marketing · Lack of focus · No pivoting</div></div></div>
+              <div class="score-row"><span class="score-label" style="min-width:180px">Investor Readiness</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">Lack of funds · Depending on others · Mismanagement</div></div></div>
+              <div class="score-row"><span class="score-label" style="min-width:180px">Financials</span><div class="score-bar-wrap" style="flex:1"><div style="font-size:11px;color:var(--text-muted);padding:2px 0">Mismanagement of funds · Lack of funds · No pivoting (burn)</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1476,7 +1682,7 @@ This brief will be reviewed by human analysts before delivery.</div>
     navItems.forEach(i => i.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
 
-    const matchingNav = document.querySelector(`.dim-nav-item[data-target="${targetId}"], .sidebar-aux-item[data-target="${targetId}"]`);
+    const matchingNav = document.querySelector(`[data-target="${targetId}"]`);
     if (matchingNav) matchingNav.classList.add('active');
 
     const panel = document.getElementById(targetId);

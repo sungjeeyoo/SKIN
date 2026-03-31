@@ -1,33 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="skin-os.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SKIN Score Engine</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a08;
-  --bg2: #111110;
-  --bg3: #1a1a18;
-  --bg4: #202020;
-  --border: rgba(255,255,255,0.07);
-  --border-hover: rgba(255,255,255,0.14);
-  --border-active: rgba(255,255,255,0.22);
-  --text: #e8e6df;
-  --text-muted: #7a786f;
-  --text-dim: #3d3c38;
-  --accent: #c8b87a;
-  --accent2: #8fb89a;
-  --accent3: #a08fc8;
-  --score-high: #8fb89a;
-  --score-mid: #c8b87a;
-  --score-low: #c88a7a;
-  --mono: 'DM Mono', monospace;
-  --serif: 'Cormorant Garamond', serif;
-  --sans: 'Syne', sans-serif;
-}
+
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1145,5 +1124,6 @@ function exportReport() {
 drawRadar();
 updateRightPanel();
 </script>
+<script src="skin-os.js"></script>
 </body>
 </html>

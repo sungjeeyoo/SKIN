@@ -1,30 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="stylesheet" href="skin-os.css">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SKIN OS — Playbooks & AI Schema</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a08;
-  --bg2: #111110;
-  --bg3: #1a1a18;
-  --bg4: #202020;
-  --border: rgba(255,255,255,0.07);
-  --border-h: rgba(255,255,255,0.14);
-  --border-a: rgba(255,255,255,0.22);
-  --text: #e8e6df;
-  --text-muted: #7a786f;
-  --text-dim: #3d3c38;
-  --accent: #c8b87a;
-  --accent2: #8fb89a;
-  --accent3: #a08fc8;
-  --danger: #c88a7a;
-  --mono: 'DM Mono', monospace;
-  --serif: 'Cormorant Garamond', serif;
-  --sans: 'Syne', sans-serif;
-}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body {
   background: var(--bg); color: var(--text);
@@ -46,7 +28,8 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0 28px; border-bottom: 1px solid var(--border); background: var(--bg); z-index: 100;
 }
-.brand { display: flex; align-items: baseline; gap: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; transition: opacity 0.15s; }
+.brand:hover { opacity: 0.75; }
 .brand .logo { font-family: var(--sans); font-weight: 800; font-size: 15px; letter-spacing: 0.12em; }
 .brand .sep { color: var(--text-dim); }
 .brand .sub { font-size: 11px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -280,11 +263,11 @@ body {
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <div class="brand">
+    <a href="index.html" class="brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="Back to SKIN OS home">
       <span class="logo">SKIN</span>
       <span class="sep">/</span>
       <span class="sub">OS · Playbooks & AI Schema</span>
-    </div>
+    </a>
     <div class="topbar-tabs">
       <button class="tab-btn active" onclick="switchTab('playbooks', this)">Decision Playbooks</button>
       <button class="tab-btn" onclick="switchTab('schema', this)">AI Schema</button>
@@ -351,6 +334,36 @@ body {
           <div class="sb-desc">Diagnosing & stopping churn</div>
         </div>
       </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section">Source-Informed Playbooks</div>
+      <div class="sb-item" onclick="showView('pb-nomarket')">
+        <span class="sb-icon">08</span>
+        <div class="sb-info">
+          <div class="sb-name">No Market Need</div>
+          <div class="sb-desc">Diagnosing the #1 failure cause</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-category')">
+        <span class="sb-icon">09</span>
+        <div class="sb-info">
+          <div class="sb-name">Category Positioning</div>
+          <div class="sb-desc">Own a category or join one</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-narrative')">
+        <span class="sb-icon">10</span>
+        <div class="sb-info">
+          <div class="sb-name">Investor Narrative</div>
+          <div class="sb-desc">Pitch that connects and converts</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-resilience')">
+        <span class="sb-icon">11</span>
+        <div class="sb-info">
+          <div class="sb-name">Founder Resilience</div>
+          <div class="sb-desc">Surviving the hard stretch</div>
+        </div>
+      </div>
     </div>
 
     <!-- SCHEMA sidebar -->
@@ -391,6 +404,13 @@ body {
         <div class="sb-info">
           <div class="sb-name">Prompt Registry</div>
           <div class="sb-desc">All system prompt templates</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('sc-failures')">
+        <span class="sb-icon">→</span>
+        <div class="sb-info">
+          <div class="sb-name">Failure Pattern Registry</div>
+          <div class="sb-desc">Sourced failure taxonomy</div>
         </div>
       </div>
     </div>
@@ -908,6 +928,380 @@ body {
       </div>
     </div>
 
+    <!-- ══════════════ SOURCE-INFORMED PLAYBOOKS ══════════════ -->
+
+    <!-- PB 8: NO MARKET NEED -->
+    <div class="view" id="pb-nomarket">
+      <div class="page-header" data-glyph="08">
+        <div class="ph-crumb">Playbooks / Source-Informed / <span>08</span></div>
+        <div class="ph-title">No Market Need</div>
+        <p class="ph-sub">The #1 startup killer across every database. Failory's 400+ cases show it appears more than competition, funding, or poor product combined. This playbook distinguishes "no market need" from "bad marketing" — they require entirely different interventions.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Product dimension</span>
+          <span class="ph-tag">Market dimension</span>
+          <span class="ph-tag">Source: Failory · 64+ documented cases</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">The critical distinction first</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">No market need vs. bad marketing — not the same problem</div>
+              <div class="pc-trigger">Founders consistently misdiagnose this. The wrong diagnosis wastes 3–6 months on the wrong fix.</div>
+              <div class="pc-tags"><span class="pc-tag urgent">Critical distinction</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node yes">
+                <span class="d-glyph">A</span>
+                <div class="d-content">
+                  <div class="d-label">No market need</div>
+                  <div class="d-text">People don't want what you're building, even when they understand it. You can explain it perfectly and they still don't buy. The problem you're solving isn't painful enough, frequent enough, or worth the switching cost. Fix: change what you're building, who you're building for, or both.</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">B</span>
+                <div class="d-content">
+                  <div class="d-label">Bad marketing (misdiagnosed as no market need)</div>
+                  <div class="d-text">People want what you're building, but they can't find it, understand it, or trust it from the way you describe it. The demand exists — you're just invisible to it or unintelligible. Fix: change how you describe, reach, and convert, not what you build.</div>
+                </div>
+              </div>
+            </div>
+            <div class="outcomes">
+              <div class="outcome-box red">
+                <div class="ob-label">Signs of true "no market need"</div>
+                <div class="ob-text">Users understand the product but don't pay · Churn happens immediately after first use · Users can't explain what problem it solved · No inbound interest after 6+ months · Discount doesn't increase conversion</div>
+              </div>
+              <div class="outcome-box green">
+                <div class="ob-label">Signs of "bad marketing" instead</div>
+                <div class="ob-text">Users who reach you do convert at decent rates · Satisfaction is high but acquisition is broken · Word of mouth is strong but small · The competitor who "stole your customers" isn't better — just louder</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">The four diagnostic tests</div>
+              <div class="pc-trigger">Run these before deciding whether to fix the product, the market, or the motion.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node action"><span class="d-glyph">1</span><div class="d-content"><div class="d-label">The Sean Ellis test</div><div class="d-text">Survey your active users: "How would you feel if you could no longer use this product?" If fewer than 40% say "very disappointed," you have a need problem, not a growth problem. Don't add features or run ads until this number moves.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">2</span><div class="d-content"><div class="d-label">The substitution test</div><div class="d-text">Ask churned users: "What are you doing instead?" If the answer is "nothing" — they went back to doing without — the problem wasn't painful enough. If the answer is a competitor, the market exists and you lost the sale.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">3</span><div class="d-content"><div class="d-label">The willingness-to-pay test</div><div class="d-text">Remove the free tier or trial. Charge from day one at a price that requires a real decision. Users who pay without being asked are revealing genuine need. Users who engage for free but won't pay are giving you social proof, not market validation.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">4</span><div class="d-content"><div class="d-label">The inbound test</div><div class="d-text">Stop all outbound for 30 days. Does anyone find you? YC data shows 70% of top YC companies had organic demand from day one — the market pulled them, they didn't push. Zero inbound after 6 months is a hard signal.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">C</span>
+            <div class="pc-meta">
+              <div class="pc-title">If it is no market need — the exit options</div>
+              <div class="pc-trigger">Failing slowly is the worst outcome. If you've confirmed no market need, the decision tree below prevents wasted runway.</div>
+              <div class="pc-tags"><span class="pc-tag urgent">Use only after B is confirmed</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Do you have customers who love a specific part of the product — even if they don't love the whole?</div><div class="d-text">If yes: that's your beachhead. Narrow to it, kill the rest. This is a customer pivot — lowest risk, preserves the most.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Do you have a distribution asset (audience, channel, relationships) that has value independent of the product?</div><div class="d-text">If yes: this is your real asset. What problem does this distribution give you unfair access to solve? Build that instead.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">?</span><div class="d-content"><div class="d-label">Does your team have a technical capability that's hard to build — even if the application was wrong?</div><div class="d-text">If yes: technology pivot. Find a different problem that genuinely needs this capability. The infrastructure is proven; the application wasn't.</div></div></div>
+              <div class="d-node warning"><span class="d-glyph">!</span><div class="d-content"><div class="d-label">None of the above — full pivot or wind down</div><div class="d-text">If you have no customers who love anything, no distribution, and no transferable technical asset — this is a start-over situation. The honest path is to wind down cleanly, preserve relationships, and start the next thing with the hard-earned clarity of knowing what not to do.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 9: CATEGORY POSITIONING -->
+    <div class="view" id="pb-category">
+      <div class="page-header" data-glyph="09">
+        <div class="ph-crumb">Playbooks / Source-Informed / <span>09</span></div>
+        <div class="ph-title">Category Positioning</div>
+        <p class="ph-sub">How a startup is categorized determines who finds it — investors, acquirers, and buyers all navigate by category. Dealroom's taxonomy of 2.6M+ companies shows that misclassification is a structural invisibility problem, not just a branding issue.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Brand dimension</span>
+          <span class="ph-tag">Market dimension</span>
+          <span class="ph-tag">Source: Dealroom taxonomy · 50+ sectors</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">The core decision</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">Own a category vs. join one</div>
+              <div class="pc-trigger">The most consequential positioning decision a founder makes. Both paths work — but they require completely different resources and timelines.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <table class="kpi-table">
+              <tr><th></th><th>Own a new category</th><th>Join an existing category</th></tr>
+              <tr>
+                <td>When it works</td>
+                <td>You have the authority, budget, and time to educate a market. Category creator wins are enormous but take 3–5+ years.</td>
+                <td>The category is established, buyers have budget, and you're genuinely differentiated within it. Faster to revenue.</td>
+              </tr>
+              <tr>
+                <td>What you need</td>
+                <td>Strong founder POV, existing audience/platform, patient capital, and a clear enemy (the old way)</td>
+                <td>A sharp "why us vs. them" answer, a beachhead segment the incumbent ignores, and a fast sales motion</td>
+              </tr>
+              <tr>
+                <td>Fatal mistake</td>
+                <td>Creating a category name without the authority to make it stick — you become uncategorizable and therefore unfindable</td>
+                <td>Entering a category dominated by an entrenched player with no structural differentiation — you compete on features and lose on distribution</td>
+              </tr>
+              <tr>
+                <td>SKIN signal</td>
+                <td>Brand score ≥70, Market score ≥75, founder has existing market authority</td>
+                <td>Market score ≥65, GTM score ≥60, clear ICP definition against category incumbents</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">The category audit — 5 questions</div>
+              <div class="pc-trigger">Run this before finalizing any positioning. Most founders skip it and pay for it in investor confusion and slow sales cycles.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <ul class="question-list">
+              <li class="question-item"><span class="q-num">Q1</span>What category does Dealroom / Crunchbase / your target investors put you in when they find you? Is that accurate? Does it matter?</li>
+              <li class="question-item"><span class="q-num">Q2</span>When your best customer explains your product to a colleague, what category do they use? Is it the same one you use?</li>
+              <li class="question-item"><span class="q-num">Q3</span>Who are the top 3 companies an investor would compare you to on first glance? Are you happy with that comparison? If not, what has to change?</li>
+              <li class="question-item"><span class="q-num">Q4</span>If your company disappeared tomorrow, what budget line does a buyer move to replace you — and what category does that vendor sit in?</li>
+              <li class="question-item"><span class="q-num">Q5</span>What would have to be true about your company for a Dealroom analyst to categorize you in your ideal category? Are you there yet?</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">C</span>
+            <div class="pc-meta">
+              <div class="pc-title">Common category mistakes — from Failory's misclassification cases</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="failure-grid">
+              <div class="failure-item">
+                <div class="failure-title">The compound category trap</div>
+                <div class="failure-desc">"AI-powered B2B SaaS platform for the future of work" — three categories in one name. Investors can't place you. Buyers can't find you. Pick one category and be ruthless about it.</div>
+              </div>
+              <div class="failure-item">
+                <div class="failure-title">The too-early category creator</div>
+                <div class="failure-desc">Creating a new category before the market understands why the old category is broken. You spend all your energy educating rather than converting. The category eventually forms — around someone who entered later with better timing.</div>
+              </div>
+              <div class="failure-item">
+                <div class="failure-title">The wrong comparison set</div>
+                <div class="failure-desc">Naming the wrong competitors in your positioning puts you in a different mental category than you intend. RethinkDB famously named the wrong market in their postmortem — their category framing made investors and buyers think smaller than the opportunity was.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 10: INVESTOR NARRATIVE -->
+    <div class="view" id="pb-narrative">
+      <div class="page-header" data-glyph="10">
+        <div class="ph-crumb">Playbooks / Source-Informed / <span>10</span></div>
+        <div class="ph-title">Investor Narrative</div>
+        <p class="ph-sub">Wefunder's $617M dataset across 2,833 founders shows a consistent pattern: campaigns and pitches that connect personally — relatable story, transparent risk, specific use of funds — outperform technically superior competitors. This applies equally to retail and institutional investors.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Investor Readiness dimension</span>
+          <span class="ph-tag">Brand dimension</span>
+          <span class="ph-tag">Source: Wefunder · $617M data</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">The narrative architecture</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">The five elements of a pitch that converts</div>
+              <div class="pc-trigger">Based on Wefunder campaign analysis and YC pitch data. All five must be present. Missing even one creates a credibility gap that investors feel but can't always articulate.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node action"><span class="d-glyph">1</span><div class="d-content"><div class="d-label">The personal origin — why you, why this problem</div><div class="d-text">Not your credentials. The specific moment or sustained experience that made this problem personal to you. Investors fund conviction, and conviction is only believable when it has a real origin. Generic origin stories ("I noticed a gap in the market") are the leading credibility destroyer in early-stage pitches.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">2</span><div class="d-content"><div class="d-label">The specific evidence — not claims, proof</div><div class="d-text">The three most credible data points you have, stated without hedging. Revenue, retention, a customer quote that uses language you didn't give them, a wait list that formed without ads. The specificity of the evidence is itself a signal — vague claims signal vague traction.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">3</span><div class="d-content"><div class="d-label">The transparent risk — what could go wrong</div><div class="d-text">Wefunder data consistently shows that campaigns which name their risks outperform those that don't. Investors know the risks exist. Naming them signals sophistication and honesty. Hiding them signals naivety or worse. State the top two risks and what you're doing about each.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">4</span><div class="d-content"><div class="d-label">The specific use of funds — milestone, not category</div><div class="d-text">"To grow the business" fails universally. "To get from $180K to $1M ARR by hiring one account executive and running 90 days of channel experiments" works. The specificity of the milestone signals that you know your business. Investors are buying the milestone, not the money.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">5</span><div class="d-content"><div class="d-label">The timing argument — why now, not eventually</div><div class="d-text">The structural change (regulatory, technological, behavioral) that makes this moment different from 3 years ago and 3 years from now. YC specifically trains founders on this: name recent events — not macro trends — that have opened the window. Windows close. Investors fund windows.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">Valuation red flags — sourced from Wefunder data</div>
+              <div class="pc-trigger">These patterns appear repeatedly in pitches and campaigns that fail to close. Each one is a credibility destroyer that experienced investors recognize immediately.</div>
+              <div class="pc-tags"><span class="pc-tag urgent">Credibility destroyers</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <table class="kpi-table">
+              <tr><th>Pattern</th><th>What it signals</th><th>Fix</th></tr>
+              <tr>
+                <td>Hockey-stick projections with no named inflection driver</td>
+                <td>Founder hasn't thought through the mechanics of growth. The model is aspiration, not analysis.</td>
+                <td>Replace with a specific driver: "When we add the second sales rep in month 4, based on current rep productivity, we expect X." Tie every inflection to an action.</td>
+              </tr>
+              <tr>
+                <td>Revenue multiples above 30x at early stage without a clear growth rate</td>
+                <td>Valuation is comp-based, not evidence-based. Wefunder cases show 165x+ multiples at early stage consistently fail to close institutional follow-on.</td>
+                <td>Anchor valuation to milestone math: "At the end of this round we'll have $X ARR, which at industry comps of Y multiple = $Z valuation." Show the work.</td>
+              </tr>
+              <tr>
+                <td>Raising "to extend runway"</td>
+                <td>No milestone attached. The business isn't creating its own momentum and the founder knows it. Investors smell survival mode immediately.</td>
+                <td>Only raise when you can articulate the specific proof point the capital gets you to and why that proof point changes your valuation story.</td>
+              </tr>
+              <tr>
+                <td>Cold outreach as primary investor access strategy</td>
+                <td>Signals lack of network or credibility in the space. Cold raise success rates are 5–10x lower than warm introductions.</td>
+                <td>Map the 3 warmest paths to each target investor before launching the process. One strong warm intro beats 50 cold emails.</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 11: FOUNDER RESILIENCE -->
+    <div class="view" id="pb-resilience">
+      <div class="page-header" data-glyph="11">
+        <div class="ph-crumb">Playbooks / Source-Informed / <span>11</span></div>
+        <div class="ph-title">Founder Resilience</div>
+        <p class="ph-sub">YC Startup School data across 15 years and 5,000+ companies identifies resilience — not intelligence, pedigree, or confidence — as the #1 predictor of founder success. Startups.RIP postmortems confirm: team cohesion under stress is the leading indicator of survival. This playbook operationalizes it.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Team dimension</span>
+          <span class="ph-tag">Source: YC Startup School · Startups.RIP 1,737+ postmortems</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">What resilience actually means operationally</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">The three resilience failures — from Startups.RIP patterns</div>
+              <div class="pc-trigger">These are the specific ways resilience collapses in early-stage companies. Each has a different intervention.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node warning">
+                <span class="d-glyph">1</span>
+                <div class="d-content">
+                  <div class="d-label">Narrative collapse under pressure</div>
+                  <div class="d-text">Founder changes the company's story when challenged by an investor, customer, or bad month. The narrative was never anchored in conviction — it was anchored in optimism. When optimism gets tested, the story changes. Symptom: each version of the pitch is subtly different. Intervention: identify the one thing that will still be true about this company even if the first 3 approaches fail. Anchor there.</div>
+                </div>
+              </div>
+              <div class="d-node warning">
+                <span class="d-glyph">2</span>
+                <div class="d-content">
+                  <div class="d-label">Co-founder fracture under stress</div>
+                  <div class="d-text">Startups.RIP postmortem pattern: co-founder conflict rarely begins in good times. It surfaces when the company hits its first serious obstacle — and the two founders disagree on how to respond. The undeclared CEO problem becomes live. Intervention: run the hard conversation before the hard moment. Agree now on: who decides when you disagree, what the shutdown criteria are, and what each person's non-negotiable is.</div>
+                </div>
+              </div>
+              <div class="d-node warning">
+                <span class="d-glyph">3</span>
+                <div class="d-content">
+                  <div class="d-label">Motivation drift</div>
+                  <div class="d-text">YC data: founders who started a company to prove they were right — rather than to solve the problem — run out of fuel when the problem proves harder than expected. The extrinsic motivation (validation, status, money) doesn't sustain through the 18-month stretch where nothing works. Intervention: the founder needs to find genuine interest in the problem, not just the outcome. If the problem itself has become uninteresting, that's a signal worth taking seriously.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">The resilience check — quarterly self-audit</div>
+              <div class="pc-trigger">Run this every 90 days. Not as a performance review — as an early warning system.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <ul class="question-list">
+              <li class="question-item"><span class="q-num">Q1</span>What is the hardest thing that has happened in the last 90 days? How did you respond — and would you respond the same way again?</li>
+              <li class="question-item"><span class="q-num">Q2</span>Is your co-founder relationship stronger or weaker than it was 90 days ago? What specific thing changed it?</li>
+              <li class="question-item"><span class="q-num">Q3</span>Do you still find the problem you're solving genuinely interesting — not just the outcome of solving it, but the problem itself?</li>
+              <li class="question-item"><span class="q-num">Q4</span>What would have to be true for you to walk away from this company? Have any of those conditions changed?</li>
+              <li class="question-item"><span class="q-num">Q5</span>When you describe what your company does to someone new, does the story feel true — or does it feel like a pitch?</li>
+            </ul>
+            <div class="d-node action" style="margin-top:14px">
+              <span class="d-glyph">→</span>
+              <div class="d-content">
+                <div class="d-label">SKIN scoring note</div>
+                <div class="d-text">These questions feed directly into Team dimension signals: conviction under pressure, co-founder cohesion, and founder-market fit. A founder who can answer Q3 and Q5 with specificity scores significantly higher on the Team dimension than one who deflects or gives generic answers.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">C</span>
+            <div class="pc-meta">
+              <div class="pc-title">The W12/S12 pattern — what early cohort failures teach us</div>
+              <div class="pc-trigger">Startups.RIP analysis of YC batches shows a disproportionate failure rate in the W12/S12 cohort. The lesson is generalizable.</div>
+              <div class="pc-tags"><span class="pc-tag info">Source: Startups.RIP</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="d-node question">
+              <span class="d-glyph">→</span>
+              <div class="d-content">
+                <div class="d-label">What happened</div>
+                <div class="d-text">The 2012 YC cohorts coincided with a post-2008 funding surge that attracted a higher proportion of "opportunity founders" — people who entered markets because funding was available, not because they had lived the problem. When growth slowed (2013–2015), these founders had no conviction reservoir to draw from. The story changed, the co-founders split, or the company simply wound down quietly. The pattern is not specific to 2012 — it repeats in every hot funding cycle.</div>
+              </div>
+            </div>
+            <div class="d-node action" style="margin-top:10px">
+              <span class="d-glyph">✓</span>
+              <div class="d-content">
+                <div class="d-label">The SKIN implication</div>
+                <div class="d-text">When a company raises during a hot market cycle (AI, 2023–2025 being the most recent), SKIN analysts should apply additional scrutiny to Team dimension signals — specifically: did the founder enter this market because of funding availability, or because of genuine problem proximity? The funding environment does not change the underlying signal requirements.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══════════════ SCHEMA VIEWS ══════════════ -->
 
     <!-- SC 1: REPORT SCHEMA -->
@@ -1316,6 +1710,125 @@ Complete skin_report.json. No prose outside the schema fields.</div>
       </div>
     </div>
 
+    <!-- SC 6: FAILURE PATTERN REGISTRY -->
+    <div class="view" id="sc-failures">
+      <div class="page-header" data-glyph="{}">
+        <div class="ph-crumb">AI Schema / <span>Failure Pattern Registry</span></div>
+        <div class="ph-title">Failure Pattern Registry</div>
+        <p class="ph-sub">Machine-readable failure patterns sourced from Failory (400+ cases), Startups.RIP (1,737+ YC postmortems), and Wefunder data. Used by the AI scoring pipeline to detect risk patterns in intake submissions and trigger the appropriate playbook.</p>
+        <div class="ph-tags"><span class="ph-tag">JSON</span><span class="ph-tag">Internal — AI use</span><span class="ph-tag">v1.1</span></div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">Failure pattern object schema</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">skin_failure_pattern.json</span><span class="sc-tag">Internal schema</span></div>
+          <div class="sc-body">
+            <div class="json-block"><span class="j-com">// SKIN Failure Pattern Registry — v1.1</span>
+<span class="j-com">// Sourced from: Failory (400+), Startups.RIP (1,737+), Wefunder ($617M data)</span>
+{
+  <span class="j-key">"pattern_id"</span>:    <span class="j-str">"fp_no_market_need"</span>,
+  <span class="j-key">"label"</span>:         <span class="j-str">"No market need"</span>,
+  <span class="j-key">"source"</span>:        <span class="j-str">"failory_cemetery"</span>,
+  <span class="j-key">"case_count"</span>:    <span class="j-num">64</span>,             <span class="j-com">// Documented cases in source</span>
+  <span class="j-key">"frequency_rank"</span>: <span class="j-num">1</span>,             <span class="j-com">// #1 most common across all sources</span>
+  <span class="j-key">"dimensions"</span>:    [<span class="j-str">"product"</span>, <span class="j-str">"market"</span>],
+  <span class="j-key">"signals"</span>: {
+    <span class="j-key">"intake_triggers"</span>: [
+      <span class="j-str">"users_engage_dont_pay"</span>,
+      <span class="j-str">"churn_immediately_after_first_use"</span>,
+      <span class="j-str">"zero_inbound_6_months"</span>,
+      <span class="j-str">"discount_doesnt_increase_conversion"</span>
+    ],
+    <span class="j-key">"question_responses"</span>: [
+      <span class="j-str">"Cannot name a user who would be very disappointed if product disappeared"</span>,
+      <span class="j-str">"Churned users say they are doing nothing instead"</span>
+    ]
+  },
+  <span class="j-key">"distinction_from"</span>: <span class="j-str">"fp_bad_marketing"</span>,  <span class="j-com">// Often confused</span>
+  <span class="j-key">"playbook_link"</span>:  <span class="j-str">"pb-nomarket"</span>,
+  <span class="j-key">"score_impact"</span>: {
+    <span class="j-key">"product"</span>: <span class="j-num">-25</span>,
+    <span class="j-key">"market"</span>:  <span class="j-num">-15</span>
+  }
+}</div>
+          </div>
+        </div>
+
+        <div class="section-label" style="margin-top:24px">Full pattern registry</div>
+        <div class="schema-card full">
+          <div class="sc-head"><span class="sc-label">All 11 registered failure patterns</span><span class="sc-tag amber">Frequency ranked</span></div>
+          <div class="sc-body">
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type">#</span><span class="f-name">Pattern ID</span><span class="f-type">Source</span><span class="f-desc">Dimensions affected · Playbook link</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--danger)">1</span><span class="f-name">fp_no_market_need</span><span class="f-type">Failory</span><span class="f-desc">Product · Market → <span style="color:var(--accent3)">pb-nomarket</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--danger)">2</span><span class="f-name">fp_bad_marketing</span><span class="f-type">Failory</span><span class="f-desc">GTM · Brand → <span style="color:var(--accent3)">pb-narrative · pb-channel</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--danger)">3</span><span class="f-name">fp_competition</span><span class="f-type">Failory</span><span class="f-desc">Market · GTM → <span style="color:var(--accent3)">pb-category · pb-pivot</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--score-mid)">4</span><span class="f-name">fp_lack_of_focus</span><span class="f-type">Failory</span><span class="f-desc">GTM · Product → <span style="color:var(--accent3)">pb-channel · pb-price</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--score-mid)">5</span><span class="f-name">fp_lack_of_funds</span><span class="f-type">Failory</span><span class="f-desc">Financials · Investor Readiness → <span style="color:var(--accent3)">pb-raise</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--score-mid)">6</span><span class="f-name">fp_poor_product</span><span class="f-type">Failory</span><span class="f-desc">Product → <span style="color:var(--accent3)">pb-churn · pb-nomarket</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--score-mid)">7</span><span class="f-name">fp_no_pivoting</span><span class="f-type">Failory</span><span class="f-desc">Product · Market → <span style="color:var(--accent3)">pb-pivot</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--score-mid)">8</span><span class="f-name">fp_mismanagement_funds</span><span class="f-type">Failory</span><span class="f-desc">Financials → <span style="color:var(--accent3)">pb-raise · pb-hire</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--accent2)">9</span><span class="f-name">fp_resilience_deficit</span><span class="f-type">YC / RIP</span><span class="f-desc">Team → <span style="color:var(--accent3)">pb-resilience</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--accent2)">10</span><span class="f-name">fp_category_misclass</span><span class="f-type">Dealroom</span><span class="f-desc">Market · Brand → <span style="color:var(--accent3)">pb-category</span></span>
+            </div>
+            <div class="field-row" style="grid-template-columns:30px 180px 80px 1fr">
+              <span class="f-type" style="color:var(--accent2)">11</span><span class="f-name">fp_narrative_disconnect</span><span class="f-type">Wefunder</span><span class="f-desc">Brand · Investor Readiness → <span style="color:var(--accent3)">pb-narrative</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="schema-card full" style="margin-top:16px">
+          <div class="sc-head"><span class="sc-label">Sector risk profiles — Startups.RIP pattern data</span><span class="sc-tag">1,737+ companies</span></div>
+          <div class="sc-body">
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Sector</span><span class="f-type">Risk level</span><span class="f-desc">Pattern notes</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Community / Social</span><span class="f-type" style="color:var(--danger)">VERY HIGH</span><span class="f-desc">Network effects required. Timing-dependent. Most common "inactive" classification. → flag: fp_no_market_need + fp_competition</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Marketplace</span><span class="f-type" style="color:var(--danger)">HIGH</span><span class="f-desc">Cold start problem. High CAC on both sides. Often acquired before profitability. → flag: fp_lack_of_funds + fp_competition</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Education</span><span class="f-type" style="color:var(--danger)">HIGH</span><span class="f-desc">Long sales cycles (institutional), low WTP in consumer. Many acquisitions in B2B sub-segment. → flag: fp_no_market_need + fp_bad_marketing</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Consumer Hardware</span><span class="f-type" style="color:var(--score-mid)">ELEVATED</span><span class="f-desc">Capital intensity outpaces most founding teams. Low acquisition rate. → flag: fp_lack_of_funds + fp_mismanagement_funds</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">B2B SaaS</span><span class="f-type" style="color:var(--score-mid)">MODERATE</span><span class="f-desc">Highest acquisition rate in YC data. Sticky enterprise contracts. Main failure: GTM and ICP. → flag: fp_bad_marketing + fp_lack_of_focus</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Developer Tools</span><span class="f-type" style="color:var(--accent2)">LOWER</span><span class="f-desc">Strong acquirability. Defensible IP. Main failure: monetization timing. → flag: fp_no_market_need (freemium trap)</span>
+            </div>
+            <div class="field-row" style="grid-template-columns:160px 100px 1fr">
+              <span class="f-name">Fintech</span><span class="f-type" style="color:var(--accent2)">LOWER</span><span class="f-desc">High acquisition rate. Regulatory risk as wildcard. → flag: fp_legal_challenges (add to registry if encountered)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -1365,5 +1878,6 @@ function toggleCard(header) {
   header.classList.toggle('open', !isOpen);
 }
 </script>
+<script src="skin-os.js"></script>
 </body>
 </html>

@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="skin-os.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKIN OS — Decision OS</title>
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--mono); font-size: 15px; line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ── SHELL ── */
+.shell {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  grid-column: 1/-1;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px; border-bottom: 1px solid var(--border);
+  background: var(--bg); z-index: 100;
+}
+.brand { display: flex; align-items: baseline; gap: 10px; transition: opacity 0.15s; }
+.brand:hover { opacity: 0.75; }
+.brand .logo { font-family: var(--sans); font-weight: 800; font-size: 16px; letter-spacing: 0.12em; color: var(--text); }
+.brand .sep  { color: var(--text-dim); }
+.brand .sub  { font-size: 13px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-link {
+  font-family: var(--mono); font-size: 12px; color: var(--text-dim);
+  text-decoration: none; letter-spacing: 0.06em;
+  transition: color 0.15s;
+}
+.topbar-link:hover { color: var(--text-muted); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 20px 0; background: var(--bg);
+}
+.sb-section {
+  font-size: 11px; letter-spacing: 0.16em; color: var(--text-dim);
+  text-transform: uppercase; padding: 0 18px 8px; margin-top: 6px;
+}
+.sb-item {
+  padding: 10px 18px; cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all 0.15s;
+}
+.sb-item:hover { background: var(--bg2); }
+.sb-item.active {
+  background: var(--bg2);
+  border-left-color: var(--accent);
+}
+.sb-name {
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  color: var(--text-muted);
+}
+.sb-item.active .sb-name { color: var(--text); }
+.sb-desc { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.sb-divider { height: 1px; background: var(--border); margin: 8px 0; }
+
+/* ── MAIN ── */
+.main {
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+/* ── DECISION PANEL ── */
+.decision-panel { display: none; }
+.decision-panel.active { display: block; }
+
+/* ── LANDING (pick your decision) ── */
+.landing {
+  padding: 56px 64px;
+  max-width: 760px;
+}
+.landing-eyebrow {
+  font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 20px;
+}
+.landing-title {
+  font-family: var(--serif); font-size: 52px; font-weight: 600;
+  line-height: 1.1; color: var(--text); margin-bottom: 16px;
+}
+.landing-sub {
+  font-size: 15px; color: var(--text-muted); line-height: 1.7;
+  max-width: 520px; margin-bottom: 48px;
+}
+.decision-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.decision-card {
+  border: 1px solid var(--border);
+  padding: 22px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.18s;
+  background: var(--bg2);
+}
+.decision-card:hover {
+  border-color: var(--accent);
+  background: var(--bg3);
+}
+.dc-num {
+  font-size: 11px; color: var(--text-dim);
+  font-family: var(--mono); margin-bottom: 8px;
+}
+.dc-title {
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
+  color: var(--text); margin-bottom: 6px;
+}
+.dc-trigger {
+  font-size: 13px; color: var(--text-muted); line-height: 1.55;
+}
+
+/* ── FLOW PANEL (3-step conversation) ── */
+.flow-wrap {
+  display: flex;
+  min-height: calc(100vh - 56px);
+}
+.flow-main {
+  flex: 1;
+  padding: 56px 64px;
+  max-width: 680px;
+}
+.flow-aside {
+  width: 280px;
+  border-left: 1px solid var(--border);
+  padding: 40px 28px;
+  background: var(--bg2);
+  flex-shrink: 0;
+}
+
+/* Step indicator */
+.step-track {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 40px;
+}
+.step-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border-active); border: 1px solid var(--border-active);
+  transition: all 0.2s;
+}
+.step-dot.done  { background: var(--accent2); border-color: var(--accent2); }
+.step-dot.active { background: var(--accent); border-color: var(--accent); }
+.step-line {
+  flex: 1; height: 1px; background: var(--border);
+  max-width: 40px; transition: background 0.3s;
+}
+.step-line.done { background: var(--accent2); }
+
+/* Step content */
+.step-block { display: none; animation: stepIn 0.22s ease; }
+.step-block.active { display: block; }
+@keyframes stepIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-eyebrow {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 16px;
+}
+.step-trigger {
+  font-family: var(--serif); font-size: 28px; font-weight: 600;
+  line-height: 1.25; color: var(--text); margin-bottom: 12px;
+}
+.step-context {
+  font-size: 14px; color: var(--text-muted); line-height: 1.65;
+  margin-bottom: 36px; max-width: 480px;
+}
+
+/* Question inputs */
+.questions { display: flex; flex-direction: column; gap: 16px; }
+
+.q-block { }
+.q-label {
+  font-size: 14px; color: var(--text); margin-bottom: 12px;
+  line-height: 1.55; font-weight: 500;
+}
+.q-label span { color: var(--text-muted); font-weight: 400; }
+
+/* Binary / forced choice buttons */
+.choice-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.choice-btn {
+  font-family: var(--mono); font-size: 13px;
+  padding: 8px 18px; border-radius: 2px;
+  border: 1px solid var(--border);
+  background: none; color: var(--text-muted);
+  cursor: pointer; transition: all 0.15s;
+  white-space: nowrap;
+}
+.choice-btn:hover { border-color: var(--border-h); color: var(--text); }
+.choice-btn.selected {
+  background: var(--bg3);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Numeric input */
+.num-wrap { display: flex; align-items: center; gap: 10px; }
+.num-input {
+  font-family: var(--mono); font-size: 18px;
+  width: 90px; padding: 8px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text); border-radius: 2px;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+.num-input:focus { outline: none; border-color: var(--accent); }
+.num-unit { font-size: 13px; color: var(--text-muted); }
+
+/* Next button */
+.next-btn {
+  margin-top: 36px;
+  font-family: var(--mono); font-size: 13px; letter-spacing: 0.06em;
+  padding: 10px 28px; border-radius: 2px;
+  background: var(--accent); color: var(--bg);
+  border: none; cursor: pointer;
+  transition: opacity 0.15s;
+  opacity: 0.35; pointer-events: none;
+}
+.next-btn.ready { opacity: 1; pointer-events: auto; }
+.next-btn.ready:hover { opacity: 0.85; }
+
+/* ── VERDICT ── */
+.verdict-wrap {
+  margin-top: 8px;
+  animation: stepIn 0.3s ease;
+}
+.verdict-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 20px; border-radius: 2px;
+  font-family: var(--sans); font-size: 18px; font-weight: 700;
+  letter-spacing: 0.05em; margin-bottom: 28px;
+}
+.verdict-badge.go    { background: rgba(143,184,154,0.15); color: var(--score-high); border: 1px solid rgba(143,184,154,0.3); }
+.verdict-badge.wait  { background: rgba(200,184,122,0.15); color: var(--score-mid);  border: 1px solid rgba(200,184,122,0.3); }
+.verdict-badge.stop  { background: rgba(200,138,122,0.15); color: var(--score-low);  border: 1px solid rgba(200,138,122,0.3); }
+.verdict-badge.fix   { background: rgba(160,143,200,0.15); color: var(--accent3);    border: 1px solid rgba(160,143,200,0.3); }
+
+.verdict-headline {
+  font-family: var(--serif); font-size: 36px; font-weight: 600;
+  line-height: 1.15; color: var(--text); margin-bottom: 16px;
+}
+.verdict-reason {
+  font-size: 15px; color: var(--text-muted); line-height: 1.7;
+  max-width: 480px; margin-bottom: 32px;
+  padding-left: 16px; border-left: 2px solid var(--accent);
+}
+.verdict-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-restart {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+  padding: 8px 20px; border-radius: 2px;
+  border: 1px solid var(--border); background: none;
+  color: var(--text-muted); cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-restart:hover { border-color: var(--border-h); color: var(--text); }
+.btn-framework {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em;
+  padding: 8px 20px; border-radius: 2px;
+  border: 1px solid var(--border-active); background: none;
+  color: var(--text-muted); cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.15s;
+}
+.btn-framework:hover { color: var(--text); }
+
+/* ── ASIDE ── */
+.aside-label {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 16px;
+}
+.aside-decision {
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
+  color: var(--text); margin-bottom: 20px;
+}
+.aside-answers { display: flex; flex-direction: column; gap: 10px; }
+.aside-answer {
+  font-size: 12px; color: var(--text-dim); line-height: 1.55;
+}
+.aside-answer .aq { color: var(--text-muted); }
+.aside-answer .av { color: var(--accent); font-weight: 500; }
+.aside-note {
+  margin-top: 32px; padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 12px; color: var(--text-dim); line-height: 1.6;
+}
+.aside-note strong { color: var(--text-muted); font-weight: 500; }
+
+/* ── MOBILE NAV ── */
+.mobile-dim-nav { display: none; grid-column: 1 / -1; }
+
+@media (max-width: 860px) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-rows: 56px auto 1fr;
+    height: auto; min-height: 100vh; overflow: auto;
+  }
+  .sidebar { display: none; }
+  .mobile-dim-nav {
+    display: flex !important;
+    overflow-x: auto; gap: 6px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-dim-nav::-webkit-scrollbar { display: none; }
+  .mobile-dim-btn {
+    flex-shrink: 0; font-family: var(--mono); font-size: 13px;
+    padding: 6px 14px; border: 1px solid var(--border);
+    border-radius: 20px; background: none; color: var(--text-muted);
+    cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  }
+  .mobile-dim-btn.active { border-color: var(--accent); color: var(--accent); background: var(--bg2); }
+
+  .brand .sep, .brand .sub { display: none; }
+  .topbar { padding: 0 16px; }
+
+  .landing { padding: 32px 20px; }
+  .landing-title { font-size: 36px; }
+  .decision-grid { grid-template-columns: 1fr; }
+
+  .flow-wrap { flex-direction: column; }
+  .flow-main { padding: 32px 20px; }
+  .flow-aside { width: 100%; border-left: none; border-top: 1px solid var(--border); padding: 24px 20px; }
+
+  .step-trigger { font-size: 22px; }
+  .verdict-headline { font-size: 26px; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <a href="index.html" class="brand" style="text-decoration:none;color:inherit;cursor:pointer;" title="Back to SKIN OS home">
+      <span class="logo">SKIN</span>
+      <span class="sep">/</span>
+      <span class="sub">Decision OS</span>
+    </a>
+    <div class="topbar-right">
+      <a href="skin-playbooks-schema.html" class="topbar-link">Decision Frameworks →</a>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar scrollbar-thin" id="sidebar">
+    <div class="sb-section">Pick a decision</div>
+    <div class="sb-item active" onclick="openDecision('hire')">
+      <div class="sb-name">Hire vs. Wait</div>
+      <div class="sb-desc">First hire timing</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('raise')">
+      <div class="sb-name">Raise vs. Grow</div>
+      <div class="sb-desc">Fundraise timing</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('pivot')">
+      <div class="sb-name">Pivot Trigger</div>
+      <div class="sb-desc">Change direction or stay</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('price')">
+      <div class="sb-name">Pricing Decision</div>
+      <div class="sb-desc">Raise or hold price</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('channel')">
+      <div class="sb-name">Channel Commitment</div>
+      <div class="sb-desc">Focus vs. diversify GTM</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('sales')">
+      <div class="sb-name">First Sales Hire</div>
+      <div class="sb-desc">Founder → sales motion</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('churn')">
+      <div class="sb-name">Churn Response</div>
+      <div class="sb-desc">Stop the bleeding</div>
+    </div>
+    <div class="sb-divider"></div>
+    <div class="sb-section">Harder calls</div>
+    <div class="sb-item" onclick="openDecision('nomarket')">
+      <div class="sb-name">No Market Need</div>
+      <div class="sb-desc">Real problem or wrong problem</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('category')">
+      <div class="sb-name">Category Positioning</div>
+      <div class="sb-desc">Own or join a category</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('raise2')">
+      <div class="sb-name">Investor Narrative</div>
+      <div class="sb-desc">Pitch or not pitch now</div>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-dim-nav" id="mobile-nav-dos" aria-label="Pick a decision">
+    <button class="mobile-dim-btn active" onclick="openDecision('hire')">Hire</button>
+    <button class="mobile-dim-btn" onclick="openDecision('raise')">Raise</button>
+    <button class="mobile-dim-btn" onclick="openDecision('pivot')">Pivot</button>
+    <button class="mobile-dim-btn" onclick="openDecision('price')">Price</button>
+    <button class="mobile-dim-btn" onclick="openDecision('channel')">Channel</button>
+    <button class="mobile-dim-btn" onclick="openDecision('sales')">Sales hire</button>
+    <button class="mobile-dim-btn" onclick="openDecision('churn')">Churn</button>
+    <button class="mobile-dim-btn" onclick="openDecision('nomarket')">No market</button>
+    <button class="mobile-dim-btn" onclick="openDecision('category')">Category</button>
+    <button class="mobile-dim-btn" onclick="openDecision('raise2')">Investor pitch</button>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main scrollbar-thin" id="main-area">
+
+    <!-- LANDING -->
+    <div class="decision-panel active" id="panel-landing">
+      <div class="landing">
+        <div class="landing-eyebrow">SKIN OS · Decision OS</div>
+        <div class="landing-title">What decision<br>are you facing?</div>
+        <p class="landing-sub">Three questions. One verdict. Pick the situation closest to where you are right now.</p>
+        <div class="decision-grid">
+          <div class="decision-card" onclick="openDecision('hire')">
+            <div class="dc-num">01</div>
+            <div class="dc-title">Hire vs. Wait</div>
+            <div class="dc-trigger">You're thinking about bringing someone in. This is where most founders mess up the timing.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('raise')">
+            <div class="dc-num">02</div>
+            <div class="dc-title">Raise vs. Grow</div>
+            <div class="dc-trigger">You're considering going out for capital. The question is whether the timing is right — or just convenient.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('pivot')">
+            <div class="dc-num">03</div>
+            <div class="dc-title">Pivot Trigger</div>
+            <div class="dc-trigger">Something isn't working. You're not sure if it's the idea, the execution, or just the timeline.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('price')">
+            <div class="dc-num">04</div>
+            <div class="dc-title">Pricing Decision</div>
+            <div class="dc-trigger">You're undercharging and you know it. Or you're about to raise prices and you're scared.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('channel')">
+            <div class="dc-num">05</div>
+            <div class="dc-title">Channel Commitment</div>
+            <div class="dc-trigger">You're spread across three channels. None of them are working well enough to bet on.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('sales')">
+            <div class="dc-num">06</div>
+            <div class="dc-title">First Sales Hire</div>
+            <div class="dc-trigger">You want to hand off sales. The question is whether the motion exists to hand off yet.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('churn')">
+            <div class="dc-num">07</div>
+            <div class="dc-title">Churn Response</div>
+            <div class="dc-trigger">Customers are leaving. The real question is why — and whether you're solving the right problem.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('nomarket')">
+            <div class="dc-num">08</div>
+            <div class="dc-title">No Market Need?</div>
+            <div class="dc-trigger">Nobody's buying at the rate you expected. You need to know if it's the market or the motion.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('category')">
+            <div class="dc-num">09</div>
+            <div class="dc-title">Category Positioning</div>
+            <div class="dc-trigger">Investors and customers keep comparing you to the wrong companies. Your category is working against you.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('raise2')">
+            <div class="dc-num">10</div>
+            <div class="dc-title">Investor Narrative</div>
+            <div class="dc-trigger">You're about to pitch. You need to know if the story is ready — or if you're going out too early.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DECISION FLOW PANEL — rendered by JS -->
+    <div class="decision-panel" id="panel-flow">
+      <div class="flow-wrap">
+        <div class="flow-main" id="flow-main-content">
+          <!-- Injected by JS -->
+        </div>
+        <div class="flow-aside" id="flow-aside-content">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+/* ============================================================
+   SKIN Decision OS — Engine
+   Each decision: trigger, steps (questions), logic (fn → verdict)
+   ============================================================ */
+
+const DECISIONS = {
+
+  hire: {
+    title: 'Hire vs. Wait',
+    trigger: "You're about to hire. This is where most founders mess up.",
+    context: "The urge to hire is usually correct. The timing almost never is. Three questions — then a verdict.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Runway',
+        q: 'How many months of runway do you have right now?',
+        type: 'choice',
+        choices: ['< 6 months', '6–12 months', '12–18 months', '18+ months'],
+        key: 'runway'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Repeatability',
+        q: 'Do you have a repeatable sales or delivery motion — something a new person could follow without you in every meeting?',
+        type: 'choice',
+        choices: ['Not yet', 'Partially — some of it is documented', 'Yes — it exists and works'],
+        key: 'motion'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Need',
+        q: "What's actually blocking you right now?",
+        type: 'choice',
+        choices: ['I\'m the bottleneck on sales', 'I\'m the bottleneck on delivery/ops', 'I need a co-pilot for strategy', 'I want to move faster overall'],
+        key: 'need'
+      }
+    ],
+    logic: (a) => {
+      if (a.runway === '< 6 months') return {
+        type: 'stop', label: 'Do not hire',
+        headline: 'You don\'t have the runway to do this right.',
+        reason: 'Hiring with less than 6 months of runway creates pressure that leads to bad decisions. Fix the cash position first — then hire.',
+        framework: 'pb-hire'
+      };
+      if (a.motion === 'Not yet' && a.need === 'I\'m the bottleneck on sales') return {
+        type: 'fix', label: 'Fix the motion first',
+        headline: 'You can\'t hire a salesperson into a process that doesn\'t exist.',
+        reason: 'A sales hire without a repeatable motion just means you\'re paying someone to learn the same lessons you already learned. Document what\'s working first.',
+        framework: 'pb-sales'
+      };
+      if (a.runway === '18+ months' && a.motion !== 'Not yet') return {
+        type: 'go', label: 'Hire now',
+        headline: 'The conditions are right. Move fast.',
+        reason: 'You have runway, a motion to hand off, and a real bottleneck. Waiting longer is the mistake here — every week you delay is a week of lost leverage.',
+        framework: 'pb-hire'
+      };
+      if (a.need === 'I want to move faster overall') return {
+        type: 'wait', label: 'Not the right reason',
+        headline: '"Moving faster" isn\'t a hire — it\'s a focus problem.',
+        reason: 'Generalist speed hires rarely solve the underlying problem. Define exactly what\'s blocked before you define the role.',
+        framework: 'pb-hire'
+      };
+      return {
+        type: 'wait', label: 'Wait — conditions not met',
+        headline: 'You\'re close, but something isn\'t ready.',
+        reason: 'You have the runway, but the motion isn\'t solid enough to hand off yet. Spend 4–6 weeks making the process explicit. Then hire.',
+        framework: 'pb-hire'
+      };
+    }
+  },
+
+  raise: {
+    title: 'Raise vs. Grow',
+    trigger: "You're considering going out for capital. The question is timing.",
+    context: "Most founders raise when they're scared of running out, not when they have leverage. Three questions.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Runway',
+        q: 'How many months of runway do you have right now?',
+        type: 'choice',
+        choices: ['< 3 months', '3–6 months', '6–12 months', '12+ months'],
+        key: 'runway'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Traction',
+        q: 'What does your growth look like over the last 90 days?',
+        type: 'choice',
+        choices: ['Declining or flat', 'Slow growth (< 5% MoM)', 'Solid growth (5–15% MoM)', 'Strong growth (15%+ MoM)'],
+        key: 'growth'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Clarity',
+        q: 'Can you name the specific milestone this raise gets you to — and why that milestone changes your story?',
+        type: 'choice',
+        choices: ['Not really — I need capital to survive', 'I have a rough sense of it', 'Yes — I can state it in one sentence'],
+        key: 'clarity'
+      }
+    ],
+    logic: (a) => {
+      if (a.runway === '< 3 months') return {
+        type: 'stop', label: 'Survival raise — change the framing',
+        headline: "You're raising from a position of desperation. That's visible.",
+        reason: 'Investors can smell a survival raise. Extend runway first — cut burn, find revenue, do a bridge. Raise when you have options, not when you\'re out of them.',
+        framework: 'pb-raise'
+      };
+      if (a.growth === 'Strong growth (15%+ MoM)' && a.clarity === 'Yes — I can state it in one sentence') return {
+        type: 'go', label: 'Raise now — you have leverage',
+        headline: 'Strong growth and a clear milestone. This is the window.',
+        reason: 'Investors fund momentum. You have it. A specific use-of-funds narrative turns this into a compelling round. Go in the next 60 days.',
+        framework: 'pb-raise'
+      };
+      if (a.clarity === 'Not really — I need capital to survive') return {
+        type: 'fix', label: 'Define the milestone first',
+        headline: '"I need capital to survive" is not an investor story.',
+        reason: 'Every raise needs a milestone: "This money gets us to $X ARR / Y users / Z proof point — which unlocks Series A pricing." Without that, you\'re asking investors to take a bet with no defined finish line.',
+        framework: 'pb-raise'
+      };
+      if (a.growth === 'Declining or flat') return {
+        type: 'wait', label: 'Fix the growth story first',
+        headline: 'Raising on a flat or declining trajectory makes everything harder.',
+        reason: 'You can raise on flat growth — but you\'ll pay for it in valuation and terms. Spend 60 days fixing the metric that\'s most visible to investors before going out.',
+        framework: 'pb-raise'
+      };
+      return {
+        type: 'wait', label: 'Almost — sharpen the narrative',
+        headline: 'The conditions are forming but the story isn\'t tight enough yet.',
+        reason: 'You have solid growth and reasonable runway. The missing piece is a crisp milestone narrative. Nail that in the next 2–3 weeks, then start the process.',
+        framework: 'pb-raise'
+      };
+    }
+  },
+
+  pivot: {
+    title: 'Pivot Trigger',
+    trigger: "Something isn't working. You need to know if it's the idea or the execution.",
+    context: "Most founders pivot too early or too late. The hard part is knowing which failure mode you're in.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Signal',
+        q: 'What\'s the clearest signal that something is wrong?',
+        type: 'choice',
+        choices: ['Nobody is paying', 'People pay once but don\'t return', 'Growth is just too slow', 'A specific competitor is winning deals we should win'],
+        key: 'signal'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Evidence',
+        q: 'Have you talked to at least 10 churned or non-converting users in the last 60 days?',
+        type: 'choice',
+        choices: ['No', 'Yes — and they can\'t explain clearly why they didn\'t buy/stay', 'Yes — and they gave specific, consistent reasons'],
+        key: 'research'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Love',
+        q: 'Do you have any users who would be genuinely disappointed if the product disappeared tomorrow?',
+        type: 'choice',
+        choices: ['No — I don\'t think so', 'Maybe 1–2 outliers', 'Yes — a small but real group'],
+        key: 'love'
+      }
+    ],
+    logic: (a) => {
+      if (a.research === 'No') return {
+        type: 'fix', label: 'Talk to users first',
+        headline: "You can't navigate without data.",
+        reason: "A pivot based on internal anxiety isn't a pivot — it's a guess. Talk to 10 churned or non-converting users before making any directional decision. The answer is usually in those conversations.",
+        framework: 'pb-nomarket'
+      };
+      if (a.signal === 'Nobody is paying' && a.love === 'No — I don\'t think so') return {
+        type: 'stop', label: 'Pivot — the market signal is clear',
+        headline: 'No payment and no love means the problem isn\'t painful enough.',
+        reason: 'This is the clearest pivot signal there is. Not a pivot to a new feature — a pivot to a different problem. Use your distribution and team as the asset, not the current product.',
+        framework: 'pb-nomarket'
+      };
+      if (a.love === 'Yes — a small but real group') return {
+        type: 'go', label: 'Do not pivot — double down on the lovers',
+        headline: 'You have real signal. The job is to find more people like them.',
+        reason: 'A small group of genuinely passionate users is more valuable than a large group of lukewarm ones. Stop trying to fix the whole product and obsess over who loves it and why.',
+        framework: 'pb-pivot'
+      };
+      if (a.signal === 'A specific competitor is winning deals we should win') return {
+        type: 'fix', label: 'Fix positioning, not product',
+        headline: 'Losing to a competitor is a sales and positioning problem first.',
+        reason: 'Before you change what you build, understand exactly what the competitor says that you don\'t. Often it\'s a framing issue, not a feature issue.',
+        framework: 'pb-category'
+      };
+      return {
+        type: 'wait', label: 'Not yet — gather more signal',
+        headline: 'The signal is mixed. Don\'t pivot on mixed signal.',
+        reason: 'You have some evidence of pain but not enough clarity on direction. Run 2–3 more weeks of structured user research before making a directional call.',
+        framework: 'pb-pivot'
+      };
+    }
+  },
+
+  price: {
+    title: 'Pricing Decision',
+    trigger: "You're thinking about changing your price. This is almost always the right move — the question is direction.",
+    context: "Founders consistently underprice. The fear of raising prices is almost never borne out by the data.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Current state',
+        q: 'Where are you with pricing right now?',
+        type: 'choice',
+        choices: ['Charging nothing (free or trial)', 'Charging but below market', 'At market rate', 'Premium — above most competitors'],
+        key: 'current'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Customer response',
+        q: 'When you mention your price to a prospect, what\'s the most common reaction?',
+        type: 'choice',
+        choices: ['Immediate objection — "that\'s too expensive"', 'Some friction but usually closes', 'No pushback — they just pay', 'They ask for a cheaper tier'],
+        key: 'reaction'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Value signal',
+        q: 'Do your best customers ever tell you, unprompted, that the product saves them time or money?',
+        type: 'choice',
+        choices: ['No — never', 'Occasionally', 'Yes — they say it regularly'],
+        key: 'value'
+      }
+    ],
+    logic: (a) => {
+      if (a.current === 'Charging nothing (free or trial)') return {
+        type: 'fix', label: 'Start charging — now',
+        headline: "Free is not a pricing strategy. It's avoiding a conversation.",
+        reason: "Until you charge, you have engagement data, not market data. Someone paying $50/month tells you 100x more about value than someone using something for free. Pick a number and charge it this week.",
+        framework: 'pb-price'
+      };
+      if (a.reaction === 'No pushback — they just pay' && a.value === 'Yes — they say it regularly') return {
+        type: 'go', label: 'Raise price — immediately',
+        headline: "No pushback and high value means you're leaving money on the table.",
+        reason: "If nobody flinches at your price and they're vocal about the value, you've already lost the negotiation. Double it and watch what happens. You'll learn more from one pricing test than a year of guessing.",
+        framework: 'pb-price'
+      };
+      if (a.reaction === 'Immediate objection — "that\'s too expensive"' && a.value === 'No — never') return {
+        type: 'fix', label: 'Fix value delivery before raising price',
+        headline: "The pricing objection is a value objection in disguise.",
+        reason: "When customers say 'too expensive' and can't articulate what you save them, the product isn't connecting the dots for them. Fix the value narrative first — then the price can follow.",
+        framework: 'pb-price'
+      };
+      return {
+        type: 'go', label: 'Test a higher price on new customers',
+        headline: "Run the experiment — raise price for new customers only.",
+        reason: "Don't change existing contracts. Just quote the next 5 prospects at 30–50% higher and measure conversion. Real data beats gut feel every time.",
+        framework: 'pb-price'
+      };
+    }
+  },
+
+  channel: {
+    title: 'Channel Commitment',
+    trigger: "You're running multiple channels. None of them are working well enough to bet on.",
+    context: "The answer is almost always to cut, not add. Three questions to find out which one to keep.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Current state',
+        q: 'How many acquisition channels are you actively running right now?',
+        type: 'choice',
+        choices: ['1', '2', '3', '4 or more'],
+        key: 'channels'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Best signal',
+        q: 'Across all your channels, where did your best 3 customers come from?',
+        type: 'choice',
+        choices: ['All from the same channel', 'Mostly one channel, some from others', 'Spread across multiple channels', "I honestly don't know"],
+        key: 'source'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Conversion',
+        q: 'Do you have real conversion data (not estimates) for at least one channel?',
+        type: 'choice',
+        choices: ['No — I\'m tracking loosely at best', 'Yes — for one channel', 'Yes — for multiple channels'],
+        key: 'data'
+      }
+    ],
+    logic: (a) => {
+      if (a.source === "I honestly don't know") return {
+        type: 'fix', label: 'Track sources before you test channels',
+        headline: "You can't optimize what you don't measure.",
+        reason: "Shut down all channels for 2 weeks and add source tracking to every new customer conversation. Ask every lead: 'How did you find us?' The answer will make every other decision obvious.",
+        framework: 'pb-channel'
+      };
+      if (a.source === 'All from the same channel') return {
+        type: 'go', label: 'Double down on the one that works',
+        headline: "The answer is already in your data. You're just not acting on it.",
+        reason: "If your best customers all came from one place, that's your channel. Cut everything else and put the budget, time, and attention into that single source. Diversification comes after dominance.",
+        framework: 'pb-channel'
+      };
+      if (a.channels === '4 or more') return {
+        type: 'stop', label: 'Cut to two — immediately',
+        headline: "Four channels means four things you're bad at.",
+        reason: "Running four channels with a small team means none of them get enough resources to be conclusive. Pick the two with the best data and cut the rest. You can always add back later.",
+        framework: 'pb-channel'
+      };
+      return {
+        type: 'wait', label: 'Run a 30-day single-channel sprint',
+        headline: "Commit fully to one channel for 30 days before judging any of them.",
+        reason: "Most channels fail because they never got enough resources to succeed. Pick one, go all-in for a month, and measure with rigor. Then decide.",
+        framework: 'pb-channel'
+      };
+    }
+  },
+
+  sales: {
+    title: 'First Sales Hire',
+    trigger: "You want to get out of sales. This is one of the most consequential hires you'll make.",
+    context: "Hiring a salesperson before the motion exists is one of the top five ways early-stage companies destroy runway.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Repeatability',
+        q: 'Can you close a deal following a written process — not just by being you?',
+        type: 'choice',
+        choices: ['No — it\'s entirely in my head', 'There\'s a rough structure but it\'s not written', 'Yes — it\'s documented and I\'ve tested it'],
+        key: 'process'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Volume',
+        q: 'How many deals have you personally closed in the last 90 days?',
+        type: 'choice',
+        choices: ['0–2', '3–5', '6–10', '10+'],
+        key: 'volume'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Bottleneck',
+        q: "What's actually limiting sales growth right now?",
+        type: 'choice',
+        choices: ['Not enough leads', 'Leads exist but conversion is low', 'I can\'t close fast enough — capacity is the limit', 'Product issues are blocking deals'],
+        key: 'bottleneck'
+      }
+    ],
+    logic: (a) => {
+      if (a.process === 'No — it\'s entirely in my head') return {
+        type: 'stop', label: 'Do not hire yet',
+        headline: "You can't hand off a process that lives only in your head.",
+        reason: "Write down every step of your current sales process — from first contact to close. If you can't do that in a day, you don't have a process. Fix this before hiring anyone.",
+        framework: 'pb-sales'
+      };
+      if (a.bottleneck === 'Product issues are blocking deals') return {
+        type: 'fix', label: 'Fix the product block first',
+        headline: "A sales hire won't fix a product problem — it'll make it louder.",
+        reason: "If product gaps are killing deals, bringing in a salesperson just creates more frustrated conversations with prospects. Resolve the top 2 blockers first.",
+        framework: 'pb-sales'
+      };
+      if (a.process === 'Yes — it\'s documented and I\'ve tested it' && a.bottleneck === 'I can\'t close fast enough — capacity is the limit') return {
+        type: 'go', label: 'Hire now',
+        headline: "You have a motion, you have demand, capacity is the only limit.",
+        reason: "This is the right reason to hire. You're leaving closed deals on the table because you're the bottleneck — not because the process is unclear. Move in the next 30 days.",
+        framework: 'pb-sales'
+      };
+      return {
+        type: 'wait', label: 'Close more deals yourself first',
+        headline: "10 founder-closed deals is the minimum before you hand off sales.",
+        reason: "Every deal you close personally teaches you something a new hire can't figure out on their own. Keep closing, keep documenting. Then hire.",
+        framework: 'pb-sales'
+      };
+    }
+  },
+
+  churn: {
+    title: 'Churn Response',
+    trigger: "Customers are leaving. Before you fix anything, you need to know why.",
+    context: "Churn has four root causes. Treating the wrong one wastes 90 days and often accelerates the problem.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Timing',
+        q: 'When is churn happening most?',
+        type: 'choice',
+        choices: ['Within the first 30 days', '30–90 days in', 'After 3+ months of use', 'No clear pattern'],
+        key: 'timing'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Exit reason',
+        q: "What do churned customers say when you ask why they left?",
+        type: 'choice',
+        choices: ['They say nothing — they just stop responding', '"It wasn\'t what I expected"', '"It stopped being useful" or "we found something else"', '"Too expensive for what it does"'],
+        key: 'reason'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Pattern',
+        q: 'Is churn concentrated in a specific customer type or segment?',
+        type: 'choice',
+        choices: ['Yes — a clear profile', 'Somewhat — I have a suspicion', 'No — it\'s spread across everyone'],
+        key: 'pattern'
+      }
+    ],
+    logic: (a) => {
+      if (a.timing === 'Within the first 30 days') return {
+        type: 'fix', label: 'Fix onboarding — not product',
+        headline: "Early churn is an onboarding failure, not a product failure.",
+        reason: "Customers who leave in the first 30 days never reached their first value moment. The product may be fine — the path to 'aha' is broken. Redesign onboarding to deliver one undeniable win in the first 7 days.",
+        framework: 'pb-churn'
+      };
+      if (a.reason === '"It wasn\'t what I expected"') return {
+        type: 'fix', label: 'Fix the sales process',
+        headline: "Expectation mismatch is a sales problem, not a product problem.",
+        reason: "When customers say 'not what I expected,' you oversold or under-qualified. The product delivered what it promised — you promised the wrong thing. Tighten ICP and qualification before closing.",
+        framework: 'pb-churn'
+      };
+      if (a.pattern === 'Yes — a clear profile') return {
+        type: 'stop', label: 'Stop selling to that customer type',
+        headline: "The wrong customers are churning. Stop acquiring them.",
+        reason: "If churn is concentrated in a specific profile, that profile was never right for the product. Update your ICP definition to exclude them — and stop selling to them immediately.",
+        framework: 'pb-churn'
+      };
+      if (a.reason === '"Too expensive for what it does"') return {
+        type: 'fix', label: 'Fix value delivery, not pricing',
+        headline: "Price objections after purchase are value perception problems.",
+        reason: "When customers pay, use the product, and then say it costs too much — the product isn't making its value visible. Add usage reporting, ROI metrics, or outcome dashboards before cutting price.",
+        framework: 'pb-churn'
+      };
+      return {
+        type: 'fix', label: 'Run a structured churn diagnosis',
+        headline: "Churn without a clear pattern needs systematic diagnosis first.",
+        reason: "Interview your last 10 churned customers. Ask: what were you trying to do, what happened, what do you do now instead? The pattern will emerge. Don't change anything until you have that data.",
+        framework: 'pb-churn'
+      };
+    }
+  },
+
+  nomarket: {
+    title: 'No Market Need?',
+    trigger: "Nobody's buying at the rate you expected. The question is: is it the problem or the motion?",
+    context: "This is the most dangerous diagnosis to get wrong. Getting it right determines whether you fix product, GTM, or both.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Engagement vs. payment',
+        q: 'How would you describe your current user behavior?',
+        type: 'choice',
+        choices: ['People don\'t engage at all', 'People engage but don\'t pay', 'People pay but don\'t return', 'People pay and return, just not enough of them'],
+        key: 'behavior'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Pain intensity',
+        q: "When you ask your best users what they'd do if your product disappeared tomorrow, what do they say?",
+        type: 'choice',
+        choices: ["Haven't asked", '"They\'d find something else easily"', '"They\'d figure it out, it\'d just be harder"', '"They\'d be seriously stuck"'],
+        key: 'pain'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Inbound',
+        q: 'Have you ever had a customer find you without any outbound effort from you?',
+        type: 'choice',
+        choices: ['Never', 'Once or twice', 'Occasionally — it happens', 'Regularly'],
+        key: 'inbound'
+      }
+    ],
+    logic: (a) => {
+      if (a.behavior === 'People don\'t engage at all' && a.pain === '"They\'d find something else easily"') return {
+        type: 'stop', label: 'No market need — pivot',
+        headline: "The signals are aligned. This is a problem of market, not execution.",
+        reason: "No engagement and easily-replaceable pain means the problem isn't urgent or differentiated enough. This isn't a fix — it's a pivot. Use your distribution and team as the asset, not this product.",
+        framework: 'pb-nomarket'
+      };
+      if (a.behavior === 'People pay and return, just not enough of them') return {
+        type: 'fix', label: 'Distribution problem — not market need',
+        headline: "The market exists. You just can't find it fast enough.",
+        reason: "Paying, returning customers prove the market need. The constraint is acquisition, not demand. Double down on finding more people like your best customers before changing anything about the product.",
+        framework: 'pb-nomarket'
+      };
+      if (a.inbound === 'Regularly' || a.pain === '"They\'d be seriously stuck"') return {
+        type: 'go', label: 'Market need is real — fix GTM',
+        headline: "The problem is real. People are looking for this.",
+        reason: "Organic inbound and strong dependency signals mean the market is there. The issue is your GTM isn't reaching it efficiently. Focus on channel clarity and ICP precision.",
+        framework: 'pb-channel'
+      };
+      return {
+        type: 'fix', label: 'Run the demand test before deciding',
+        headline: "The signal is too mixed to diagnose accurately yet.",
+        reason: "Stop outbound for 2 weeks. Remove the free tier. Ask every active user the 'very disappointed' question. These three moves will give you a clear signal within 30 days.",
+        framework: 'pb-nomarket'
+      };
+    }
+  },
+
+  category: {
+    title: 'Category Positioning',
+    trigger: "People keep comparing you to the wrong companies. Your category is working against you.",
+    context: "How you're categorized determines who finds you and how much they'll pay. This is a strategic decision, not a branding one.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Current state',
+        q: 'When investors or customers find you for the first time, which comparison do they reach for?',
+        type: 'choice',
+        choices: ['A competitor we\'re better than', 'A company in the wrong space entirely', 'Something much bigger (flattering but inaccurate)', 'There isn\'t a clear comparison — they\'re confused'],
+        key: 'comparison'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Category authority',
+        q: 'Do you have the credibility to create your own category — or do you need to borrow from an existing one?',
+        type: 'choice',
+        choices: ['We\'re unknown — no existing authority', 'We have traction but not platform-level reach', 'We have a known founder or significant traction', 'We\'re a recognized player in the space'],
+        key: 'authority'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Buyer clarity',
+        q: "When your best customer explains your product to their colleague, what category do they use?",
+        type: 'choice',
+        choices: ["I haven't asked", 'A category that doesn\'t match how we describe ourselves', 'Roughly the same category we use', 'Exactly the category we want to own'],
+        key: 'buyer_category'
+      }
+    ],
+    logic: (a) => {
+      if (a.comparison === 'There isn\'t a clear comparison — they\'re confused') return {
+        type: 'fix', label: 'Join an existing category first',
+        headline: "Confusion is not a positioning strategy.",
+        reason: "If people can't place you, they can't route budget or attention to you. Join the nearest existing category, own a clear sub-segment, then challenge the broader category from a position of strength.",
+        framework: 'pb-category'
+      };
+      if (a.buyer_category === 'Exactly the category we want to own') return {
+        type: 'go', label: 'Your category is landing — reinforce it',
+        headline: "Your buyers are using your language. That's the signal to accelerate.",
+        reason: "When customers organically adopt your category language, you're winning the framing war. Double down on the language, the comparisons, and the 'enemy' narrative. Don't change it.",
+        framework: 'pb-category'
+      };
+      if (a.authority === 'We\'re unknown — no existing authority') return {
+        type: 'wait', label: 'Too early to create a category',
+        headline: "Category creation requires authority you don't have yet.",
+        reason: "Creating a category without market authority means you'll spend all your energy educating and none of it converting. Join an existing category, win it, then redefine it.",
+        framework: 'pb-category'
+      };
+      return {
+        type: 'fix', label: 'Close the gap between your language and your buyer\'s',
+        headline: "The framing disconnect is costing you deals and investor meetings.",
+        reason: "Interview your last 5 customers about how they described you internally before buying. Their language is your positioning. Adopt it — don't fight it.",
+        framework: 'pb-category'
+      };
+    }
+  },
+
+  raise2: {
+    title: 'Investor Narrative',
+    trigger: "You're about to pitch. You need to know if the story is ready — or if you're going in too early.",
+    context: "Pitching before the narrative is tight is worse than waiting. You burn relationships on a story that doesn't land.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Origin',
+        q: "Can you state in one sentence why you — specifically — are the right person to solve this problem?",
+        type: 'choice',
+        choices: ['Not really — it\'s a good opportunity, I\'m just early', 'I have relevant experience but it\'s not a compelling story', 'Yes — I lived this problem or built in this space before', 'Yes — and investors find it credible and specific'],
+        key: 'origin'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Milestone',
+        q: "Can you state in one sentence what this raise gets you to — and why that milestone changes your valuation story?",
+        type: 'choice',
+        choices: ['No — I\'m raising to extend runway', 'I have a rough idea but it\'s not crisp', 'Yes — I can state it clearly', 'Yes — and I\'ve stress-tested it with advisors'],
+        key: 'milestone'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Evidence',
+        q: "What's your single strongest evidence point right now?",
+        type: 'choice',
+        choices: ['I have a prototype or early users but no revenue', 'I have revenue but it\'s early and inconsistent', 'I have consistent month-over-month growth', 'I have strong growth and a clear market signal'],
+        key: 'evidence'
+      }
+    ],
+    logic: (a) => {
+      if (a.origin === 'Not really — it\'s a good opportunity, I\'m just early') return {
+        type: 'stop', label: 'Do not pitch yet',
+        headline: "A generic origin story loses to every other pitch in the room.",
+        reason: "Investors fund people before they fund ideas. 'Good opportunity' is not a founder story — it's a consulting deck. Spend 2 weeks developing a specific, personal, believable reason why you.",
+        framework: 'pb-narrative'
+      };
+      if (a.milestone === 'No — I\'m raising to extend runway') return {
+        type: 'stop', label: 'Reframe before pitching',
+        headline: "'Extending runway' is not a milestone. It's a life support narrative.",
+        reason: "No investor writes a check to help you survive. They write checks to get you to a specific proof point. Define the milestone — $X ARR, Y customers, Z product completion — then pitch.",
+        framework: 'pb-narrative'
+      };
+      if (a.evidence === 'I have strong growth and a clear market signal' && a.milestone !== 'No — I\'m raising to extend runway') return {
+        type: 'go', label: 'Pitch now — you have the ingredients',
+        headline: "Strong evidence, clear milestone, and a founder story. Go.",
+        reason: "The three things investors need are all present. Don't over-prepare — start the process in the next 2 weeks. The conversations themselves will sharpen the pitch.",
+        framework: 'pb-narrative'
+      };
+      return {
+        type: 'wait', label: 'Sharpen one thing before going out',
+        headline: "You're close — but one gap will cost you in every meeting.",
+        reason: "Identify your weakest element (origin, milestone, or evidence) and spend 3 weeks on it before starting the process. A tight story with one strong proof point beats a broad story with three weak ones.",
+        framework: 'pb-narrative'
+      };
+    }
+  }
+
+};
+
+/* ── Engine state ── */
+let currentDecision = null;
+let currentStep = 0;
+let answers = {};
+
+/* ── Open a decision flow ── */
+function openDecision(key) {
+  currentDecision = key;
+  currentStep = 0;
+  answers = {};
+
+  const d = DECISIONS[key];
+  if (!d) return;
+
+  // Update sidebar active state
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(i => {
+    if (i.getAttribute('onclick') && i.getAttribute('onclick').includes(`'${key}'`)) {
+      i.classList.add('active');
+    }
+  });
+
+  // Update mobile nav
+  document.querySelectorAll('#mobile-nav-dos .mobile-dim-btn').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick')?.includes(`'${key}'`));
+  });
+
+  // Switch to flow panel
+  document.getElementById('panel-landing').classList.remove('active');
+  document.getElementById('panel-flow').classList.add('active');
+
+  renderFlow(d);
+  scrollTop();
+}
+
+/* ── Render the flow ── */
+function renderFlow(d) {
+  const main = document.getElementById('flow-main-content');
+  const aside = document.getElementById('flow-aside-content');
+
+  // Step track
+  const dots = d.steps.map((_, i) => `
+    <div class="step-dot ${i < currentStep ? 'done' : i === currentStep ? 'active' : ''}"></div>
+    ${i < d.steps.length - 1 ? `<div class="step-line ${i < currentStep ? 'done' : ''}"></div>` : ''}
+  `).join('');
+
+  // Build each step block
+  const stepBlocks = d.steps.map((step, i) => {
+    if (i !== currentStep) return `<div class="step-block" data-step="${i}"></div>`;
+    return `
+      <div class="step-block active" data-step="${i}">
+        <div class="step-eyebrow">${step.eyebrow}</div>
+        <div class="step-trigger">${d.trigger}</div>
+        <p class="step-context">${d.context}</p>
+        <div class="questions">
+          <div class="q-block">
+            <div class="q-label">${step.q}</div>
+            ${renderInput(step, i)}
+          </div>
+        </div>
+        <button class="next-btn" id="next-btn-${i}" onclick="nextStep()">
+          ${i < d.steps.length - 1 ? 'Next →' : 'Get verdict →'}
+        </button>
+      </div>
+    `;
+  }).join('');
+
+  main.innerHTML = `
+    <div class="step-track">${dots}</div>
+    ${stepBlocks}
+  `;
+
+  // Aside
+  aside.innerHTML = renderAside(d);
+}
+
+function renderInput(step, stepIdx) {
+  const val = answers[step.key];
+  if (step.type === 'choice') {
+    return `<div class="choice-row">
+      ${step.choices.map(c => `
+        <button class="choice-btn ${val === c ? 'selected' : ''}"
+          onclick="selectChoice('${step.key}', this, ${stepIdx})">${c}</button>
+      `).join('')}
+    </div>`;
+  }
+  if (step.type === 'number') {
+    return `<div class="num-wrap">
+      <input class="num-input" type="number" id="num-${step.key}"
+        value="${val || ''}" min="${step.min || 0}"
+        oninput="selectNumber('${step.key}', this.value, ${stepIdx})"
+        placeholder="—">
+      ${step.unit ? `<span class="num-unit">${step.unit}</span>` : ''}
+    </div>`;
+  }
+  return '';
+}
+
+function renderAside(d) {
+  const answeredKeys = Object.keys(answers);
+  return `
+    <div class="aside-label">Current path</div>
+    <div class="aside-decision">${d.title}</div>
+    <div class="aside-answers">
+      ${d.steps.map(step => {
+        const ans = answers[step.key];
+        if (!ans) return '';
+        return `<div class="aside-answer">
+          <div class="aq">${step.eyebrow.replace(/Step \d of \d — /, '')}</div>
+          <div class="av">${ans}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="aside-note">
+      <strong>Three steps max.</strong> The verdict is based on the patterns we've seen across 1,700+ YC companies and 400+ Failory postmortems.
+    </div>
+  `;
+}
+
+/* ── Input handlers ── */
+function selectChoice(key, btn, stepIdx) {
+  const row = btn.closest('.choice-row');
+  row.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[key] = btn.textContent.trim();
+  const nextBtn = document.getElementById(`next-btn-${stepIdx}`);
+  if (nextBtn) nextBtn.classList.add('ready');
+  renderAside(DECISIONS[currentDecision]);
+  document.getElementById('flow-aside-content').innerHTML = renderAside(DECISIONS[currentDecision]);
+}
+
+function selectNumber(key, val, stepIdx) {
+  answers[key] = val;
+  const nextBtn = document.getElementById(`next-btn-${stepIdx}`);
+  if (nextBtn && val) nextBtn.classList.add('ready');
+}
+
+/* ── Next step / verdict ── */
+function nextStep() {
+  const d = DECISIONS[currentDecision];
+  if (currentStep < d.steps.length - 1) {
+    currentStep++;
+    renderFlow(d);
+    scrollTop();
+  } else {
+    showVerdict(d);
+  }
+}
+
+function showVerdict(d) {
+  const verdict = d.logic(answers);
+  const typeClass = { go: 'go', stop: 'stop', wait: 'wait', fix: 'fix' }[verdict.type] || 'wait';
+  const typeIcon  = { go: '✓', stop: '✗', wait: '◎', fix: '→' }[verdict.type] || '→';
+
+  const main = document.getElementById('flow-main-content');
+  const aside = document.getElementById('flow-aside-content');
+
+  const dots = d.steps.map((_, i) => `
+    <div class="step-dot done"></div>
+    ${i < d.steps.length - 1 ? `<div class="step-line done"></div>` : ''}
+  `).join('');
+
+  main.innerHTML = `
+    <div class="step-track">${dots}</div>
+    <div class="verdict-wrap">
+      <div class="verdict-badge ${typeClass}">${typeIcon} ${verdict.label}</div>
+      <div class="verdict-headline">${verdict.headline}</div>
+      <p class="verdict-reason">${verdict.reason}</p>
+      <div class="verdict-actions">
+        <button class="btn-restart" onclick="openDecision('${currentDecision}')">Start over</button>
+        <button class="btn-restart" onclick="backToLanding()">Different decision</button>
+        <a class="btn-framework" href="skin-playbooks-schema.html#${verdict.framework}">
+          Read the full framework →
+        </a>
+      </div>
+    </div>
+  `;
+
+  // Final aside — show all answers
+  aside.innerHTML = `
+    <div class="aside-label">Your answers</div>
+    <div class="aside-decision">${d.title}</div>
+    <div class="aside-answers">
+      ${d.steps.map(step => {
+        const ans = answers[step.key];
+        return `<div class="aside-answer">
+          <div class="aq">${step.eyebrow.replace(/Step \d of \d — /, '')}</div>
+          <div class="av">${ans || '—'}</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="aside-note">
+      <strong>Verdict type: ${verdict.type.toUpperCase()}</strong><br>
+      Not what you expected? Hit "Start over" and answer differently — the logic shifts based on your exact situation.
+    </div>
+  `;
+  scrollTop();
+}
+
+function backToLanding() {
+  document.getElementById('panel-flow').classList.remove('active');
+  document.getElementById('panel-landing').classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+  scrollTop();
+}
+
+function scrollTop() {
+  const main = document.querySelector('.main');
+  if (main && main.scrollHeight > main.clientHeight) {
+    main.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+</script>
+<script src="skin-os.js"></script>
+</body>
+</html>

@@ -478,6 +478,22 @@ body {
           <div class="sb-desc">Surviving the hard stretch</div>
         </div>
       </div>
+      <div class="sb-divider"></div>
+      <div class="sb-section">CB Insights · 431 failures</div>
+      <div class="sb-item" onclick="showView('pb-uniteconomics')">
+        <span class="sb-icon">12</span>
+        <div class="sb-info">
+          <div class="sb-name">Unit Economics</div>
+          <div class="sb-desc">Scale or fix the unit first</div>
+        </div>
+      </div>
+      <div class="sb-item" onclick="showView('pb-timing')">
+        <span class="sb-icon">13</span>
+        <div class="sb-info">
+          <div class="sb-name">Market Timing</div>
+          <div class="sb-desc">Early, right, or wrong market</div>
+        </div>
+      </div>
     </div>
 
     <!-- SCHEMA sidebar -->
@@ -546,6 +562,8 @@ body {
     <button class="mobile-dim-btn" onclick="showViewMobile('pb-category')">09 Category</button>
     <button class="mobile-dim-btn" onclick="showViewMobile('pb-narrative')">10 Narrative</button>
     <button class="mobile-dim-btn" onclick="showViewMobile('pb-resilience')">11 Resilience</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-uniteconomics')">12 Unit econ</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-timing')">13 Timing</button>
   </nav>
 
   <!-- MAIN -->
@@ -1428,6 +1446,225 @@ body {
                 <div class="d-label">The SKIN implication</div>
                 <div class="d-text">When a company raises during a hot market cycle (AI, 2023–2025 being the most recent), SKIN analysts should apply additional scrutiny to Team dimension signals — specifically: did the founder enter this market because of funding availability, or because of genuine problem proximity? The funding environment does not change the underlying signal requirements.</div>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 12: UNIT ECONOMICS -->
+    <div class="view" id="pb-uniteconomics">
+      <div class="page-header" data-glyph="12">
+        <div class="ph-crumb">Playbooks / CB Insights Data / <span>12</span></div>
+        <div class="ph-title">Unit Economics</div>
+        <p class="ph-sub">19% of VC-backed startups that shut down since 2023 cited unsustainable unit economics as a primary cause. The pattern: founders knew the numbers were shaky and scaled anyway. This playbook tells you when the unit is proven enough to scale — and when scaling will accelerate the collapse.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Financials dimension</span>
+          <span class="ph-tag">GTM dimension</span>
+          <span class="ph-tag">Source: CB Insights · 431 failures · 2023–2026</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">The core principle</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">What "unsustainable unit economics" actually means</div>
+              <div class="pc-trigger">Most founders frame unit economics as a spreadsheet problem. It's actually a timing problem — the unit is only unsustainable if you scale before it's proven.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="decision-tree">
+              <div class="d-node action">
+                <span class="d-glyph">1</span>
+                <div class="d-content">
+                  <div class="d-label">CAC (Customer Acquisition Cost)</div>
+                  <div class="d-text">The fully-loaded cost of acquiring one customer — including all marketing spend, sales salaries, tools, and attributed overhead. Not just ad spend. Most founders undercount CAC by 30–50% by excluding salaries. Your CAC number is almost certainly wrong unless you've included every cost that wouldn't exist without the acquisition effort.</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">2</span>
+                <div class="d-content">
+                  <div class="d-label">LTV (Lifetime Value)</div>
+                  <div class="d-text">The total net revenue from a customer over their lifetime with you. The critical word is "lifetime" — not what they've paid so far. LTV based on less than 12 months of cohort data is a guess. Churn patterns frequently accelerate at the 12–18 month mark in ways that early cohorts don't reveal. Don't use LTV to justify CAC until you have at least two full cohort cycles of data.</div>
+                </div>
+              </div>
+              <div class="d-node action">
+                <span class="d-glyph">3</span>
+                <div class="d-content">
+                  <div class="d-label">Payback period</div>
+                  <div class="d-text">How many months of gross margin from a customer it takes to recover their CAC. This is the most actionable unit metric because it tells you how much capital you need to grow. A 6-month payback means you need 6 months of working capital per customer to grow. A 24-month payback means you're essentially lending money to your customers — and you'll run out of cash before they pay it back.</div>
+                </div>
+              </div>
+              <div class="d-node warning">
+                <span class="d-glyph">!</span>
+                <div class="d-content">
+                  <div class="d-label">The scaling trap</div>
+                  <div class="d-text">The CB Insights pattern: companies raise capital to scale growth, growth increases CAC (channel saturation, less-qualified leads), margins compress, LTV assumptions prove optimistic, payback period extends, runway shortens. They raise again to cover the hole — and the second raise buys 22 months before death (the CB Insights median). Every dollar of growth capital poured into a broken unit makes the eventual reckoning worse.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">The unit economics readiness test</div>
+              <div class="pc-trigger">Run this before committing to any growth spend increase. Five questions — they'll tell you whether the unit is ready or broken.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <ul class="question-list">
+              <li class="question-item"><span class="q-num">Q1</span>What is your fully-loaded CAC — including all salaries, tools, events, and agency costs attributed to acquisition? If your answer changed when you added salaries, recalculate before proceeding.</li>
+              <li class="question-item"><span class="q-num">Q2</span>What is your payback period in months? (CAC ÷ monthly gross margin per customer.) If it's over 18 months, stop here — the unit needs fixing before the scale conversation.</li>
+              <li class="question-item"><span class="q-num">Q3</span>What does your LTV calculation assume about churn — and how many months of data is that based on? Any assumption based on less than 12 months is a guess.</li>
+              <li class="question-item"><span class="q-num">Q4</span>As your customer count has grown, has your gross margin per customer gone up, stayed flat, or gone down? Declining margins at scale is the single clearest indicator the unit won't survive growth.</li>
+              <li class="question-item"><span class="q-num">Q5</span>If you doubled growth spend next month, what would happen to your CAC? If you don't know — or if the honest answer is "it would go up" — you don't have a repeatable acquisition channel yet.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">C</span>
+            <div class="pc-meta">
+              <div class="pc-title">Fix-it hierarchy — broken unit economics have four root causes</div>
+              <div class="pc-trigger">The fix depends on which part of the unit is broken. Don't treat all unit economics problems the same way.</div>
+              <div class="pc-tags"><span class="pc-tag urgent">Use only after B identifies the gap</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node question"><span class="d-glyph">1</span><div class="d-content"><div class="d-label">CAC too high → channel or conversion problem</div><div class="d-text">You're paying too much to acquire. Either your channel is expensive (move to organic, referral, or lower-CAC channels), your conversion rate is low (qualification, demo, or sales process problem), or you're counting too many leads as qualified. Fix the funnel before increasing spend.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">2</span><div class="d-content"><div class="d-label">Payback period too long → pricing problem</div><div class="d-text">Even if CAC is reasonable, if monthly gross margin is too small, payback extends painfully. This is almost always a pricing problem. You are undercharging. A 30% price increase with 10% customer loss usually improves unit economics dramatically — and the customers you lose were probably the least valuable ones anyway.</div></div></div>
+              <div class="d-node question"><span class="d-glyph">3</span><div class="d-content"><div class="d-label">LTV too low → retention or expansion problem</div><div class="d-text">Customers aren't staying long enough or expanding enough to justify acquisition cost. Churn before value realization is an onboarding problem. Churn after 12+ months is a product depth problem. Neither is fixed by acquiring more customers faster.</div></div></div>
+              <div class="d-node warning"><span class="d-glyph">4</span><div class="d-content"><div class="d-label">Margins deteriorating at scale → structural business model problem</div><div class="d-text">If unit economics worsen as you grow, you have a structural issue: either your costs scale with revenue (services business masquerading as SaaS), your channel is saturating, or you're discounting to hit growth targets. No amount of operational efficiency fixes a structurally broken model. This requires a strategic decision about the business model, not a tactical fix.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">D</span>
+            <div class="pc-meta">
+              <div class="pc-title">The CB Insights benchmark — what the data shows</div>
+              <div class="pc-tags"><span class="pc-tag info">Source: CB Insights · 431 VC-backed failures · 2023–2026</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node action"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">19% cited unsustainable unit economics as a primary cause</div><div class="d-text">This makes it the 4th most common failure cause — behind capital running out (70%), poor PMF (43%), and bad timing (29%). Importantly, unit economics failures appear disproportionately at later stages: companies that raised enough to scale a broken model before it became visible.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">Median time from last raise to death: 22 months</div><div class="d-text">This is the signature of a unit economics death spiral: the raise provides enough runway to scale the problem, but not enough to fix it. By month 22, the company is out of options. The SKIN signal: a company raising "to grow" without a clear unit economics proof point is often buying 22 months, not 22 months of growth.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">Fintech skews heavily: median equity of $4M vs. $11M dataset-wide</div><div class="d-text">Fintech unit economics failures tend to be earlier-stage — companies that never proved the unit before scaling acquisition. The implication: you don't need to be heavily funded to have a unit economics problem. Early-stage fintech, marketplace, and consumer subscription companies are particularly exposed.</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PB 13: MARKET TIMING -->
+    <div class="view" id="pb-timing">
+      <div class="page-header" data-glyph="13">
+        <div class="ph-crumb">Playbooks / CB Insights Data / <span>13</span></div>
+        <div class="ph-title">Market Timing</div>
+        <p class="ph-sub">29% of recent VC-backed failures cited wrong market timing or adverse macro conditions. It's the second biggest failure cause — and the hardest to diagnose because being early and being wrong look identical from the inside for the first 18 months. This playbook gives you the diagnostic framework to tell them apart.</p>
+        <div class="ph-tags">
+          <span class="ph-tag">Market dimension</span>
+          <span class="ph-tag">Product dimension</span>
+          <span class="ph-tag">Source: CB Insights · 431 failures · 2023–2026</span>
+        </div>
+      </div>
+      <div class="page-body">
+        <div class="section-label">The core distinction</div>
+        <div class="playbook-card">
+          <div class="pc-header open" onclick="toggleCard(this)">
+            <span class="pc-num">A</span>
+            <div class="pc-meta">
+              <div class="pc-title">Early vs. wrong — the most consequential misdiagnosis in startups</div>
+              <div class="pc-trigger">Founders who are early think they're right but unlucky. Founders who are wrong think they're early. The difference determines everything — especially whether to persevere or pivot.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body open">
+            <div class="outcomes">
+              <div class="outcome-box green">
+                <div class="ob-label">Signs you're early (right market, wrong moment)</div>
+                <div class="ob-text">Customers recognize the problem immediately · Manual workarounds exist — they're solving it badly · You can name a specific forcing function that will change urgency · A few early adopters are genuinely passionate · The problem's importance is growing, not static</div>
+              </div>
+              <div class="outcome-box red">
+                <div class="ob-label">Signs you're wrong (wrong market or wrong problem)</div>
+                <div class="ob-text">Customers don't recognize the problem without a long explanation · No existing workarounds — it's not being solved at all · No forcing function you can name specifically · Even your best users are lukewarm · The problem is hypothetical, not lived</div>
+              </div>
+            </div>
+            <div class="d-node warning" style="margin-top:16px">
+              <span class="d-glyph">!</span>
+              <div class="d-content">
+                <div class="d-label">The CB Insights pattern — sectors that got timing wrong at scale</div>
+                <div class="d-text">CB Insights found timing failures concentrated in climate & energy, food & agriculture, and blockchain — sectors that attracted heavy capital in 2021–2022 on trends that never materialized. New Age Meats ($32M) and RECUR ($55M) raised at the peak of alt-protein and NFT waves respectively. The lesson: sector consensus is not market validation. A crowded fundraising thesis can masquerade as market timing confirmation right up until it doesn't.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">B</span>
+            <div class="pc-meta">
+              <div class="pc-title">The timing diagnostic — five questions</div>
+              <div class="pc-trigger">These questions force the distinction between "early" and "wrong." Answer them honestly — the temptation is to rationalize toward "early" every time.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <ul class="question-list">
+              <li class="question-item"><span class="q-num">Q1</span>Can you name one specific event — regulatory change, technology shift, macro disruption — that has made this problem more urgent in the last 24 months than it was before? "The market is growing" is not an event. Name the event.</li>
+              <li class="question-item"><span class="q-num">Q2</span>How are customers solving this problem today, right now, without you? If the answer is "they're not — they don't recognize it as a problem," that's a wrong-market signal, not an early-market signal.</li>
+              <li class="question-item"><span class="q-num">Q3</span>When you pitch the problem — before showing the product — what percentage of your target buyers say "yes, this is painful for us right now"? If it's under 30%, the urgency isn't there yet.</li>
+              <li class="question-item"><span class="q-num">Q4</span>Is there a specific buyer persona — a specific role, company size, or situation — for whom this problem is urgent right now, even if it isn't for most of the market? If yes, that's your beachhead. Start there.</li>
+              <li class="question-item"><span class="q-num">Q5</span>What would have to be true for this market to be 5x more receptive in 3 years? Is that future plausible — and can you survive until it arrives?</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">C</span>
+            <div class="pc-meta">
+              <div class="pc-title">Responses by diagnosis</div>
+              <div class="pc-trigger">The intervention depends entirely on which timing problem you have. Don't apply the same fix to a wrong-market company that you'd apply to an early-market company.</div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node yes"><span class="d-glyph">A</span><div class="d-content"><div class="d-label">Early market — right problem, not yet urgent</div><div class="d-text">Find the 10% of the market for whom it IS urgent right now — usually a specific company size, sector, or situation. Serve only them. Build deep reference customers in that segment. When the broader market catches up, you'll have the credibility and the product depth. Don't try to educate the whole market. You'll run out of money before they catch up.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">B</span><div class="d-content"><div class="d-label">Wrong timing — real problem, adverse macro</div><div class="d-text">If the forcing function you were counting on (regulation, technology unlock, behavioral shift) hasn't arrived, your options are: extend runway to wait it out, pivot to a version of the problem where the forcing function has already arrived, or find adjacent markets where the macro is favorable. Don't raise growth capital against a macro that hasn't turned — you're borrowing time, not buying growth.</div></div></div>
+              <div class="d-node warning"><span class="d-glyph">C</span><div class="d-content"><div class="d-label">Wrong market — the problem doesn't exist at scale</div><div class="d-text">This is the hardest verdict. If customers don't recognize the problem, no amount of waiting fixes the timing. This is a pivot situation — not to a different moment, but to a different problem. Use what you've built as an asset: your distribution, your team's expertise, your existing customer relationships. Find a problem those assets uniquely position you to solve.</div></div></div>
+              <div class="d-node action"><span class="d-glyph">D</span><div class="d-content"><div class="d-label">Right timing — execution is the variable</div><div class="d-text">When competitors exist and budget exists and customers recognize the pain — timing isn't the problem. Stop diagnosing and start executing. The window is open but not permanent. Focus on winning a specific segment before the market consolidates around 1–2 dominant players.</div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="playbook-card">
+          <div class="pc-header" onclick="toggleCard(this)">
+            <span class="pc-num">D</span>
+            <div class="pc-meta">
+              <div class="pc-title">SKIN scoring implications</div>
+              <div class="pc-tags"><span class="pc-tag info">Market dimension · 18% weight</span></div>
+            </div>
+            <span class="pc-chevron">›</span>
+          </div>
+          <div class="pc-body">
+            <div class="decision-tree">
+              <div class="d-node action"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">Green signals on Market timing</div><div class="d-text">Founder can name a specific forcing function · Competitors exist (validates timing) · Customers solve this problem today with workarounds · Specific early-adopter persona identified · CB Insights or Dealroom sector momentum data supports the window</div></div></div>
+              <div class="d-node warning"><span class="d-glyph">→</span><div class="d-content"><div class="d-label">Red signals on Market timing</div><div class="d-text">No existing workarounds — market unaware of problem · Forcing function is a macro trend, not a specific event · Sector raised heavily in 2021–2022 on trends that stalled · Founder's timing thesis depends on "the market will catch up" · Similar companies have failed citing timing in the last 24 months</div></div></div>
             </div>
           </div>
         </div>

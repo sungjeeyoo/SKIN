@@ -406,6 +406,16 @@ body {
       <div class="sb-name">Investor Narrative</div>
       <div class="sb-desc">Pitch or not pitch now</div>
     </div>
+    <div class="sb-divider"></div>
+    <div class="sb-section">CB Insights data</div>
+    <div class="sb-item" onclick="openDecision('uniteconomics')">
+      <div class="sb-name">Unit Economics</div>
+      <div class="sb-desc">Scale or fix the unit first</div>
+    </div>
+    <div class="sb-item" onclick="openDecision('timing')">
+      <div class="sb-name">Market Timing</div>
+      <div class="sb-desc">Early, right, or wrong market</div>
+    </div>
   </nav>
 
   <!-- MOBILE NAV -->
@@ -420,6 +430,8 @@ body {
     <button class="mobile-dim-btn" onclick="openDecision('nomarket')">No market</button>
     <button class="mobile-dim-btn" onclick="openDecision('category')">Category</button>
     <button class="mobile-dim-btn" onclick="openDecision('raise2')">Investor pitch</button>
+    <button class="mobile-dim-btn" onclick="openDecision('uniteconomics')">Unit economics</button>
+    <button class="mobile-dim-btn" onclick="openDecision('timing')">Market timing</button>
   </nav>
 
   <!-- MAIN -->
@@ -481,6 +493,16 @@ body {
             <div class="dc-num">10</div>
             <div class="dc-title">Investor Narrative</div>
             <div class="dc-trigger">You're about to pitch. You need to know if the story is ready — or if you're going out too early.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('uniteconomics')">
+            <div class="dc-num">11</div>
+            <div class="dc-title">Unit Economics</div>
+            <div class="dc-trigger">Your numbers seem to work at this scale. The question is whether they survive growth — or collapse under it.</div>
+          </div>
+          <div class="decision-card" onclick="openDecision('timing')">
+            <div class="dc-num">12</div>
+            <div class="dc-title">Market Timing</div>
+            <div class="dc-trigger">Traction is slower than it should be. You need to know if you're early to a real market — or just wrong about it.</div>
           </div>
         </div>
       </div>
@@ -1079,6 +1101,140 @@ const DECISIONS = {
         headline: "You're close — but one gap will cost you in every meeting.",
         reason: "Identify your weakest element (origin, milestone, or evidence) and spend 3 weeks on it before starting the process. A tight story with one strong proof point beats a broad story with three weak ones.",
         framework: 'pb-narrative'
+      };
+    }
+  },
+
+  uniteconomics: {
+    title: 'Unit Economics',
+    trigger: "Your numbers work at small scale. The question is whether they survive growth — or collapse under it.",
+    context: "19% of VC-backed startups that shut down since 2023 cited unsustainable unit economics. Most knew the numbers were shaky. They scaled anyway.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — CAC vs. LTV',
+        q: 'Do you know your Customer Acquisition Cost (CAC) and Lifetime Value (LTV) — with real data, not spreadsheet estimates?',
+        type: 'choice',
+        choices: ['No — I don\'t have clean numbers', 'CAC yes, LTV is a rough guess', 'Both — but LTV is based on < 6 months of data', 'Both — based on 12+ months of real cohort data'],
+        key: 'cac_ltv'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Payback period',
+        q: 'How long does it take to recover the cost of acquiring a customer?',
+        type: 'choice',
+        choices: ['I don\'t know', 'More than 24 months', '12–24 months', 'Under 12 months'],
+        key: 'payback'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Direction of travel',
+        q: 'As you\'ve grown, what has happened to your unit economics?',
+        type: 'choice',
+        choices: ['Getting worse — CAC is rising, margins shrinking', 'Roughly flat', 'Improving slightly', 'Improving significantly — clear economies of scale'],
+        key: 'trend'
+      }
+    ],
+    logic: (a) => {
+      if (a.cac_ltv === 'No — I don\'t have clean numbers') return {
+        type: 'stop', label: 'Stop scaling — measure first',
+        headline: "You are flying blind. Every dollar you spend acquiring customers is unaccounted for.",
+        reason: "You cannot fix what you cannot see. Before any growth spend, instrument your funnel: cost per lead, conversion rate at each stage, revenue per customer, and churn. One week of setup saves months of misallocated capital.",
+        framework: 'pb-raise'
+      };
+      if (a.payback === 'More than 24 months') return {
+        type: 'stop', label: 'Do not scale — the unit is broken',
+        headline: "A 24+ month payback period means you need capital just to stand still.",
+        reason: "At this payback period, every new customer costs you more than you earn back in the foreseeable future. Raising to grow makes the hole bigger. Fix the unit — cut CAC, raise price, or improve retention — before adding fuel.",
+        framework: 'pb-price'
+      };
+      if (a.trend === 'Getting worse — CAC is rising, margins shrinking') return {
+        type: 'stop', label: 'Pause growth spend immediately',
+        headline: "Scaling a deteriorating unit is the fastest way to destroy a company.",
+        reason: "Worsening unit economics at scale is not a growing pain — it's a structural problem. Something in your model doesn't work at volume. Find it before you fund it. Common culprits: channel saturation, support costs, discount creep, or pricing pressure from competitors.",
+        framework: 'pb-channel'
+      };
+      if (a.cac_ltv === 'Both — based on 12+ months of real cohort data' && a.payback === 'Under 12 months' && a.trend === 'Improving significantly — clear economies of scale') return {
+        type: 'go', label: 'Scale — the unit supports it',
+        headline: "Strong cohort data, fast payback, improving margins. You have earned the right to grow.",
+        reason: "This is the rare case where the model is genuinely proven. Go raise capital specifically to pour fuel on the acquisition engine — the unit will compound, not collapse.",
+        framework: 'pb-raise'
+      };
+      if (a.payback === 'Under 12 months' && a.trend !== 'Getting worse — CAC is rising, margins shrinking') return {
+        type: 'wait', label: 'Grow carefully — extend your data window',
+        headline: "Your numbers look okay but your data history isn't long enough to be certain.",
+        reason: "Under-12-month payback is healthy, but LTV based on less than a year of cohort data can be dangerously optimistic. Churn often accelerates at 12–18 months. Watch the next two cohort checkpoints before committing to aggressive growth.",
+        framework: 'pb-raise'
+      };
+      return {
+        type: 'fix', label: 'Fix the unit before scaling',
+        headline: "The economics aren't broken — but they aren't proven either.",
+        reason: "A 12–24 month payback is survivable but not scaleable without good capital efficiency. Identify the biggest lever: is it CAC (channel or conversion), price, or retention? Run one focused experiment on that lever before increasing growth spend.",
+        framework: 'pb-price'
+      };
+    }
+  },
+
+  timing: {
+    title: 'Market Timing',
+    trigger: "Something isn't gaining traction the way it should. You need to know if you're early — or just wrong.",
+    context: "29% of recent startup failures cited wrong market timing. The brutal part: being early and being wrong look identical from the inside for the first 18 months.",
+    steps: [
+      {
+        eyebrow: 'Step 1 of 3 — Demand signal',
+        q: 'How are customers currently solving the problem you\'re solving?',
+        type: 'choice',
+        choices: ['They aren\'t — most people don\'t recognize it as a problem yet', 'Manual workarounds, spreadsheets, or internal tools', 'An existing product — but they\'re unhappy with it', 'Multiple competitors actively fighting for this budget'],
+        key: 'demand'
+      },
+      {
+        eyebrow: 'Step 2 of 3 — Forcing function',
+        q: 'Is there a recent event — regulatory change, technology shift, macro condition — that makes this problem more urgent NOW than it was 2 years ago?',
+        type: 'choice',
+        choices: ['No clear forcing function I can name', 'Maybe — I can point to a trend but not a specific trigger', 'Yes — one specific, named event has changed the stakes', 'Yes — multiple converging forces have opened a clear window'],
+        key: 'forcing'
+      },
+      {
+        eyebrow: 'Step 3 of 3 — Buyer behavior',
+        q: 'When you pitch the problem — before you even show the product — what\'s the typical reaction?',
+        type: 'choice',
+        choices: ['Blank stare — they don\'t recognize the problem', '"Interesting but not a priority right now"', '"Yes, this is painful — what do you do?"', '"We\'ve been looking for something exactly like this"'],
+        key: 'reaction'
+      }
+    ],
+    logic: (a) => {
+      if (a.demand === 'They aren\'t — most people don\'t recognize it as a problem yet' && a.forcing === 'No clear forcing function I can name') return {
+        type: 'stop', label: 'Too early — or wrong market',
+        headline: "No existing behavior and no forcing function is the hardest combination to overcome.",
+        reason: "You're not just selling a product — you're trying to create a habit and a category simultaneously. That takes 5–10 years and $50M+ to pull off. Unless you have both the capital and conviction to be that patient, find a version of this problem that people are already trying to solve.",
+        framework: 'pb-nomarket'
+      };
+      if (a.reaction === '"We\'ve been looking for something exactly like this"') return {
+        type: 'go', label: 'Timing is right — move fast',
+        headline: "Pull demand is the clearest timing signal there is.",
+        reason: "When prospects say 'we've been looking for this,' the window is open. The risk isn't timing — it's speed. Someone else is seeing the same signal. Your job now is to close deals and establish reference customers before the market gets crowded.",
+        framework: 'pb-channel'
+      };
+      if (a.demand === 'An existing product — but they\'re unhappy with it' && a.forcing !== 'No clear forcing function I can name') return {
+        type: 'go', label: 'Timing is good — but execution is the variable',
+        headline: "Unhappy customers plus a forcing function is a real market window.",
+        reason: "Unhappy incumbents create the market, forcing functions create urgency. Your job is to convert that unhappiness into pipeline before the incumbent improves or a better-funded competitor arrives. This window is real but not permanent.",
+        framework: 'pb-channel'
+      };
+      if (a.reaction === '"Interesting but not a priority right now"') return {
+        type: 'wait', label: 'Too early — wait for the forcing function',
+        headline: "\"Not a priority\" is a timing problem, not a product problem.",
+        reason: "The problem is recognized but not urgent enough to buy. This means you're early. Options: find the specific buyer persona for whom this is a priority today, wait for the forcing function to arrive, or find a faster-moving adjacent problem that unlocks this one.",
+        framework: 'pb-nomarket'
+      };
+      if (a.demand === 'Multiple competitors actively fighting for this budget') return {
+        type: 'fix', label: 'Timing is fine — positioning is the problem',
+        headline: "When competitors exist and budget exists, timing isn't the issue.",
+        reason: "Multiple competitors fighting for budget means the market is ready. Your challenge isn't timing — it's differentiation. Define the specific segment where you win and stop competing across the full market.",
+        framework: 'pb-category'
+      };
+      return {
+        type: 'wait', label: 'Timing is uncertain — find the early adopter profile',
+        headline: "Mixed signals usually mean you're right on the edge of the window.",
+        reason: "Some people recognize the problem urgently, most don't yet. That's not a bad place to be — but you need to find the specific profile of who's in pain right now and sell only to them. Don't waste resources on the majority who aren't ready yet.",
+        framework: 'pb-nomarket'
       };
     }
   }

@@ -309,8 +309,8 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 
 /* Hidden on desktop, revealed in mobile media query */
-.mobile-score-bar { display: none; }
-.mobile-dim-nav   { display: none; }
+.mobile-score-bar { display: none; grid-column: 1 / -1; }
+.mobile-dim-nav   { display: none; grid-column: 1 / -1; }
 
 @media (max-width: 1100px) {
   .shell { grid-template-columns: 200px 1fr 260px; }
@@ -319,13 +319,11 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 @media (max-width: 860px) {
   .shell {
     grid-template-columns: 1fr;
-    grid-template-rows: 56px 1fr;
+    grid-template-rows: 56px auto auto 1fr;
     height: auto;
     min-height: 100vh;
     overflow: visible;
   }
-
-  /* Hide left nav and right score panel on mobile — show compact versions */
   .dim-nav { display: none; }
   .score-panel { display: none; }
   .scorer {
@@ -336,13 +334,44 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
   /* Mobile score summary bar */
   .mobile-score-bar {
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: space-between;
     padding: 10px 20px;
     background: var(--bg2);
     border-bottom: 1px solid var(--border);
   }
+
+  /* Mobile dimension nav strip */
+  .mobile-dim-nav {
+    display: flex !important;
+    overflow-x: auto;
+    gap: 6px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    scrollbar-width: none;
+  }
+  .mobile-dim-nav::-webkit-scrollbar { display: none; }
+  .mobile-dim-btn {
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .mobile-dim-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg2);
+  }
+  .mobile-dim-btn:hover { border-color: var(--border-h); color: var(--text); }
   .mobile-score-label { font-size: 12px; color: var(--text-muted); }
   .mobile-score-num { font-family: var(--serif); font-size: 28px; font-weight: 600; }
   .mobile-score-mode { font-family: var(--sans); font-size: 11px; letter-spacing: 0.12em; color: var(--accent); }

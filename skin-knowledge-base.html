@@ -575,7 +575,7 @@
   .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 
   /* Hide mobile nav on desktop — shown only inside the media query */
-  .mobile-dim-nav { display: none; }
+  .mobile-dim-nav { display: none; grid-column: 1 / -1; }
 
   /* RESPONSIVE */
   @media (max-width: 860px) {
@@ -601,7 +601,7 @@
 
     /* Mobile sidebar nav */
     .mobile-dim-nav {
-      display: flex;
+      display: flex !important;
       overflow-x: auto;
       gap: 6px;
       padding: 10px 16px;

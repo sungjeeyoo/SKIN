@@ -258,7 +258,7 @@ body {
 .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 
 /* Hide mobile nav on desktop */
-.mobile-dim-nav { display: none; }
+.mobile-dim-nav { display: none; grid-column: 1 / -1; }
 .mobile-nav-divider { color: var(--text-dim); padding: 0 4px; align-self: center; font-size: 12px; }
 
 /* ── QUESTION LIST (used in resilience + category playbooks) ── */
@@ -286,7 +286,7 @@ body {
 @media (max-width: 860px) {
   .shell {
     grid-template-columns: 1fr;
-    grid-template-rows: 56px 1fr;
+    grid-template-rows: 56px auto 1fr;
     height: auto;
     min-height: 100vh;
     overflow: auto;
@@ -296,35 +296,38 @@ body {
     display: none;
   }
 
-  /* Show a compact mobile nav bar below topbar instead */
-  .mobile-nav {
-    display: flex;
+  /* Show the mobile dim nav strip */
+  .mobile-dim-nav {
+    display: flex !important;
     overflow-x: auto;
-    gap: 4px;
-    padding: 8px 16px;
+    gap: 6px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--border);
     background: var(--bg);
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
   }
-  .mobile-nav::-webkit-scrollbar { display: none; }
-  .mobile-nav-btn {
+  .mobile-dim-nav::-webkit-scrollbar { display: none; }
+  .mobile-nav-divider { color: var(--text-dim); padding: 0 2px; align-self: center; flex-shrink: 0; }
+  .mobile-dim-btn {
     flex-shrink: 0;
     font-family: var(--mono);
-    font-size: 12px;
-    padding: 5px 12px;
+    font-size: 13px;
+    padding: 6px 14px;
     border: 1px solid var(--border);
     border-radius: 20px;
     background: none;
     color: var(--text-muted);
     cursor: pointer;
     white-space: nowrap;
+    transition: all 0.15s;
   }
-  .mobile-nav-btn.active {
+  .mobile-dim-btn.active {
     background: var(--bg2);
     border-color: var(--accent);
     color: var(--accent);
   }
+  .mobile-dim-btn:hover { border-color: var(--border-h); color: var(--text); }
 
   .main {
     height: auto;

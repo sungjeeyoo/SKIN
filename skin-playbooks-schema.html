@@ -335,14 +335,18 @@ body {
   }
 
   .topbar {
-    padding: 0 16px;
+    padding: 0 12px;
+    gap: 6px;
   }
+  /* Hide subtitle on mobile to save space */
+  .brand .sep, .brand .sub { display: none; }
   .topbar-tabs {
     gap: 2px;
+    flex-shrink: 0;
   }
   .tab-btn {
     font-size: 12px;
-    padding: 5px 12px;
+    padding: 5px 10px;
   }
   .chip { display: none; }
 

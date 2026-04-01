@@ -257,6 +257,10 @@ body {
 
 .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 
+/* Hide mobile nav on desktop */
+.mobile-dim-nav { display: none; }
+.mobile-nav-divider { color: var(--text-dim); padding: 0 4px; align-self: center; font-size: 12px; }
+
 /* ── QUESTION LIST (used in resilience + category playbooks) ── */
 .question-list { list-style: none; }
 .question-item {
@@ -516,6 +520,24 @@ body {
         </div>
       </div>
     </div>
+  </nav>
+
+  <!-- MOBILE NAV STRIP — visible only on mobile -->
+  <nav class="mobile-dim-nav" id="mobile-nav-pb" aria-label="Navigate playbooks">
+    <button class="mobile-dim-btn active" id="mnav-pb" onclick="switchTabMobile('playbooks')">Playbooks</button>
+    <button class="mobile-dim-btn" id="mnav-sc" onclick="switchTabMobile('schema')">AI Schema</button>
+    <span class="mobile-nav-divider">·</span>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-hire')">01 Hire</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-raise')">02 Raise</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-pivot')">03 Pivot</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-price')">04 Price</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-channel')">05 Channel</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-sales')">06 Sales</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-churn')">07 Churn</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-nomarket')">08 No Market</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-category')">09 Category</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-narrative')">10 Narrative</button>
+    <button class="mobile-dim-btn" onclick="showViewMobile('pb-resilience')">11 Resilience</button>
   </nav>
 
   <!-- MAIN -->
@@ -1945,7 +1967,6 @@ function switchTab(tab, btn) {
   document.getElementById('sb-playbooks').style.display = tab === 'playbooks' ? 'block' : 'none';
   document.getElementById('sb-schema').style.display    = tab === 'schema'    ? 'block' : 'none';
 
-  // Reset sidebar active states
   document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
 
   if (tab === 'playbooks') {
@@ -1955,6 +1976,47 @@ function switchTab(tab, btn) {
     showView('sc-report');
     document.querySelector('#sb-schema .sb-item').classList.add('active');
   }
+
+  // Update mobile tab pill active state
+  const pbBtn = document.getElementById('mnav-pb');
+  const scBtn = document.getElementById('mnav-sc');
+  if (pbBtn) pbBtn.classList.toggle('active', tab === 'playbooks');
+  if (scBtn) scBtn.classList.toggle('active', tab === 'schema');
+
+  // Rebuild mobile nav items for the active tab
+  updateMobileNavItems(tab);
+}
+
+// Mobile versions of tab switch and view — called from mobile nav buttons
+function switchTabMobile(tab) {
+  const fakeBtn = document.createElement('button');
+  fakeBtn.className = 'tab-btn';
+  document.querySelector('.topbar-tabs').appendChild(fakeBtn);
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if ((tab === 'playbooks' && b.textContent.includes('Playbook')) ||
+        (tab === 'schema'    && b.textContent.includes('Schema'))) {
+      switchTab(tab, b);
+    }
+  });
+  fakeBtn.remove();
+}
+
+function showViewMobile(id) {
+  showView(id);
+  // Mark the tapped mobile btn active
+  document.querySelectorAll('.mobile-dim-btn[onclick]').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(id));
+  });
+  // Scroll active btn into view in the strip
+  const active = document.querySelector('.mobile-dim-btn.active');
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+}
+
+// Show/hide mobile nav items based on current tab (schema items hidden in playbooks mode)
+function updateMobileNavItems(tab) {
+  document.querySelectorAll('.mobile-dim-btn[data-tab]').forEach(b => {
+    b.style.display = (b.dataset.tab === tab || !b.dataset.tab) ? '' : 'none';
+  });
 }
 
 function showView(id) {
@@ -1970,7 +2032,13 @@ function showView(id) {
     }
   });
 
-  document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' });
+  // Scroll to top — window on mobile, container on desktop
+  const main = document.querySelector('.main');
+  if (main && main.scrollHeight > main.clientHeight) {
+    main.scrollTo({ top: 0, behavior: 'smooth' });
+  } else {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 }
 
 function toggleCard(header) {

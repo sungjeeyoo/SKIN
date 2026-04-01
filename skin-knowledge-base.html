@@ -574,6 +574,9 @@
 
   .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 
+  /* Hide mobile nav on desktop — shown only inside the media query */
+  .mobile-dim-nav { display: none; }
+
   /* RESPONSIVE */
   @media (max-width: 860px) {
     .shell {
@@ -720,6 +723,21 @@
     <div class="sidebar-aux-item">
       <span>↳</span> Playbooks
     </div>
+  </nav>
+
+  <!-- MOBILE NAV STRIP — visible only on mobile, replaces sidebar -->
+  <nav class="mobile-dim-nav" id="mobile-nav" aria-label="Navigate dimensions">
+    <button class="mobile-dim-btn active" data-target="overview">Overview</button>
+    <button class="mobile-dim-btn" data-target="dim-1">01 Team</button>
+    <button class="mobile-dim-btn" data-target="dim-2">02 Product</button>
+    <button class="mobile-dim-btn" data-target="dim-3">03 Brand</button>
+    <button class="mobile-dim-btn" data-target="dim-4">04 Market</button>
+    <button class="mobile-dim-btn" data-target="dim-5">05 GTM</button>
+    <button class="mobile-dim-btn" data-target="dim-6">06 Investor</button>
+    <button class="mobile-dim-btn" data-target="dim-7">07 Financials</button>
+    <button class="mobile-dim-btn" data-target="prompts">AI Prompts</button>
+    <button class="mobile-dim-btn" data-target="sources">Sources</button>
+    <button class="mobile-dim-btn" data-target="benchmarks">Benchmarks</button>
   </nav>
 
   <!-- MAIN -->
@@ -1715,13 +1733,25 @@ This brief will be reviewed by human analysts before delivery.</div>
     navItems.forEach(i => i.classList.remove('active'));
     panels.forEach(p => p.classList.remove('active'));
 
-    const matchingNav = document.querySelector(`[data-target="${targetId}"]`);
-    if (matchingNav) matchingNav.classList.add('active');
+    const matchingNavs = document.querySelectorAll(`[data-target="${targetId}"]`);
+    matchingNavs.forEach(n => n.classList.add('active'));
 
     const panel = document.getElementById(targetId);
     if (panel) panel.classList.add('active');
 
-    document.querySelector('.main').scrollTo({ top: 0, behavior: 'smooth' });
+    // Scroll to top — use window on mobile, main container on desktop
+    const main = document.querySelector('.main');
+    if (main && main.scrollHeight > main.clientHeight) {
+      main.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Scroll active mobile button into view
+    const activeMobileBtn = document.querySelector('.mobile-dim-btn.active');
+    if (activeMobileBtn) {
+      activeMobileBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
   }
 
   navItems.forEach(item => {

@@ -308,6 +308,10 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
 .scrollbar-thin { scrollbar-width: thin; scrollbar-color: var(--bg3) transparent; }
 
+/* Hidden on desktop, revealed in mobile media query */
+.mobile-score-bar { display: none; }
+.mobile-dim-nav   { display: none; }
+
 @media (max-width: 1100px) {
   .shell { grid-template-columns: 200px 1fr 260px; }
 }
@@ -460,6 +464,24 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <span class="dim-mini-score" id="nav-score-7" style="color:var(--text-dim)">—</span>
       <span class="dim-dot" id="dot-7"></span>
     </div>
+  </nav>
+
+  <!-- MOBILE NAV STRIP — visible only on mobile -->
+  <div class="mobile-score-bar" id="mobile-score-bar">
+    <div>
+      <div class="mobile-score-label">SKIN Score™</div>
+      <div class="mobile-score-mode" id="mobile-mode">CALIBRATING</div>
+    </div>
+    <div class="mobile-score-num" id="mobile-score-num">50</div>
+  </div>
+  <nav class="mobile-dim-nav" id="mobile-nav-score" aria-label="Score dimensions">
+    <button class="mobile-dim-btn active" onclick="goToMobile(1)">01 Team</button>
+    <button class="mobile-dim-btn" onclick="goToMobile(2)">02 Product</button>
+    <button class="mobile-dim-btn" onclick="goToMobile(3)">03 Brand</button>
+    <button class="mobile-dim-btn" onclick="goToMobile(4)">04 Market</button>
+    <button class="mobile-dim-btn" onclick="goToMobile(5)">05 GTM</button>
+    <button class="mobile-dim-btn" onclick="goToMobile(6)">06 Investor</button>
+    <button class="mobile-dim-btn" onclick="goToMobile(7)">07 Financials</button>
   </nav>
 
   <!-- CENTER: SCORING FORM -->
@@ -1001,7 +1023,13 @@ function goTo(n) {
   document.getElementById('p'+n).classList.add('active');
   document.querySelectorAll('.dim-item').forEach(i => i.classList.remove('active'));
   document.querySelectorAll('.dim-item')[n-1].classList.add('active');
-  document.querySelector('.scorer').scrollTo({top:0, behavior:'smooth'});
+  // Scroll top — scorer container on desktop, window on mobile
+  const scorer = document.querySelector('.scorer');
+  if (scorer && scorer.scrollHeight > scorer.clientHeight) {
+    scorer.scrollTo({top:0, behavior:'smooth'});
+  } else {
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
   currentDim = n;
 }
 
@@ -1076,6 +1104,25 @@ function updateRightPanel() {
 
   // Flags
   updateFlags(score);
+
+  // Mobile score bar sync
+  const mNum  = document.getElementById('mobile-score-num');
+  const mMode = document.getElementById('mobile-mode');
+  if (mNum)  { mNum.textContent  = score; mNum.style.color = scoreColor(score); }
+  if (mMode) { mMode.textContent = getMode(score).name; mMode.style.color = scoreColor(score); }
+}
+
+// ── MOBILE NAVIGATION ──
+function goToMobile(n) {
+  goTo(n);
+  // Update mobile nav strip active state
+  const btns = document.querySelectorAll('#mobile-nav-score .mobile-dim-btn');
+  btns.forEach((b, i) => b.classList.toggle('active', i === n - 1));
+  // Scroll active button into view
+  const active = document.querySelector('#mobile-nav-score .mobile-dim-btn.active');
+  if (active) active.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  // On mobile, scroll the scoring form into view below the nav
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function scoreColor(s) {

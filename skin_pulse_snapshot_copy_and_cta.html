@@ -1,0 +1,306 @@
+
+<h2 class="sr-only">SKIN Pulse Snapshot — distribution copy for four channels and a three-step Snapshot-to-Pulse CTA sequence</h2>
+<style>
+.tab-nav { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 12px; }
+.tab-btn { padding: 6px 14px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all .15s; }
+.tab-btn.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); font-weight: 500; }
+.tab-btn:hover:not(.active) { background: var(--color-background-secondary); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.copy-block { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); margin-bottom: 16px; overflow: hidden; }
+.copy-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 0.5px solid var(--color-border-tertiary); background: var(--color-background-secondary); }
+.copy-header .ch-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.copy-header .ch-note { font-size: 11px; color: var(--color-text-tertiary); }
+.copy-body { padding: 14px 16px; font-size: 13px; color: var(--color-text-primary); line-height: 1.75; white-space: pre-wrap; font-family: var(--font-sans); }
+.copy-body .placeholder { color: var(--color-text-info); font-style: italic; }
+.copy-footer { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; border-top: 0.5px solid var(--color-border-tertiary); }
+.copy-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+.ct-channel { background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.ct-tone { background: var(--color-background-info); color: var(--color-text-info); }
+.ct-warn { background: var(--color-background-warning); color: var(--color-text-warning); }
+.copy-btn { font-size: 11px; padding: 4px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all .1s; }
+.copy-btn:hover { background: var(--color-background-secondary); }
+.copy-btn.copied { color: var(--color-text-success); border-color: var(--color-border-success); }
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--color-text-tertiary); text-transform: uppercase; margin: 20px 0 10px; }
+.note-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 10px 14px; font-size: 12px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 16px; }
+.seq-step { display: flex; gap: 14px; margin-bottom: 0; position: relative; }
+.seq-step:not(:last-child):before { content: ''; position: absolute; left: 16px; top: 36px; bottom: -4px; width: 1px; background: var(--color-border-tertiary); }
+.seq-dot { width: 32px; height: 32px; border-radius: 50%; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-secondary); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--color-text-secondary); flex-shrink: 0; margin-top: 2px; }
+.seq-dot.highlight { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
+.seq-content { flex: 1; padding-bottom: 20px; }
+.seq-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 4px 0 4px; }
+.seq-timing { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 8px; }
+.nudge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.inline-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--color-background-secondary); color: var(--color-text-secondary); }
+</style>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('dist')">Distribution copy</button>
+  <button class="tab-btn" onclick="showTab('cta')">Snapshot → Pulse sequence</button>
+</div>
+
+<!-- DISTRIBUTION COPY TAB -->
+<div class="tab-panel active" id="dist">
+
+  <div class="note-box">Keep the message consistent across channels — vary the distribution, not the positioning. The Snapshot is a pre-fundraise decision tool, not a free resource. Every line of copy should put the founder one step closer to a named decision.</div>
+
+  <div class="section-label">Channel A · LinkedIn DM (outbound to founders)</div>
+  <div class="copy-block">
+    <div class="copy-header">
+      <span class="ch-title">Variant 1 — post-raise trigger</span>
+      <span class="ch-note">Use when founder just announced a round</span>
+    </div>
+    <div class="copy-body" id="li-1">Congrats on the raise — you've just entered the window where most of the expensive mistakes get made.
+
+We built a free diagnostic called the SKIN Pulse Snapshot. It takes about 8 minutes and tells you exactly where your unit economics, hiring pace, and burn are relative to founders who made it past Series A — and where they aren't.
+
+No pitch, no follow-up unless you want one. <span class="placeholder">[link]</span>
+
+Worth it if you want a clear picture before the next 90 days kick in.</div>
+    <div class="copy-footer">
+      <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">LinkedIn DM</span><span class="copy-tag ct-tone">Low pressure</span></div>
+      <button class="copy-btn" onclick="copyText('li-1', this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="copy-block">
+    <div class="copy-header">
+      <span class="ch-title">Variant 2 — cold pre-fundraise</span>
+      <span class="ch-note">Use for founders 3–6 months from a raise</span>
+    </div>
+    <div class="copy-body" id="li-2">You're at the stage where the next 12 weeks either compound the business or quietly kill it — and most founders only find out which one after the fact.
+
+I run a framework called SKIN that helps pre-fundraise founders stress-test the decisions they're about to make. The free version takes 8 minutes.
+
+If it surfaces something you already knew but hadn't named, that's still useful. <span class="placeholder">[link]</span></div>
+    <div class="copy-footer">
+      <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">LinkedIn DM</span><span class="copy-tag ct-tone">Direct</span></div>
+      <button class="copy-btn" onclick="copyText('li-2', this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="section-label">Channel B · Investor partner forward</div>
+  <div class="copy-block">
+    <div class="copy-header">
+      <span class="ch-title">Template for investors to forward to portfolio</span>
+      <span class="ch-note">Send to Dominik + 2–3 others — they paste and forward verbatim</span>
+    </div>
+    <div class="copy-body" id="inv-1">Sharing something I found genuinely useful for founders in the pre-fundraise window.
+
+It's a free diagnostic called the SKIN Pulse Snapshot — built by <span class="placeholder">[Sungjee / SKIN Studios]</span>. Takes about 8 minutes. It scores your unit economics, hiring, burn, and market timing against patterns from startups that made it and ones that didn't.
+
+The full report is paid, but the Snapshot gives you a real signal on where you stand. Worth doing before your next board update or fundraise prep: <span class="placeholder">[link]</span></div>
+    <div class="copy-footer">
+      <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">Investor forward</span><span class="copy-tag ct-tone">Trusted referral tone</span></div>
+      <button class="copy-btn" onclick="copyText('inv-1', this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="section-label">Channel C · Community post (Slack / WhatsApp)</div>
+  <div class="copy-block">
+    <div class="copy-header">
+      <span class="ch-title">Slack / WhatsApp community drop</span>
+      <span class="ch-note">Anchor on a specific high-stakes moment — don't post generically</span>
+    </div>
+    <div class="copy-body" id="comm-1">For anyone in the pre-fundraise window or just post-raise —
+
+I built a free 8-minute diagnostic that benchmarks your unit economics, hiring pace, and burn against real patterns from startups that made it past Series A. It's called the SKIN Pulse Snapshot.
+
+It won't tell you what to do. But it will tell you which decisions deserve more of your attention right now.
+
+<span class="placeholder">[link]</span> — no email required to start.</div>
+    <div class="copy-footer">
+      <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">Community</span><span class="copy-tag ct-tone">Peer, not promotional</span></div>
+      <button class="copy-btn" onclick="copyText('comm-1', this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="section-label">Channel D · SKIN OS banner / interstitial</div>
+  <div class="copy-block">
+    <div class="copy-header">
+      <span class="ch-title">Persistent banner (top of SKIN OS pages)</span>
+      <span class="ch-note">Short — founder is already in a task, don't interrupt their flow</span>
+    </div>
+    <div class="copy-body" id="os-1">New: Free pre-fundraise diagnostic → 8 minutes, instant results. <span class="placeholder">[Take the Snapshot →]</span></div>
+    <div class="copy-footer">
+      <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">SKIN OS banner</span><span class="copy-tag ct-tone">Utility-first</span></div>
+      <button class="copy-btn" onclick="copyText('os-1', this)">Copy</button>
+    </div>
+  </div>
+
+  <div class="copy-block">
+    <div class="copy-header">
+      <span class="ch-title">Interstitial (after score engine completion)</span>
+      <span class="ch-note">Trigger after the founder has already engaged with a tool — intent is confirmed</span>
+    </div>
+    <div class="copy-body" id="os-2">You just ran a score. Want to see how it compares to founders who raised their next round — and the ones who didn't?
+
+The SKIN Pulse Snapshot takes 8 minutes and benchmarks your results across unit economics, team, burn, and market timing.
+
+<span class="placeholder">[Run the Snapshot →]</span> Free. No account needed.</div>
+    <div class="copy-footer">
+      <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">SKIN OS interstitial</span><span class="copy-tag ct-tone">Contextual</span></div>
+      <button class="copy-btn" onclick="copyText('os-2', this)">Copy</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- CTA SEQUENCE TAB -->
+<div class="tab-panel" id="cta">
+
+  <div class="note-box">The sequence has one job: turn a completed Snapshot into a paid Pulse decision. The founder has already given you 8 minutes. The conversion window is the 24 hours after they finish — not a week later. Front-load the value, then the ask.</div>
+
+  <div class="seq-step">
+    <div class="seq-dot highlight">0</div>
+    <div class="seq-content">
+      <div class="seq-title">End-of-Snapshot moment — the primary CTA</div>
+      <div class="seq-timing">Immediately after the last Snapshot question is answered</div>
+      <div class="copy-block" style="margin-top:8px;">
+        <div class="copy-header">
+          <span class="ch-title">Snapshot results screen copy</span>
+          <span class="ch-note">Displayed inline with their score — not a separate page</span>
+        </div>
+        <div class="copy-body" id="snap-0">Your Snapshot flagged <span class="placeholder">[1–2 risk areas]</span> that typically show up 6–12 months before a founder hits a wall.
+
+The full SKIN Pulse Report goes 3 layers deeper on each of these — with human review, not just a score. It's what investors wish founders had read before the meeting.
+
+<span class="placeholder">[Get the full Pulse Report — $99 →]</span>
+
+Or if you want to talk through what the Snapshot surfaced: <span class="placeholder">[Book 30 min →]</span></div>
+        <div class="copy-footer">
+          <div style="display:flex;gap:6px;"><span class="copy-tag ct-tone">Two CTAs — pick one</span><span class="copy-tag ct-warn">Do not hide the price</span></div>
+          <button class="copy-btn" onclick="copyText('snap-0', this)">Copy</button>
+        </div>
+      </div>
+      <div class="nudge-row">
+        <span class="inline-tag">Hard CTA: $99 upgrade</span>
+        <span class="inline-tag">Soft CTA: 30-min call</span>
+        <span class="inline-tag">No email gate at this step</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="seq-step">
+    <div class="seq-dot">1</div>
+    <div class="seq-content">
+      <div class="seq-title">Email 1 — results + one thing to act on</div>
+      <div class="seq-timing">Sent same day, 1–2 hours after completion (if email captured)</div>
+      <div class="copy-block" style="margin-top:8px;">
+        <div class="copy-header">
+          <span class="ch-title">Subject: Your Pulse Snapshot — the one flag worth looking at now</span>
+        </div>
+        <div class="copy-body" id="email-1">Your Snapshot is done.
+
+The results show you're in reasonable shape on <span class="placeholder">[area]</span>, but there's a signal in <span class="placeholder">[risk area]</span> that's worth taking seriously before your next fundraise conversation.
+
+Most founders who see this pattern either address it in the next 60 days or explain it away. The ones who address it close more consistently.
+
+The full Pulse Report gives you a human-reviewed breakdown of exactly what's driving that signal and what to do about it.
+
+<span class="placeholder">[Get the full report — $99 →]</span>
+
+— <span class="placeholder">[Sungjee]</span></div>
+        <div class="copy-footer">
+          <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">Email 1</span><span class="copy-tag ct-tone">Specific, not generic</span></div>
+          <button class="copy-btn" onclick="copyText('email-1', this)">Copy</button>
+        </div>
+      </div>
+      <div class="nudge-row">
+        <span class="inline-tag">Personalise the risk area</span>
+        <span class="inline-tag">Single CTA only</span>
+        <span class="inline-tag">Short — under 100 words</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="seq-step">
+    <div class="seq-dot">2</div>
+    <div class="seq-content">
+      <div class="seq-title">Email 2 — the cost of the gap</div>
+      <div class="seq-timing">3 days after Email 1 (send only if no conversion)</div>
+      <div class="copy-block" style="margin-top:8px;">
+        <div class="copy-header">
+          <span class="ch-title">Subject: What happens when founders ignore this signal</span>
+        </div>
+        <div class="copy-body" id="email-2">The founders who don't fix <span class="placeholder">[risk area]</span> before their next raise don't usually fail because of it directly.
+
+They fail because it creates a pattern — in their numbers, in how they talk about the business, in how an investor reads them in a room — that's hard to explain away once someone's looking for it.
+
+The full Pulse Report shows you what that pattern looks like from the outside and gives you a specific intervention for it.
+
+It's $99 and takes an afternoon to read properly.
+
+<span class="placeholder">[Get the Pulse Report →]</span>
+
+If you'd rather talk through it: <span class="placeholder">[Book a call →]</span></div>
+        <div class="copy-footer">
+          <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">Email 2</span><span class="copy-tag ct-tone">Stakes, not urgency</span></div>
+          <button class="copy-btn" onclick="copyText('email-2', this)">Copy</button>
+        </div>
+      </div>
+      <div class="nudge-row">
+        <span class="inline-tag">Do not manufacture urgency</span>
+        <span class="inline-tag">Raise the cost of inaction</span>
+        <span class="inline-tag">Re-introduce the call CTA</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="seq-step">
+    <div class="seq-dot">3</div>
+    <div class="seq-content">
+      <div class="seq-title">Email 3 — final ask, exit or upgrade</div>
+      <div class="seq-timing">7 days after Email 1 (last email in sequence)</div>
+      <div class="copy-block" style="margin-top:8px;">
+        <div class="copy-header">
+          <span class="ch-title">Subject: Last one from me on this</span>
+        </div>
+        <div class="copy-body" id="email-3">I've sent a couple of notes about your Snapshot results. This is the last one.
+
+If you're heads-down and the timing isn't right, no problem — the Snapshot link stays active if you want to come back to it.
+
+If you do want to go deeper: the full Pulse Report is $99, takes about an afternoon, and gives you a human-reviewed read on the exact signals your Snapshot flagged.
+
+<span class="placeholder">[Get the Pulse Report →]</span>
+
+And if at some point you want a co-founder-level sounding board, that's something I do for a handful of founders each year. Just reply to this.</div>
+        <div class="copy-footer">
+          <div style="display:flex;gap:6px;"><span class="copy-tag ct-channel">Email 3</span><span class="copy-tag ct-tone">Respectful exit</span></div>
+          <button class="copy-btn" onclick="copyText('email-3', this)">Copy</button>
+        </div>
+      </div>
+      <div class="nudge-row">
+        <span class="inline-tag">Releases pressure</span>
+        <span class="inline-tag">Seeds the Fractional path</span>
+        <span class="inline-tag">No follow-up after this</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; margin-top: 4px;">
+    <div style="font-size: 13px; font-weight: 500; margin-bottom: 8px; color: var(--color-text-primary);">Sequence rules</div>
+    <div style="font-size: 12px; color: var(--color-text-secondary); line-height: 1.75;">
+      Stop the sequence the moment they convert — don't send Email 2 if they bought after Email 1. Each email has one CTA. Email 3 plants the Fractional seed without pitching it — reply-based, not link-based. Never add a 4th email. The sequence exits, not escalates.
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+function copyText(id, btn) {
+  const el = document.getElementById(id);
+  const text = el.innerText.replace(/Copy$/,'').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1800);
+  });
+}
+</script>

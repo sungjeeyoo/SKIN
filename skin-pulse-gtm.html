@@ -1,253 +1,469 @@
-
-<h2 class="sr-only">SKIN Pulse Snapshot GTM Testing Framework — three phases covering channel selection, CTA optimization, and scale decision</h2>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="skin-os.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKIN OS — GTM Framework</title>
 <style>
-:root { --phase-gap: 12px; }
-.phase-nav { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-.phase-btn { padding: 7px 16px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: transparent; color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all .15s; }
-.phase-btn.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
-.phase-btn:hover:not(.active) { background: var(--color-background-secondary); }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px; height: 56px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; position: sticky; top: 0; z-index: 100;
+  background: var(--bg);
+  transition: background var(--ease), border-color var(--ease);
+}
+.brand { display: flex; align-items: baseline; gap: 10px; text-decoration: none; color: inherit; opacity: 1; transition: opacity var(--ease); }
+.brand:hover { opacity: 0.7; }
+.brand .logo { font-family: var(--sans); font-weight: 800; font-size: 15px; letter-spacing: 0.12em; }
+.brand .sep { color: var(--text-dim); }
+.brand .label { font-size: 13px; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+/* ── PAGE CONTENT ── */
+.page-wrap {
+  flex: 1; overflow-y: auto; padding: 56px 48px 80px;
+}
+.page-header { margin-bottom: 48px; }
+.page-eyebrow {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em;
+  color: var(--text-dim); text-transform: uppercase; margin-bottom: 16px;
+}
+.page-eyebrow span { color: var(--accent); }
+.page-title {
+  font-family: var(--serif); font-size: 60px; font-weight: 400;
+  font-style: italic; line-height: 0.95; letter-spacing: -0.02em;
+  margin-bottom: 20px;
+}
+.page-title strong { font-weight: 600; font-style: normal; display: block; }
+.page-sub {
+  font-family: var(--mono); font-size: 14px; color: var(--text-muted);
+  line-height: 1.8; max-width: 520px;
+}
+.content-max { max-width: 860px; }
+
+/* ── PHASE NAV ── */
+.phase-nav {
+  display: flex; gap: 6px; margin-bottom: 28px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--border); padding-bottom: 16px;
+}
+.phase-btn {
+  padding: 6px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color var(--ease), background var(--ease), color var(--ease);
+}
+.phase-btn.active {
+  background: var(--bg3);
+  color: var(--text);
+  border-color: var(--border-h);
+}
+.phase-btn:hover:not(.active) {
+  background: var(--bg2);
+  border-color: var(--border-h);
+  color: var(--text-muted);
+}
+
+/* ── PANELS ── */
 .phase-panel { display: none; }
-.phase-panel.active { display: block; }
-.section-label { font-size: 11px; font-weight: 500; letter-spacing: .06em; color: var(--color-text-tertiary); text-transform: uppercase; margin: 0 0 8px; }
+.phase-panel.active { display: block; animation: skinFadeUp 0.2s ease; }
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.18em; color: var(--text-dim);
+  text-transform: uppercase; margin: 0 0 10px;
+}
+.section-label.mt { margin-top: 24px; }
+
+/* ── HYPOTHESIS BLOCK ── */
+.hypothesis-block {
+  border-left: 2px solid var(--accent);
+  padding-left: 16px;
+  margin-bottom: 24px;
+}
+.hypothesis-block .h-label {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 0.14em;
+  margin: 0 0 6px;
+}
+.hypothesis-block .h-text {
+  font-family: var(--mono); font-size: 13px; color: var(--text-muted);
+  margin: 0; line-height: 1.7;
+}
+
+/* ── TIMELINE ── */
+.timeline-bar { display: flex; gap: 0; margin-bottom: 12px; }
+.tbar-seg { flex: 1; height: 3px; background: var(--bg4); }
+.tbar-seg.done { background: var(--accent3); }
+.tbar-seg.active { background: var(--accent); }
+.tbar-seg:first-child { border-radius: 2px 0 0 2px; }
+.tbar-seg:last-child { border-radius: 0 2px 2px 0; }
+.tbar-labels {
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 11px; color: var(--text-dim);
+  margin-bottom: 24px;
+}
+
+/* ── TEST CARDS ── */
 .row-grid { display: grid; gap: 8px; }
-.test-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 12px 14px; }
-.test-card .label { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 4px; }
-.test-card .desc { font-size: 12px; color: var(--color-text-secondary); margin: 0 0 8px; line-height: 1.5; }
-.test-card .meta-row { display: flex; gap: 8px; flex-wrap: wrap; }
-.tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 500; }
-.tag-metric { background: var(--color-background-info); color: var(--color-text-info); }
-.tag-effort { background: var(--color-background-secondary); color: var(--color-text-secondary); }
-.tag-kill { background: var(--color-background-danger); color: var(--color-text-danger); }
-.tag-go { background: var(--color-background-success); color: var(--color-text-success); }
-.tag-neutral { background: var(--color-background-warning); color: var(--color-text-warning); }
-.rule-box { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 14px 16px; margin-top: 20px; }
-.rule-box .rule-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin: 0 0 8px; }
-.rule-box .rule-row { display: flex; gap: 10px; align-items: flex-start; font-size: 12px; color: var(--color-text-secondary); padding: 4px 0; border-top: 0.5px solid var(--color-border-tertiary); line-height: 1.5; }
+.test-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  transition: border-color var(--ease), background var(--ease);
+}
+.test-card:hover { border-color: var(--border-h); background: var(--bg3); }
+.test-card .card-label {
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  color: var(--text); margin: 0 0 6px; letter-spacing: 0.02em;
+}
+.test-card .desc {
+  font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+  margin: 0 0 12px; line-height: 1.65;
+}
+.meta-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ── TAGS ── */
+.tag {
+  font-family: var(--mono); font-size: 11px;
+  padding: 2px 8px; border-radius: var(--radius-sm);
+  font-weight: 500; letter-spacing: 0.06em; white-space: nowrap;
+}
+.tag-metric { background: rgba(160,143,200,0.12); color: var(--accent3); }
+.tag-effort { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+.tag-kill   { background: rgba(200,138,122,0.12); color: var(--danger); }
+.tag-go     { background: rgba(143,184,154,0.12); color: var(--accent2); }
+.tag-neutral{ background: rgba(200,184,122,0.12); color: var(--accent); }
+
+/* ── RULE BOX ── */
+.rule-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 18px;
+  margin-top: 20px;
+}
+.rule-box .rule-title {
+  font-family: var(--sans); font-size: 13px; font-weight: 600;
+  color: var(--text); margin: 0 0 10px; letter-spacing: 0.02em;
+}
+.rule-box .rule-row {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+  padding: 6px 0; border-top: 1px solid var(--border); line-height: 1.6;
+}
 .rule-box .rule-row:first-of-type { border-top: none; }
-.badge-col { min-width: 52px; }
-.timeline-bar { display: flex; gap: 0; margin-bottom: 20px; }
-.tbar-seg { flex: 1; height: 6px; background: var(--color-border-tertiary); }
-.tbar-seg.done { background: var(--color-text-info); }
-.tbar-seg.active { background: var(--color-text-primary); }
-.tbar-seg:first-child { border-radius: 3px 0 0 3px; }
-.tbar-seg:last-child { border-radius: 0 3px 3px 0; }
-.tbar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 16px; }
-.hypothesis-block { border-left: 2px solid var(--color-border-secondary); padding-left: 12px; margin-bottom: 16px; }
-.hypothesis-block .h-label { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 4px; }
-.hypothesis-block .h-text { font-size: 13px; color: var(--color-text-primary); margin: 0; line-height: 1.6; }
-.cta-winner-box { border: 0.5px solid var(--color-border-info); border-radius: var(--border-radius-md); padding: 12px 14px; margin-top: 8px; background: var(--color-background-info); }
-.cta-winner-box .w-label { font-size: 11px; color: var(--color-text-info); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; margin: 0 0 4px; }
-.cta-winner-box .w-text { font-size: 12px; color: var(--color-text-info); margin: 0; line-height: 1.5; }
+.badge-col { min-width: 54px; flex-shrink: 0; }
+
+/* ── CTA WINNER BOX ── */
+.cta-winner-box {
+  border: 1px solid rgba(160,143,200,0.2);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  margin-top: 10px;
+  background: rgba(160,143,200,0.06);
+}
+.cta-winner-box .w-label {
+  font-family: var(--mono); font-size: 11px; color: var(--accent3);
+  font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 6px;
+}
+.cta-winner-box .w-text {
+  font-family: var(--mono); font-size: 12px; color: var(--text-muted);
+  margin: 0; line-height: 1.7;
+}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar {
+  border-top: 1px solid var(--border);
+  padding: 18px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.bottom-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.bottom-links a {
+  font-size: 13px; color: var(--text-dim); text-decoration: none;
+  letter-spacing: 0.05em; transition: color var(--ease);
+}
+.bottom-links a:hover { color: var(--text-muted); }
+.version { font-size: 12px; color: var(--text-dim); letter-spacing: 0.08em; }
+
+/* Responsive */
+@media (max-width: 820px) {
+  .topbar { padding: 0 24px; }
+  .brand .label, .brand .sep { display: none; }
+  .page-wrap { padding: 36px 24px 60px; }
+  .page-title { font-size: 40px; }
+  .bottom-bar { padding: 16px 24px; flex-direction: column; gap: 12px; }
+}
 </style>
+</head>
+<body>
 
-<div style="padding: 4px 0 20px;">
-  <div style="font-size: 18px; font-weight: 500; margin-bottom: 4px; color: var(--color-text-primary);">Pulse Snapshot GTM framework</div>
-  <div style="font-size: 13px; color: var(--color-text-secondary);">Three sequential phases · 6 weeks total · clear kill criteria at each gate</div>
-</div>
-
-<div class="phase-nav">
-  <button class="phase-btn active" onclick="showPhase('p1')">Phase 1 · Channel pulse</button>
-  <button class="phase-btn" onclick="showPhase('p2')">Phase 2 · CTA split</button>
-  <button class="phase-btn" onclick="showPhase('p3')">Phase 3 · Scale decision</button>
-  <button class="phase-btn" onclick="showPhase('p4')">Framework logic</button>
-</div>
-
-<!-- PHASE 1 -->
-<div class="phase-panel active" id="p1">
-  <div class="timeline-bar">
-    <div class="tbar-seg active"></div><div class="tbar-seg"></div><div class="tbar-seg"></div>
-    <div class="tbar-seg"></div><div class="tbar-seg"></div><div class="tbar-seg"></div>
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <span class="logo">SKIN</span>
+    <span class="sep">/</span>
+    <span class="label">GTM FRAMEWORK</span>
+  </a>
+  <div class="topbar-right">
+    <a href="index.html" class="btn-ghost">← SKIN OS</a>
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle day/night mode">
+      <span class="icon-moon">◐</span>
+      <span class="icon-sun">◑</span>
+    </button>
   </div>
-  <div class="tbar-labels"><span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span></div>
+</header>
 
-  <div class="hypothesis-block">
-    <div class="h-label">Phase hypothesis</div>
-    <div class="h-text">One channel will surface meaningfully more qualified founders with lower friction than the others. The goal is to find it in 2 weeks — not to optimize it.</div>
-  </div>
+<div class="page-wrap">
+  <div class="content-max">
 
-  <p class="section-label">Run these 4 micro-tests in parallel (2 weeks)</p>
-  <div class="row-grid">
-    <div class="test-card">
-      <div class="label">A · SKIN OS organic</div>
-      <div class="desc">Add a persistent banner or interstitial inside SKIN OS directing existing visitors to the Snapshot. No new traffic needed — test what existing intent converts to.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Metric: Snapshot starts / OS visitors</span>
-        <span class="tag tag-effort">Effort: Low</span>
-        <span class="tag tag-go">Signal: ≥8% start rate = valid</span>
+    <header class="page-header">
+      <div class="page-eyebrow">SKIN OS · <span>Pulse Launch</span></div>
+      <h1 class="page-title">
+        Six-week test<br>
+        <strong>framework</strong>
+      </h1>
+      <p class="page-sub">Three sequential phases with hard kill criteria at every gate — channel selection, CTA split testing, and scale decision.</p>
+    </header>
+
+    <!-- PHASE NAV -->
+    <nav class="phase-nav">
+      <button class="phase-btn active" onclick="showPhase('p1')">Phase 1 · Channel pulse</button>
+      <button class="phase-btn" onclick="showPhase('p2')">Phase 2 · CTA split</button>
+      <button class="phase-btn" onclick="showPhase('p3')">Phase 3 · Scale decision</button>
+      <button class="phase-btn" onclick="showPhase('p4')">Framework logic</button>
+    </nav>
+
+    <!-- PHASE 1 -->
+    <div class="phase-panel active" id="p1">
+      <div class="timeline-bar">
+        <div class="tbar-seg active"></div><div class="tbar-seg"></div><div class="tbar-seg"></div>
+        <div class="tbar-seg"></div><div class="tbar-seg"></div><div class="tbar-seg"></div>
+      </div>
+      <div class="tbar-labels"><span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span></div>
+
+      <div class="hypothesis-block">
+        <div class="h-label">Phase hypothesis</div>
+        <div class="h-text">One channel will surface meaningfully more qualified founders with lower friction than the others. The goal is to find it in 2 weeks — not to optimize it.</div>
+      </div>
+
+      <p class="section-label">Run these 4 micro-tests in parallel (2 weeks)</p>
+      <div class="row-grid">
+        <div class="test-card">
+          <div class="card-label">A · SKIN OS organic</div>
+          <div class="desc">Add a persistent banner or interstitial inside SKIN OS directing existing visitors to the Snapshot. No new traffic needed — test what existing intent converts to.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Metric: Snapshot starts / OS visitors</span>
+            <span class="tag tag-effort">Effort: Low</span>
+            <span class="tag tag-go">Signal: ≥8% start rate = valid</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">B · LinkedIn DM outbound</div>
+          <div class="desc">Send 30–50 personalised DMs to pre-seed / seed founders (recent raise announcements = best timing signal). Offer the Snapshot as a free diagnostic. Track opens → starts.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Metric: Starts / DMs sent</span>
+            <span class="tag tag-effort">Effort: Medium</span>
+            <span class="tag tag-go">Signal: ≥15% start rate = valid</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">C · Investor partner drop</div>
+          <div class="desc">Ask 2–3 investors (Dominik + network) to forward the Snapshot to 5–10 portfolio founders each. Frame as a portfolio resource, not a product pitch. Warm referral removes friction.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Metric: Starts / referred founders</span>
+            <span class="tag tag-effort">Effort: Low (once set up)</span>
+            <span class="tag tag-go">Signal: ≥25% start rate = valid</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">D · Community post (Slack / WhatsApp)</div>
+          <div class="desc">Post in 2–3 founder Slack groups or WhatsApp communities where you already have credibility. Anchor on a specific, timely problem (e.g. "pre-fundraise health check"). Track clicks → starts.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Metric: Starts / post reach</span>
+            <span class="tag tag-effort">Effort: Low</span>
+            <span class="tag tag-go">Signal: ≥5% start rate = valid</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-box">
+        <div class="rule-title">Phase 1 decision gate — end of week 2</div>
+        <div class="rule-row"><span class="tag tag-go badge-col">Keep</span><span>Any channel hitting its signal threshold. Carry forward top 1–2 into Phase 2.</span></div>
+        <div class="rule-row"><span class="tag tag-kill badge-col">Kill</span><span>Any channel below threshold after 2 weeks — don't invest further time in it.</span></div>
+        <div class="rule-row"><span class="tag tag-neutral badge-col">Pivot</span><span>If zero channels hit threshold: the bottleneck is the Snapshot's perceived value, not distribution. Revisit the free offer before retesting channels.</span></div>
       </div>
     </div>
-    <div class="test-card">
-      <div class="label">B · LinkedIn DM outbound</div>
-      <div class="desc">Send 30–50 personalised DMs to pre-seed / seed founders (recent raise announcements = best timing signal). Offer the Snapshot as a free diagnostic. Track opens → starts.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Metric: Starts / DMs sent</span>
-        <span class="tag tag-effort">Effort: Medium</span>
-        <span class="tag tag-go">Signal: ≥15% start rate = valid</span>
+
+    <!-- PHASE 2 -->
+    <div class="phase-panel" id="p2">
+      <div class="timeline-bar">
+        <div class="tbar-seg done"></div><div class="tbar-seg done"></div><div class="tbar-seg active"></div>
+        <div class="tbar-seg active"></div><div class="tbar-seg"></div><div class="tbar-seg"></div>
+      </div>
+      <div class="tbar-labels"><span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span></div>
+
+      <div class="hypothesis-block">
+        <div class="h-label">Phase hypothesis</div>
+        <div class="h-text">On the winning channel, one CTA will generate a meaningfully higher signal of downstream value than the others. The $99 upgrade rate is the north star — the other two are proxies that tell you where conversion intent sits.</div>
+      </div>
+
+      <p class="section-label">Test 3 CTAs on the winning channel (2 weeks)</p>
+      <div class="row-grid">
+        <div class="test-card">
+          <div class="card-label">CTA 1 · Upgrade to full Pulse ($99)</div>
+          <div class="desc">Direct hard CTA at the end of the Snapshot — "Get the full human-reviewed report for $99." This is the money signal: if this converts, you have product-market fit for the paid tier, not just the free one.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">North star: Upgrade rate</span>
+            <span class="tag tag-go">Threshold: ≥3% of Snapshot completions</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">CTA 2 · Email capture (Pulse waitlist)</div>
+          <div class="desc">Soft CTA: "We'll send you the full breakdown when it's ready." Tests whether founders see enough value to trade an email but aren't ready to pay. High conversion here = demand, not monetisation intent.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Metric: Email capture rate</span>
+            <span class="tag tag-go">Threshold: ≥20% of completions</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">CTA 3 · Book a 30-min founder call</div>
+          <div class="desc">High-friction CTA: "Want to walk through your results with someone who's seen hundreds of decks?" Tests willingness to commit time (high-intent signal) and surfaces Fractional Program candidates.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Metric: Call booking rate</span>
+            <span class="tag tag-go">Threshold: ≥5% of completions</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cta-winner-box">
+        <div class="w-label">Reading the results</div>
+        <div class="w-text">High CTA 1 = paid conversion path is working. Scale. High CTA 2 only = demand without willingness to pay — Snapshot needs a stronger value wedge before the $99 ask. High CTA 3 = you're generating Fractional leads, not Pulse leads — treat those as a separate track.</div>
+      </div>
+
+      <div class="rule-box">
+        <div class="rule-title">Phase 2 decision gate — end of week 4</div>
+        <div class="rule-row"><span class="tag tag-go badge-col">Scale</span><span>CTA 1 hits ≥3% — commit to the channel + CTA combo, invest in more volume.</span></div>
+        <div class="rule-row"><span class="tag tag-neutral badge-col">Nurture</span><span>CTA 1 sub-threshold but CTA 2 strong — build an email nurture sequence from captures into the $99 offer. Don't expect direct Snapshot-to-Pulse conversion yet.</span></div>
+        <div class="rule-row"><span class="tag tag-kill badge-col">Reframe</span><span>All CTAs sub-threshold — the Snapshot isn't landing as a decision tool. The format, framing, or delivery of the free product needs a change before you scale distribution.</span></div>
       </div>
     </div>
-    <div class="test-card">
-      <div class="label">C · Investor partner drop</div>
-      <div class="desc">Ask 2–3 investors (Dominik + network) to forward the Snapshot to 5–10 portfolio founders each. Frame as a portfolio resource, not a product pitch. Warm referral removes friction.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Metric: Starts / referred founders</span>
-        <span class="tag tag-effort">Effort: Low (once set up)</span>
-        <span class="tag tag-go">Signal: ≥25% start rate = valid</span>
+
+    <!-- PHASE 3 -->
+    <div class="phase-panel" id="p3">
+      <div class="timeline-bar">
+        <div class="tbar-seg done"></div><div class="tbar-seg done"></div><div class="tbar-seg done"></div>
+        <div class="tbar-seg done"></div><div class="tbar-seg active"></div><div class="tbar-seg active"></div>
+      </div>
+      <div class="tbar-labels"><span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span></div>
+
+      <div class="hypothesis-block">
+        <div class="h-label">Phase hypothesis</div>
+        <div class="h-text">The winning channel + CTA combo can be systematically amplified without degrading conversion quality. Week 5–6 proves whether this is a repeatable motion or a one-time signal.</div>
+      </div>
+
+      <p class="section-label">Scale decision — choose one path</p>
+      <div class="row-grid">
+        <div class="test-card">
+          <div class="card-label">Path S1 · Amplify the same channel</div>
+          <div class="desc">Double volume on the winning channel. If LinkedIn worked, send 100 DMs instead of 40. If investor referral worked, add 2 more investors. Watch whether conversion rate holds as volume increases.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Watch: Conversion rate at 2x volume</span>
+            <span class="tag tag-go">Pass: Rate holds within 30% of Phase 2 rate</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">Path S2 · Add the second-best channel</div>
+          <div class="desc">Keep the primary channel running and turn on the next-best Phase 1 result. Tests whether the conversion combo holds across distribution contexts — or if it was audience-specific.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Watch: New channel conversion vs baseline</span>
+            <span class="tag tag-go">Pass: Within 50% of primary channel rate</span>
+          </div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">Path S3 · Embed in a partner's existing flow</div>
+          <div class="desc">Approach one accelerator, pre-seed fund, or founder community to offer the Snapshot as a standard onboarding resource. Single integration point → ongoing pipeline with no recurring distribution effort.</div>
+          <div class="meta-row">
+            <span class="tag tag-metric">Watch: Monthly Snapshot volume from partner</span>
+            <span class="tag tag-go">Pass: ≥20 completions / month from one partner</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-box">
+        <div class="rule-title">End-of-test scorecard — week 6</div>
+        <div class="rule-row"><span class="tag tag-metric badge-col">Channel</span><span>Which channel(s) produced qualified starts consistently at acceptable cost-per-start.</span></div>
+        <div class="rule-row"><span class="tag tag-metric badge-col">CTA</span><span>Which conversion goal had the strongest signal — and whether it maps to Pulse revenue or Fractional pipeline.</span></div>
+        <div class="rule-row"><span class="tag tag-metric badge-col">CAC proxy</span><span>Estimated time/cost to generate one Snapshot completion. Benchmark against $99 Pulse revenue to assess payback.</span></div>
+        <div class="rule-row"><span class="tag tag-metric badge-col">Qualitative</span><span>What do completers say? Do they feel they got value from the Snapshot alone — or do they want more?</span></div>
       </div>
     </div>
-    <div class="test-card">
-      <div class="label">D · Community post (Slack / WhatsApp)</div>
-      <div class="desc">Post in 2–3 founder Slack groups or WhatsApp communities where you already have credibility. Anchor on a specific, timely problem (e.g. "pre-fundraise health check"). Track clicks → starts.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Metric: Starts / post reach</span>
-        <span class="tag tag-effort">Effort: Low</span>
-        <span class="tag tag-go">Signal: ≥5% start rate = valid</span>
+
+    <!-- FRAMEWORK LOGIC -->
+    <div class="phase-panel" id="p4">
+      <p class="section-label">Why this sequence</p>
+      <div class="row-grid">
+        <div class="test-card">
+          <div class="card-label">Channel before CTA</div>
+          <div class="desc">Testing CTAs on a weak channel will give you false negatives. The sequence forces you to find qualified audience first, then optimise conversion — not both at once.</div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">Kill fast, not slow</div>
+          <div class="desc">2-week windows with hard thresholds prevent you from over-investing in a channel that feels promising but isn't converting. The kill criteria are not aspirational — they're the minimum signal that justifies continued attention.</div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">Conversion goal ≠ business goal</div>
+          <div class="desc">Email capture is easy to hit but doesn't validate the $99 Pulse. Call bookings are hard to hit but are the strongest Fractional signal. You're testing three different things — each CTA is a proxy for a different revenue path.</div>
+        </div>
+        <div class="test-card">
+          <div class="card-label">Free product must feel complete</div>
+          <div class="desc">The Snapshot can't be a "teaser" — founders will sense it immediately and disengage. It needs to deliver a genuine insight before the upgrade CTA appears. The difference between a useful subset and a demo is the moment of micro-clarity.</div>
+        </div>
+      </div>
+
+      <div class="rule-box">
+        <div class="rule-title">What you're not testing here</div>
+        <div class="rule-row"><span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);">Pricing — $99 is fixed for now. Price sensitivity is a Phase 2+ problem, not a launch problem.</span></div>
+        <div class="rule-row"><span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);">Positioning copy — keep the framing consistent across channels so results are comparable. Vary the distribution, not the message.</span></div>
+        <div class="rule-row"><span style="font-family:var(--mono);font-size:12px;color:var(--text-muted);">Product format — the Snapshot is a subset of the Pulse report. Don't redesign it mid-test. Evaluate format after the GTM test completes.</span></div>
       </div>
     </div>
-  </div>
 
-  <div class="rule-box">
-    <div class="rule-title">Phase 1 decision gate (end of week 2)</div>
-    <div class="rule-row"><span class="tag tag-go badge-col">Keep</span><span>Any channel hitting its signal threshold. Carry forward top 1–2 into Phase 2.</span></div>
-    <div class="rule-row"><span class="tag tag-kill badge-col">Kill</span><span>Any channel below threshold after 2 weeks — don't invest further time in it.</span></div>
-    <div class="rule-row"><span class="tag tag-neutral badge-col">Pivot</span><span>If zero channels hit threshold: the bottleneck is the Snapshot's perceived value, not distribution. Revisit the free offer before retesting channels.</span></div>
-  </div>
-</div>
+  </div><!-- /content-max -->
+</div><!-- /page-wrap -->
 
-<!-- PHASE 2 -->
-<div class="phase-panel" id="p2">
-  <div class="timeline-bar">
-    <div class="tbar-seg done"></div><div class="tbar-seg done"></div><div class="tbar-seg active"></div>
-    <div class="tbar-seg active"></div><div class="tbar-seg"></div><div class="tbar-seg"></div>
+<footer class="bottom-bar">
+  <div class="bottom-links">
+    <a href="index.html">← SKIN OS</a>
+    <a href="skin-pulse-copy.html">Launch Copy</a>
+    <a href="https://skin.global" target="_blank">skin.global ↗</a>
   </div>
-  <div class="tbar-labels"><span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span></div>
+  <div class="version">SKIN OS v1.2 · GTM Framework</div>
+</footer>
 
-  <div class="hypothesis-block">
-    <div class="h-label">Phase hypothesis</div>
-    <div class="h-text">On the winning channel, one CTA will generate a meaningfully higher signal of downstream value than the others. The $99 upgrade rate is the north star — the other two are proxies that tell you where conversion intent sits.</div>
-  </div>
-
-  <p class="section-label">Test 3 CTAs on the winning channel (2 weeks)</p>
-  <div class="row-grid">
-    <div class="test-card">
-      <div class="label">CTA 1 · Upgrade to full Pulse ($99)</div>
-      <div class="desc">Direct hard CTA at the end of the Snapshot — "Get the full human-reviewed report for $99." This is the money signal: if this converts, you have product-market fit for the paid tier, not just the free one.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">North star: Upgrade rate</span>
-        <span class="tag tag-go">Threshold: ≥3% of Snapshot completions</span>
-      </div>
-    </div>
-    <div class="test-card">
-      <div class="label">CTA 2 · Email capture (Pulse waitlist)</div>
-      <div class="desc">Soft CTA: "We'll send you the full breakdown when it's ready." Tests whether founders see enough value to trade an email but aren't ready to pay. High conversion here = demand, not monetisation intent.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Metric: Email capture rate</span>
-        <span class="tag tag-go">Threshold: ≥20% of completions</span>
-      </div>
-    </div>
-    <div class="test-card">
-      <div class="label">CTA 3 · Book a 30-min founder call</div>
-      <div class="desc">High-friction CTA: "Want to walk through your results with someone who's seen hundreds of decks?" Tests willingness to commit time (high-intent signal) and surfaces Fractional Program candidates.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Metric: Call booking rate</span>
-        <span class="tag tag-go">Threshold: ≥5% of completions</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="cta-winner-box">
-    <div class="w-label">Reading the results</div>
-    <div class="w-text">High CTA 1 = paid conversion path is working. Scale. High CTA 2 only = demand without willingness to pay — Snapshot needs a stronger value wedge before the $99 ask. High CTA 3 = you're generating Fractional leads, not Pulse leads — treat those as a separate track.</div>
-  </div>
-
-  <div class="rule-box">
-    <div class="rule-title">Phase 2 decision gate (end of week 4)</div>
-    <div class="rule-row"><span class="tag tag-go badge-col">Scale</span><span>CTA 1 hits ≥3% — commit to the channel + CTA combo, invest in more volume.</span></div>
-    <div class="rule-row"><span class="tag tag-neutral badge-col">Nurture</span><span>CTA 1 sub-threshold but CTA 2 strong — build an email nurture sequence from captures into the $99 offer. Don't expect direct Snapshot-to-Pulse conversion yet.</span></div>
-    <div class="rule-row"><span class="tag tag-kill badge-col">Reframe</span><span>All CTAs sub-threshold — the Snapshot isn't landing as a decision tool. The format, framing, or delivery of the free product needs a change before you scale distribution.</span></div>
-  </div>
-</div>
-
-<!-- PHASE 3 -->
-<div class="phase-panel" id="p3">
-  <div class="timeline-bar">
-    <div class="tbar-seg done"></div><div class="tbar-seg done"></div><div class="tbar-seg done"></div>
-    <div class="tbar-seg done"></div><div class="tbar-seg active"></div><div class="tbar-seg active"></div>
-  </div>
-  <div class="tbar-labels"><span>Wk 1</span><span>Wk 2</span><span>Wk 3</span><span>Wk 4</span><span>Wk 5</span><span>Wk 6</span></div>
-
-  <div class="hypothesis-block">
-    <div class="h-label">Phase hypothesis</div>
-    <div class="h-text">The winning channel + CTA combo can be systematically amplified without degrading conversion quality. Week 5–6 proves whether this is a repeatable motion or a one-time signal.</div>
-  </div>
-
-  <p class="section-label">Scale decision — choose one path</p>
-  <div class="row-grid">
-    <div class="test-card">
-      <div class="label">Path S1 · Amplify the same channel</div>
-      <div class="desc">Double volume on the winning channel. If LinkedIn worked, send 100 DMs instead of 40. If investor referral worked, add 2 more investors. Watch whether conversion rate holds as volume increases.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Watch: Conversion rate at 2x volume</span>
-        <span class="tag tag-go">Pass: Rate holds within 30% of Phase 2 rate</span>
-      </div>
-    </div>
-    <div class="test-card">
-      <div class="label">Path S2 · Add the second-best channel</div>
-      <div class="desc">Keep the primary channel running and turn on the next-best Phase 1 result. Tests whether the conversion combo holds across distribution contexts — or if it was audience-specific.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Watch: New channel conversion vs baseline</span>
-        <span class="tag tag-go">Pass: Within 50% of primary channel rate</span>
-      </div>
-    </div>
-    <div class="test-card">
-      <div class="label">Path S3 · Embed in a partner's existing flow</div>
-      <div class="desc">Approach one accelerator, pre-seed fund, or founder community to offer the Snapshot as a standard onboarding resource. Single integration point → ongoing pipeline with no recurring distribution effort.</div>
-      <div class="meta-row">
-        <span class="tag tag-metric">Watch: Monthly Snapshot volume from partner</span>
-        <span class="tag tag-go">Pass: ≥20 completions / month from one partner</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="rule-box">
-    <div class="rule-title">End-of-test scorecard (week 6)</div>
-    <div class="rule-row"><span class="tag tag-metric badge-col">Channel</span><span>Which channel(s) produced qualified starts consistently at acceptable cost-per-start.</span></div>
-    <div class="rule-row"><span class="tag tag-metric badge-col">CTA</span><span>Which conversion goal had the strongest signal — and whether it maps to Pulse revenue or Fractional pipeline.</span></div>
-    <div class="rule-row"><span class="tag tag-metric badge-col">CAC proxy</span><span>Estimated time/cost to generate one Snapshot completion. Benchmark against $99 Pulse revenue to assess payback.</span></div>
-    <div class="rule-row"><span class="tag tag-metric badge-col">Qualitative</span><span>What do completers say? Do they feel they got value from the Snapshot alone — or do they want more?</span></div>
-  </div>
-</div>
-
-<!-- FRAMEWORK LOGIC -->
-<div class="phase-panel" id="p4">
-  <p class="section-label">Why this sequence</p>
-  <div class="row-grid">
-    <div class="test-card">
-      <div class="label">Channel before CTA</div>
-      <div class="desc">Testing CTAs on a weak channel will give you false negatives. The sequence forces you to find qualified audience first, then optimise conversion — not both at once.</div>
-    </div>
-    <div class="test-card">
-      <div class="label">Kill fast, not slow</div>
-      <div class="desc">2-week windows with hard thresholds prevent you from over-investing in a channel that feels promising but isn't converting. The kill criteria are not aspirational — they're the minimum signal that justifies continued attention.</div>
-    </div>
-    <div class="test-card">
-      <div class="label">Conversion goal ≠ business goal</div>
-      <div class="desc">Email capture is easy to hit but doesn't validate the $99 Pulse. Call bookings are hard to hit but are the strongest Fractional signal. You're testing three different things — each CTA is a proxy for a different revenue path.</div>
-    </div>
-    <div class="test-card">
-      <div class="label">Free product must feel complete</div>
-      <div class="desc">The Snapshot can't be a "teaser" — founders will sense it immediately and disengage. It needs to deliver a genuine insight before the upgrade CTA appears. The difference between a useful subset and a demo is the moment of micro-clarity.</div>
-    </div>
-  </div>
-
-  <div class="rule-box">
-    <div class="rule-title">What you're not testing here</div>
-    <div class="rule-row"><span style="color:var(--color-text-secondary);font-size:12px;">Pricing — $99 is fixed for now. Price sensitivity is a Phase 2+ problem, not a launch problem.</span></div>
-    <div class="rule-row"><span style="color:var(--color-text-secondary);font-size:12px;">Positioning copy — keep the framing consistent across channels so results are comparable. Vary the distribution, not the message.</span></div>
-    <div class="rule-row"><span style="color:var(--color-text-secondary);font-size:12px;">Product format — the Snapshot is a subset of the Pulse report. Don't redesign it mid-test. Evaluate format after the GTM test completes.</span></div>
-  </div>
-</div>
-
+<script src="skin-os.js"></script>
 <script>
 function showPhase(id) {
   document.querySelectorAll('.phase-panel').forEach(p => p.classList.remove('active'));
@@ -256,3 +472,5 @@ function showPhase(id) {
   event.target.classList.add('active');
 }
 </script>
+</body>
+</html>

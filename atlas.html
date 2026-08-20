@@ -7,7 +7,7 @@
 <meta name="description" content="Three minutes with Atlas. Say what feels hard, and get a First Read from SKIN." />
 <link rel="icon" type="image/png" href="skin-favicon.png" />
 <link rel="apple-touch-icon" href="skin-favicon.png" />
-<!-- SKIN · Atlas · v2.6 -->
+<!-- SKIN · Atlas · v2.7 -->
 <style>
 :root{
   --obsidian:#0B0B0D;
@@ -312,13 +312,13 @@ a{color:inherit}
 
   <header class="topbar">
     <div class="tb-left">
-      <a href="index.html" aria-label="SKIN home"><img src="skin-wordmark.png" alt="SKIN" width="1325" height="328" /></a>
+      <a href="https://skin.global" aria-label="SKIN home"><img src="skin-wordmark.png" alt="SKIN" width="1325" height="328" /></a>
       <div class="tb-div"></div>
       <span>Atlas</span>
     </div>
     <div class="tb-right">
       <span class="tb-meta">Founder guide</span>
-      <a class="tb-link" href="index.html">Back to SKIN</a>
+      <a class="tb-link" href="https://skin.global">Back to SKIN</a>
     </div>
   </header>
 
@@ -406,14 +406,14 @@ a{color:inherit}
   <main class="report" id="report"></main>
 
   <footer class="foot">
-    <span data-version>SKIN Studios · Atlas v2.6</span>
-    <a href="index.html">skin.global</a>
+    <span data-version>SKIN Studios · Atlas v2.7</span>
+    <a href="https://skin.global">skin.global</a>
   </footer>
 </div>
 
 <script>
-/* SKIN · Atlas · v2.6 */
-const VERSION = "2.6";
+/* SKIN · Atlas · v2.7 */
+const VERSION = "2.7";
 document.querySelectorAll("[data-version]").forEach(function (el) { el.textContent = "SKIN Studios \u00b7 Atlas v" + VERSION; });
 
 const CHECKOUT = {
@@ -721,7 +721,7 @@ function renderReport(r){
   const paths = {
     fundable: { name:'Fundable', price:'$49', desc:'Investor readiness diagnostic. Twenty signals, weighted by investor type, with deal killer detection.', href:CHECKOUT.fundable },
     pulse:    { name:'Pulse', price:'$29 / month', desc:'Ongoing company health diagnostic. Forty six signals across six dimensions, tracked over time.', href:CHECKOUT.pulse },
-    live:     { name:'Talk it through live', price:'By request', desc:'A scoping conversation with a SKIN operator. Some situations are easier out loud.', href:'index.html#contact' }
+    live:     { name:'Talk it through live', price:'By request', desc:'A scoping conversation with a SKIN operator. Some situations are easier out loud.', href:'https://skin.global/#contact' }
   };
   const pick = paths[r.path] || paths.live;
   const order = [r.path === 'pulse' ? 'pulse' : 'fundable', r.path === 'pulse' ? 'fundable' : 'pulse', 'live'];
